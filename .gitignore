@@ -62,4 +62,4 @@ target/
 .ipynb_checkpoints
 
 # exclude configuration files that may have sensitive content
--*config.py
+*config.py
