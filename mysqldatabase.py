@@ -20,6 +20,7 @@ class MySQLDatabase:
     # "Constant" values: Table names
     __TBL_BADGES = "Badges"
     __TBL_COMMENTS = "Comments"
+    __TBL_POSITIVE_SCORED_POSTS = "posvote_Posts"
     __TBL_NEGATIVE_SCORED_POSTS = "negvote_Posts"
     '''
     To reduce data amount when retrieving training data, a table was
@@ -57,6 +58,31 @@ class MySQLDatabase:
         except MySQLdb.Error as err:
             print("Error during connection: %s", err)
 
+    def retrieve_posts_with_positive_votes(self, limit=1000, remove_html=True):
+        """
+        Retrieves all Posts (questions only) where the voting score is positive (> 0)
+
+        Arguments:
+            limit: Amount of rows to retrieve
+            remove_html: Should HTML be removed from the question text
+
+        Returns:
+            pandas.DataFrame: Positive scored Question posts
+
+        """
+        posts_data = None
+        try:
+            query = "SELECT * FROM " + self.__TBL_POSITIVE_SCORED_POSTS \
+                    + " LIMIT " + str(limit) + ";"
+            posts_data = pandas.read_sql(query, con=self.__db)
+            if remove_html:
+                posts_data = self.__remove_html_from_text(self.POSTS_QUESTION_TEXT, posts_data)
+        except MySQLdb.Error as err:
+            print("MySQLdb.Error (retrieve_posts_with_positive_votes): %s", err)
+        finally:
+            self.__close_db_connection()
+        return posts_data
+
     def retrieve_posts_with_negative_votes(self, limit=1000, remove_html=True):
         """
         Retrieves all Posts (questions only) where the voting score is negative (< 0)
@@ -69,10 +95,17 @@ class MySQLDatabase:
             pandas.DataFrame: Negative scored Question posts
 
         """
-        query = "SELECT * FROM negvote_Posts LIMIT " + str(limit) + ";"
-        posts_data = pandas.read_sql(query, con=self.__db)
-        if remove_html:
-            posts_data = self.__remove_html_from_text(self.POSTS_QUESTION_TEXT, posts_data)
+        posts_data = None
+        try:
+            query = "SELECT * FROM " + self.__TBL_NEGATIVE_SCORED_POSTS \
+                    + " LIMIT " + str(limit) + ";"
+            posts_data = pandas.read_sql(query, con=self.__db)
+            if remove_html:
+                posts_data = self.__remove_html_from_text(self.POSTS_QUESTION_TEXT, posts_data)
+        except MySQLdb.Error as err:
+            print("MySQLdb.Error (retrieve_posts_with_negative_votes): %s", err)
+        finally:
+            self.__close_db_connection()
         return posts_data
 
     @staticmethod
@@ -98,7 +131,7 @@ class MySQLDatabase:
         """
         for index in range(len(text_data)):
             temp_value = text_data.get_value(index=index, col=column_name)
-            new_value = htmlstripper.strip_tags(temp_value)
+            new_value = htmlstripper.strip_tags(temp_value.decode("utf-8"))
             text_data.set_value(index=index, col=column_name, value=new_value)
         return text_data
 
