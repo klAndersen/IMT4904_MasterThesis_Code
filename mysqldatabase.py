@@ -1,6 +1,8 @@
 
+import pandas
 import MySQLdb
 
+import htmlstripper
 import dbconfig as config
 
 _author_ = "Knut Lucas Andersen"
@@ -18,6 +20,13 @@ class MySQLDatabase:
     # "Constant" values: Table names
     __TBL_BADGES = "Badges"
     __TBL_COMMENTS = "Comments"
+    __TBL_NEGATIVE_SCORED_POSTS = "negvote_Posts"
+    '''
+    To reduce data amount when retrieving training data, a table was
+    created which contains only Questions with votes/score < 0.
+    Size-wise this was beneficial, since the Posts has a file size of 30.6GB,
+    and this only has a file size of 0.7GB
+    '''
     __TBL_POSTHISTORY = "PostHistory"
     __TBL_POSTS = "Posts"
     __TBL_TAGS = "Tags"
@@ -25,6 +34,10 @@ class MySQLDatabase:
     # "Constant" values: Primary keys
     __PK_IS_ID = "Id"
     __TBL_BADGES_ID = "UserId"
+    # "Constant" values: Column names
+    POSTS_VOTES = "Score"
+    POSTS_TITLE = "Title"
+    POSTS_QUESTION_TEXT = "Body"
 
     def __init__(self):
         """
@@ -44,7 +57,52 @@ class MySQLDatabase:
         except MySQLdb.Error as err:
             print("Error during connection: %s", err)
 
-    def __select_all_records_from_tables(self, table_list, limit=1000):
+    def retrieve_posts_with_negative_votes(self, limit=1000, remove_html=True):
+        """
+        Retrieves all Posts (questions only) where the voting score is negative (< 0)
+
+        Arguments:
+            limit: Amount of rows to retrieve
+            remove_html: Should HTML be removed from the question text
+
+        Returns:
+            pandas.DataFrame: Negative scored Question posts
+
+        """
+        query = "SELECT * FROM negvote_Posts LIMIT " + str(limit) + ";"
+        posts_data = pandas.read_sql(query, con=self.__db)
+        if remove_html:
+            posts_data = self.__remove_html_from_text(self.POSTS_QUESTION_TEXT, posts_data)
+        return posts_data
+
+    @staticmethod
+    def __remove_html_from_text(column_name, text_data=pandas.DataFrame):
+        """
+        Removes HTML elements (if any) from the text
+
+        Since all posts (questions, answers, comments, etc) can have HTML-content,
+        processing the text can become more difficult. This function loops through
+        each entry in the passed DataFrame, and removes the HTML elements from the
+        text.
+
+        Arguments:
+            column_name (str): Key to the column
+            text_data (pandas.DataFrame): DataFrame with HTML text data
+
+        Returns:
+            pandas.DataFrame: DataFrame with updated text data
+
+        See:
+            | ```htmlstripper.strip_tags()```
+
+        """
+        for index in range(len(text_data)):
+            temp_value = text_data.get_value(index=index, col=column_name)
+            new_value = htmlstripper.strip_tags(temp_value)
+            text_data.set_value(index=index, col=column_name, value=new_value)
+        return text_data
+
+    def select_all_records_from_tables(self, table_list, limit=1000):
         """
         Retrieves all records from the selected tables.
 
@@ -74,13 +132,14 @@ class MySQLDatabase:
             # if there are more then one table in the list...
             if no_of_entries > 0:
                 for counter in range(0, no_of_entries):
-                    query += ", %s"
+                    query += ", %s "
             # add semi-colon at the end of the query
-            query += "LIMIT=" + str(limit) + ";"
+            query += " LIMIT " + str(limit) + ";"
             # run query and get the results
             cursor.execute(query % tuple(table_list))
             result_set = cursor.fetchall()
         except MySQLdb.Error as err:
+            # print cursor._last_executed
             print("MySQLdb.Error (Select all): %s", err)
         finally:
             self.__close_db_connection()

@@ -2,9 +2,12 @@
 Main entry file, all user interaction is handled through this class
 """
 
+from sklearn import svm
 
-class Main:
+#
+# class Main:
+#
+#     def __init__(self):
+#         pass
 
-    def __init__(self):
-        pass
 
