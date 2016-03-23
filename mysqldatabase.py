@@ -36,9 +36,26 @@ class MySQLDatabase:
     __PK_IS_ID = "Id"
     __TBL_BADGES_ID = "UserId"
     # "Constant" values: Column names
-    POSTS_VOTES = "Score"
-    POSTS_TITLE = "Title"
-    POSTS_QUESTION_TEXT = "Body"
+    POSTS_VOTES_KEY = "Score"
+    '''
+    Column identifier/key: Score
+    Amount of votes/scores on a given question
+    '''
+    POSTS_TITLE_KEY = "Title"
+    '''
+    Column identifier/key: Title
+    The title of the question as seen on StackOverflow
+    '''
+    POSTS_QUESTION_TEXT_KEY = "Body"
+    '''
+    Column identifier/key: Body
+    The question text
+    '''
+    CLASS_LABEL_KEY = "label"
+    '''
+    Column identifier/key: label
+    Label for the retrieved training data.
+    '''
 
     def __init__(self):
         """
@@ -58,55 +75,124 @@ class MySQLDatabase:
         except MySQLdb.Error as err:
             print("Error during connection: %s", err)
 
-    def retrieve_posts_with_positive_votes(self, limit=1000, remove_html=True):
+    def retrieve_question_posts(self, table_name, class_label, limit=1000, remove_html=True):
         """
-        Retrieves all Posts (questions only) where the voting score is positive (> 0)
 
         Arguments:
-            limit: Amount of rows to retrieve
-            remove_html: Should HTML be removed from the question text
+            table_name (str): The table to retrieve data from
+            class_label (str): The class label for this data
+            limit (int): Amount of rows to retrieve (default=1000)
+            remove_html (bool): Should HTML be removed from the question text
 
         Returns:
-            pandas.DataFrame: Positive scored Question posts
+            pandas.DataFrame:
 
         """
         posts_data = None
         try:
-            query = "SELECT * FROM " + self.__TBL_POSITIVE_SCORED_POSTS \
+            query = "SELECT * FROM " + table_name \
                     + " LIMIT " + str(limit) + ";"
             posts_data = pandas.read_sql(query, con=self.__db)
             if remove_html:
-                posts_data = self.__remove_html_from_text(self.POSTS_QUESTION_TEXT, posts_data)
+                posts_data = self.__remove_html_from_text(self.POSTS_QUESTION_TEXT_KEY, posts_data)
+            # add a column containing the class label (e.g. good/bad question)
+            posts_data[self.CLASS_LABEL_KEY] = posts_data[self.POSTS_QUESTION_TEXT_KEY].map(lambda text: class_label)
         except MySQLdb.Error as err:
-            print("MySQLdb.Error (retrieve_posts_with_positive_votes): %s", err)
-        finally:
-            self.__close_db_connection()
+            print("MySQLdb.Error (retrieve_question_posts): %s", err)
         return posts_data
 
-    def retrieve_posts_with_negative_votes(self, limit=1000, remove_html=True):
+    def retrieve_training_data(self, limit=1000, remove_html=True):
         """
-        Retrieves all Posts (questions only) where the voting score is negative (< 0)
+        Retrieves all Posts (questions only) where the questions are labeled
+        based on if the question is bad (score < 0) or good (score > 0)
 
         Arguments:
-            limit: Amount of rows to retrieve
-            remove_html: Should HTML be removed from the question text
+            limit (int): Amount of rows to retrieve for each label (default=1000)
+            remove_html (bool): Should HTML be removed from the question text
 
         Returns:
-            pandas.DataFrame: Negative scored Question posts
+             tuple(str, pandas.DataFrame): The str value is key to the column containing the
+                                       question text, and the DataFrame contains the labeled
+                                       training data (```bad_question``` and ```good_question```)
 
         """
-        posts_data = None
-        try:
-            query = "SELECT * FROM " + self.__TBL_NEGATIVE_SCORED_POSTS \
-                    + " LIMIT " + str(limit) + ";"
-            posts_data = pandas.read_sql(query, con=self.__db)
-            if remove_html:
-                posts_data = self.__remove_html_from_text(self.POSTS_QUESTION_TEXT, posts_data)
-        except MySQLdb.Error as err:
-            print("MySQLdb.Error (retrieve_posts_with_negative_votes): %s", err)
-        finally:
-            self.__close_db_connection()
-        return posts_data
+        training_data = pandas.DataFrame()
+        # retrieve the questions with negative votes (< 0)
+        class_label = "bad_question"
+        negative_training_data = self.retrieve_question_posts(self.__TBL_NEGATIVE_SCORED_POSTS,
+                                                              class_label, limit, remove_html)
+        # retrieve questions with votes > 0
+        class_label = "good_question"
+        positive_training_data = self.retrieve_question_posts(self.__TBL_POSITIVE_SCORED_POSTS,
+                                                              class_label, limit, remove_html)
+        # add the retrieved data to the DataFrame
+        training_data = training_data.append(negative_training_data, ignore_index=True)
+        training_data = training_data.append(positive_training_data, ignore_index=True)
+        # close the database connection (closed here to avoid connection errors with pandas)
+        self.__close_db_connection()
+        return self.POSTS_QUESTION_TEXT_KEY, training_data
+    #
+    # def retrieve_posts_with_positive_votes(self, limit=1000, remove_html=True):
+    #     """
+    #     Retrieves all Posts (questions only) where the voting score is positive (> 0)
+    #
+    #     Arguments:
+    #         limit: Amount of rows to retrieve (default=1000)
+    #         remove_html: Should HTML be removed from the question text
+    #
+    #     Returns:
+    #          tuple(str, pandas.DataFrame): The str value is key to the column containing the
+    #                                    question text, and the DataFrame contains question posts
+    #                                    with a voting score > 0
+    #
+    #     """
+    #     posts_data = None
+    #     question_text_key = None
+    #     try:
+    #         query = "SELECT * FROM " + self.__TBL_POSITIVE_SCORED_POSTS \
+    #                 + " LIMIT " + str(limit) + ";"
+    #         posts_data = pandas.read_sql(query, con=self.__db)
+    #         question_text_key = self.__POSTS_QUESTION_TEXT
+    #         if remove_html:
+    #             posts_data = self.__remove_html_from_text(question_text_key, posts_data)
+    #         # add a column containing the class label (e.g. good/bad question)
+    #         posts_data[self.CLASS_LABEL] = posts_data[question_text_key].map(lambda text: 'good')
+    #     except MySQLdb.Error as err:
+    #         print("MySQLdb.Error (retrieve_posts_with_positive_votes): %s", err)
+    #     finally:
+    #         self.__close_db_connection()
+    #     return question_text_key, posts_data
+    #
+    # def retrieve_posts_with_negative_votes(self, limit=1000, remove_html=True):
+    #     """
+    #     Retrieves all Posts (questions only) where the voting score is negative (< 0)
+    #
+    #     Arguments:
+    #         limit: Amount of rows to retrieve (default=1000)
+    #         remove_html: Should HTML be removed from the question text
+    #
+    #     Returns:
+    #          tuple(str, pandas.DataFrame): The str value is key to the column containing the
+    #                                    question text, and the DataFrame contains question posts
+    #                                    with a voting score < 0
+    #
+    #     """
+    #     posts_data = None
+    #     question_text_key = None
+    #     try:
+    #         query = "SELECT * FROM " + self.__TBL_NEGATIVE_SCORED_POSTS \
+    #                 + " LIMIT " + str(limit) + ";"
+    #         posts_data = pandas.read_sql(query, con=self.__db)
+    #         question_text_key = self.__POSTS_QUESTION_TEXT
+    #         if remove_html:
+    #             posts_data = self.__remove_html_from_text(question_text_key, posts_data)
+    #         # add a column containing the class label (e.g. good/bad question)
+    #         posts_data[self.CLASS_LABEL] = posts_data[question_text_key].map(lambda text: 'bad')
+    #     except MySQLdb.Error as err:
+    #         print("MySQLdb.Error (retrieve_posts_with_negative_votes): %s", err)
+    #     finally:
+    #         self.__close_db_connection()
+    #     return question_text_key, posts_data
 
     @staticmethod
     def __remove_html_from_text(column_name, text_data=pandas.DataFrame):
