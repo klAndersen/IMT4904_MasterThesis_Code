@@ -10,31 +10,52 @@ _author_ = "Knut Lucas Andersen"
 
 class MySQLDatabase:
     """
-    Class for handling MySQL database operations.
+    Class that handles all interactions with the MySQL database.
+
+    The MySQL database structure can be seen in ./MySQLDB.
+
+    The database contains all data posted on StackOverflow,
+    and is based on the dataset found at:
+
+    https://archive.org/details/stackexchange
     """
 
-    __db = None  # the database connection
-    __mysql_parameters = None  # parameters for database connection
-    # Constant values: Error values
-    PRIMARY_KEY_NOT_FOUND = -1
+    # the database connection
+    __db = None
+    # parameters for database connection
+    __mysql_parameters = None
+    # vote values for where clause
+    __pos_vote_value = int
+    __neg_vote_value = int
+    # "Constant" values: Primary keys
+    __PK_IS_ID = "Id"
+    __TBL_BADGES_ID = "UserId"
     # "Constant" values: Table names
     __TBL_BADGES = "Badges"
     __TBL_COMMENTS = "Comments"
-    __TBL_POSITIVE_SCORED_POSTS = "posvote_Posts"
-    __TBL_NEGATIVE_SCORED_POSTS = "negvote_Posts"
+    __TBL_POSTHISTORY = "PostHistory"
+    __TBL_POSTS = "Posts"
+    __TBL_TAGS = "Tags"
+    __TBL_VOTES = "Votes"
+    __TBL_POSITIVE_VOTES_POSTS = "posvote_Posts"
+    __TBL_NEGATIVE__VOTES_POSTS = "negvote_Posts"
     '''
     To reduce data amount when retrieving training data, a table was
     created which contains only Questions with votes/score < 0.
     Size-wise this was beneficial, since the Posts has a file size of 30.6GB,
     and this only has a file size of 0.7GB
     '''
-    __TBL_POSTHISTORY = "PostHistory"
-    __TBL_POSTS = "Posts"
-    __TBL_TAGS = "Tags"
-    __TBL_VOTES = "Votes"
-    # "Constant" values: Primary keys
-    __PK_IS_ID = "Id"
-    __TBL_BADGES_ID = "UserId"
+    # Values for votes in WHERE clause
+    __DEFAULT_POSITIVE_VOTE_VALUE = int(50)
+    '''
+    Default value to use in WHERE clause for good questions
+    (Value = 50)
+    '''
+    __DEFAULT_NEGATIVE_VOTE_VALUE = int(-10)
+    '''
+    Default value to use in WHERE clause for bad questions
+    (Value = -10)
+    '''
     # "Constant" values: Column names
     POSTS_VOTES_KEY = "Score"
     '''
@@ -72,25 +93,46 @@ class MySQLDatabase:
                 self.__mysql_parameters['db']
             )
             self.__db.autocommit(True)
+            self.__pos_vote_value = self.__DEFAULT_POSITIVE_VOTE_VALUE
+            self.__neg_vote_value = self.__DEFAULT_NEGATIVE_VOTE_VALUE
         except MySQLdb.Error as err:
             print("Error during connection: %s", err)
 
-    def retrieve_question_posts(self, table_name, class_label, limit=1000, remove_html=True):
+    def retrieve_question_posts(self, table_name, class_label, score_clause=str, limit=1000, remove_html=True):
         """
+        Retrieves all Posts data from the passed ```table_name```, removes the HTML from the
+        question body and adds a class label. The class label indicates whether this is a good or bad
+        question. The retrieved data is added to pandas.DataFrame.
 
         Arguments:
             table_name (str): The table to retrieve data from
             class_label (str): The class label for this data
+            score_clause (str):
             limit (int): Amount of rows to retrieve (default=1000)
-            remove_html (bool): Should HTML be removed from the question text
+            remove_html (bool): Should HTML be removed from the question text?
 
         Returns:
-            pandas.DataFrame:
+            pandas.DataFrame: DataFrame containing the retrieved data || None
 
         """
         posts_data = None
         try:
-            query = "SELECT * FROM " + table_name \
+            where_clause = ''
+            if score_clause:
+                where_clause = " WHERE Score " + score_clause
+            query = "SELECT Id, " \
+                    + "Score, " \
+                      "ViewCount, " \
+                      "Body, " \
+                      "Title, " \
+                      "AnswerCount, " \
+                      "CommentCount, " \
+                      "AcceptedAnswerId, " \
+                      "OwnerUserId, " \
+                      "CreationDate, " \
+                      "ClosedDate " \
+                    + " FROM " + table_name \
+                    + where_clause \
                     + " LIMIT " + str(limit) + ";"
             posts_data = pandas.read_sql(query, con=self.__db)
             if remove_html:
@@ -103,106 +145,54 @@ class MySQLDatabase:
 
     def retrieve_training_data(self, limit=1000, remove_html=True):
         """
-        Retrieves all Posts (questions only) where the questions are labeled
-        based on if the question is bad (score < 0) or good (score > 0)
+        Retrieves all Posts (questions only) where the questions are labeled based on if
+        the question is bad or good.
+
+        The vote/score is based on the values set in ```set_vote_value_params()```
+        ---> (default values are ```good: 50```, ```bad: -10```)
+
 
         Arguments:
             limit (int): Amount of rows to retrieve for each label (default=1000)
-            remove_html (bool): Should HTML be removed from the question text
+            remove_html (bool): Should HTML be removed from the question text?
 
         Returns:
-             tuple(str, pandas.DataFrame): The str value is key to the column containing the
-                                       question text, and the DataFrame contains the labeled
-                                       training data (```bad_question``` and ```good_question```)
+             (str, pandas.DataFrame):
+             |  The string (str) is the key value for the column
+             |  containing the question text.
+             |
+             |  The DataFrame contains the labeled training data
+             |  (```bad_question``` and ```good_question```)
 
         """
         training_data = pandas.DataFrame()
         # retrieve the questions with negative votes (< 0)
         class_label = "bad_question"
-        negative_training_data = self.retrieve_question_posts(self.__TBL_NEGATIVE_SCORED_POSTS,
-                                                              class_label, limit, remove_html)
-        # retrieve questions with votes > 0
+        score_clause = "< " + str(self.__neg_vote_value)
+        negative_training_data = self.retrieve_question_posts(self.__TBL_NEGATIVE__VOTES_POSTS,
+                                                              class_label, score_clause, limit, remove_html)
+        # retrieve the questions with positive votes (> 0)
         class_label = "good_question"
-        positive_training_data = self.retrieve_question_posts(self.__TBL_POSITIVE_SCORED_POSTS,
-                                                              class_label, limit, remove_html)
+        score_clause = "> " + str(self.__pos_vote_value)
+        positive_training_data = self.retrieve_question_posts(self.__TBL_POSITIVE_VOTES_POSTS,
+                                                              class_label, score_clause, limit, remove_html)
         # add the retrieved data to the DataFrame
         training_data = training_data.append(negative_training_data, ignore_index=True)
         training_data = training_data.append(positive_training_data, ignore_index=True)
         # close the database connection (closed here to avoid connection errors with pandas)
         self.__close_db_connection()
         return self.POSTS_QUESTION_TEXT_KEY, training_data
-    #
-    # def retrieve_posts_with_positive_votes(self, limit=1000, remove_html=True):
-    #     """
-    #     Retrieves all Posts (questions only) where the voting score is positive (> 0)
-    #
-    #     Arguments:
-    #         limit: Amount of rows to retrieve (default=1000)
-    #         remove_html: Should HTML be removed from the question text
-    #
-    #     Returns:
-    #          tuple(str, pandas.DataFrame): The str value is key to the column containing the
-    #                                    question text, and the DataFrame contains question posts
-    #                                    with a voting score > 0
-    #
-    #     """
-    #     posts_data = None
-    #     question_text_key = None
-    #     try:
-    #         query = "SELECT * FROM " + self.__TBL_POSITIVE_SCORED_POSTS \
-    #                 + " LIMIT " + str(limit) + ";"
-    #         posts_data = pandas.read_sql(query, con=self.__db)
-    #         question_text_key = self.__POSTS_QUESTION_TEXT
-    #         if remove_html:
-    #             posts_data = self.__remove_html_from_text(question_text_key, posts_data)
-    #         # add a column containing the class label (e.g. good/bad question)
-    #         posts_data[self.CLASS_LABEL] = posts_data[question_text_key].map(lambda text: 'good')
-    #     except MySQLdb.Error as err:
-    #         print("MySQLdb.Error (retrieve_posts_with_positive_votes): %s", err)
-    #     finally:
-    #         self.__close_db_connection()
-    #     return question_text_key, posts_data
-    #
-    # def retrieve_posts_with_negative_votes(self, limit=1000, remove_html=True):
-    #     """
-    #     Retrieves all Posts (questions only) where the voting score is negative (< 0)
-    #
-    #     Arguments:
-    #         limit: Amount of rows to retrieve (default=1000)
-    #         remove_html: Should HTML be removed from the question text
-    #
-    #     Returns:
-    #          tuple(str, pandas.DataFrame): The str value is key to the column containing the
-    #                                    question text, and the DataFrame contains question posts
-    #                                    with a voting score < 0
-    #
-    #     """
-    #     posts_data = None
-    #     question_text_key = None
-    #     try:
-    #         query = "SELECT * FROM " + self.__TBL_NEGATIVE_SCORED_POSTS \
-    #                 + " LIMIT " + str(limit) + ";"
-    #         posts_data = pandas.read_sql(query, con=self.__db)
-    #         question_text_key = self.__POSTS_QUESTION_TEXT
-    #         if remove_html:
-    #             posts_data = self.__remove_html_from_text(question_text_key, posts_data)
-    #         # add a column containing the class label (e.g. good/bad question)
-    #         posts_data[self.CLASS_LABEL] = posts_data[question_text_key].map(lambda text: 'bad')
-    #     except MySQLdb.Error as err:
-    #         print("MySQLdb.Error (retrieve_posts_with_negative_votes): %s", err)
-    #     finally:
-    #         self.__close_db_connection()
-    #     return question_text_key, posts_data
 
     @staticmethod
     def __remove_html_from_text(column_name, text_data=pandas.DataFrame):
         """
         Removes HTML elements (if any) from the text
 
-        Since all posts (questions, answers, comments, etc) can have HTML-content,
-        processing the text can become more difficult. This function loops through
-        each entry in the passed DataFrame, and removes the HTML elements from the
-        text.
+        Since all posts (questions, answers, comments, etc.) can have HTML-content,
+        processing the text can become more difficult.
+
+        This function loops through each entry in the passed DataFrame, and removes
+        the HTML elements from the text.
 
         Arguments:
             column_name (str): Key to the column
@@ -248,11 +238,10 @@ class MySQLDatabase:
             cursor = self.__get_db_cursor()
             query = "SELECT * FROM %s"
             no_of_entries = len(table_list) - 1
-            # if there are more then one table in the list...
+            # is there more then one table in the list?
             if no_of_entries > 0:
                 for counter in range(0, no_of_entries):
                     query += ", %s "
-            # add semi-colon at the end of the query
             query += " LIMIT " + str(limit) + ";"
             # run query and get the results
             cursor.execute(query % tuple(table_list))
@@ -263,54 +252,6 @@ class MySQLDatabase:
         finally:
             self.__close_db_connection()
         return result_set
-
-    def __get_primary_key_of_table(self, pk_name=str, table_name=str, where=str, where_args=dict):
-        """
-        Retrieves the primary key of the given entry in the given table
-
-        Arguments:
-            pk_name (str): The name of the primary key to retrieve
-            table_name (str): The table to retrieve the primary key from
-            where (str):
-                | The WHERE clause string (use ```%(where_args_key)s``` for values).
-                |  E.g: 'WHERE username = %(username)s',
-                |  and where_args = {'username': 'lucas'}
-            where_args (dict): Dictionary with values for the where clause
-
-        See:
-            | ```MySQLCursor.fetchall()```
-            | ```MySQLdb.cursors.DictCursor```
-
-        Throws:
-            ValueError: Throws exception if any of the passed values are empty (None)
-
-        Returns:
-            long: Primary key based on passed WHERE statement || ```PRIMARY_KEY_NOT_FOUND```
-
-        """
-        error_msg = None
-        if pk_name is None:
-            error_msg = "Primary key name cannot be empty!"
-        elif table_name is None:
-            error_msg = "Table name cannot be empty!"
-        elif where is None or not where_args:
-            error_msg = "Where clause and where arguments cannot be empty!"
-        # was there any errors?
-        if error_msg is not None:
-            raise ValueError(error_msg)
-        # everything okay, attempt to retrieve and return primary key
-        primary_key = self.PRIMARY_KEY_NOT_FOUND
-        try:
-            query = "SELECT " + pk_name + " FROM " + table_name + " " + where + ";"
-            cursor = self.__get_db_cursor()
-            cursor.execute(query, where_args)
-            result_set = cursor.fetchone()
-            if result_set is None:
-                return self.PRIMARY_KEY_NOT_FOUND
-            primary_key = result_set[pk_name]
-        except MySQLdb.Error as err:
-            print("MySQLdb.Error (GET PK): %s", err)
-        return primary_key
 
     def __get_db_cursor(self):
         """
@@ -324,6 +265,18 @@ class MySQLDatabase:
 
         """
         return self.__db.cursor(MySQLdb.cursors.DictCursor)
+
+    def set_vote_value_params(self, pos_vote_value=int, neg_vote_value=int):
+        """
+        Sets the start value for the question votes to retrieve for the training
+
+        Arguments:
+            pos_vote_value (int): Start value for good questions (>= 0).
+            neg_vote_value (int): Start value for bad questions (<= 0).
+
+        """
+        self.__pos_vote_value = pos_vote_value
+        self.__neg_vote_value = neg_vote_value
 
     def __close_db_connection(self):
         """

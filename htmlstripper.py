@@ -1,14 +1,16 @@
-"""
-Source: http://stackoverflow.com/questions/753052/strip-html-from-strings-in-python
-
-Accepted answer: "answered May 29 '09 at 11:47 Eloff"
-And comment to this answer by 'pihentagyu aka James Doepp' (May 21 '15 at 17:49)
-"""
-
 from HTMLParser import HTMLParser
 
 
 class HTMLStripper(HTMLParser):
+    """
+    Removes HTML elements from the received text.
+
+    Source: http://stackoverflow.com/questions/753052/strip-html-from-strings-in-python
+
+    Accepted answer: "answered May 29 '09 at 11:47 Eloff".
+
+    And comment to this answer by 'pihentagyu aka James Doepp' (May 21 '15 at 17:49)
+    """
 
     def __init__(self):
         self.reset()
