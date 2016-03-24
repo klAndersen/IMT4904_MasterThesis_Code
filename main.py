@@ -54,9 +54,9 @@ question_train, question_test, label_train, label_test = train_test_split(traini
                                                                           training_data[class_label], test_size=0.2)
 
 pipeline_svm = Pipeline([
-    ('vect', TfidfVectorizer(analyzer='word')),
+    ('bow', TfidfVectorizer(analyzer='word')),
     ('tfidf', TfidfTransformer()),
-    ('clf', SVC()),
+    ('classifier', SVC()),  # <== change here
 ])
 
 # --- From tutorial: http://radimrehurek.com/data_science_python/#Step-6:-How-to-tune-parameters?
