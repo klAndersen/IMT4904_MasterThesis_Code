@@ -2,107 +2,98 @@
 Main entry file, all user interaction is handled through this class
 """
 
-import sklearn
-from sklearn import svm
-import matplotlib.pyplot as plt
+from sklearn.svm import SVC
+from sklearn.pipeline import Pipeline
 from mysqldatabase import MySQLDatabase
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
+from sklearn.metrics import classification_report, confusion_matrix
 
 
-from sklearn.pipeline import Pipeline
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import classification_report, f1_score, accuracy_score, confusion_matrix
+limit = 100  # 10 # 100  # 1000  # 10000
+class_label = MySQLDatabase.CLASS_LABEL_KEY
+MySQLDatabase().set_vote_value_params()
+question_text_key, training_data = MySQLDatabase().retrieve_training_data(limit)
 
-
-limit = 10
-
-# question_text_key, negative_score = MySQLDatabase().retrieve_posts_with_negative_votes(limit)
-# question_text_key1, positive_score = MySQLDatabase().retrieve_posts_with_positive_votes(limit)
-
-question_text_key, training_data = MySQLDatabase().retrieve_training_data()
-
-# negative_score.append(positive_score, ignore_index=True)
-
-# print len(negative_score)
-# print len(positive_score)
-# # test that connection work and data gets loaded
-# print negative_score.get_value(index=0, col=question_text_key)
-# print positive_score.get_value(index=0, col=question_text_key)
-#
 # get and print the length of question text
-# training_data['length'] = training_data[question_text_key].map(lambda text: len(text))
-# can print via get() or via member
-# print training_data.get('length'), training_data.length
-#
-# print training_data.label
-
-# training_data.length.plot(bins=20, kind='hist')
-
-# print training_data.length.describe()
-#
-# training_data.hist(column='length', by='Id', bins=50)
-#
-# shows plots made by pandas
-# plt.show()
-#
-# print list(training_data.get(question_text_key)[training_data.length > 14400])
-
-# tutorial: http://radimrehurek.com/data_science_python/ --- Continue from Step 2
-
+training_data['length'] = training_data[question_text_key].map(lambda text: len(text))
 
 question_text = training_data.get_value(index=0, col=question_text_key)
-# "U dun say so early hor... U c already then say..." #
-# ngram_range=(2, 2): binds words together, word1 + word2, word2 + word3, word3 + word4, ..., wordN-1 + wordN
-# analyzer: should it be made of words or characters
+print question_text
+print
 
-vectorizer = TfidfVectorizer(analyzer='word')
-
-# print training_data.get_value(index=0, col=question_text_key)
-# print
-#
-# print vectorizer.build_preprocessor()(question_text)
-# print
-#
-# tokenized_question = vectorizer.build_tokenizer()(question_text)
-# print vectorizer.build_tokenizer()(question_text)
-# print
-#
-# analysed_question = vectorizer.build_analyzer()(question_text)
-# print vectorizer.build_analyzer()(question_text)
-# print
-
-bow_transformer = CountVectorizer(analyzer='word').fit(training_data.get(question_text_key))
-# vectorizer.fit(training_data.get(question_text_key))
-
-# print bow_transformer.getnnz
-print "len: ", bow_transformer.vocabulary_  # fit_transform(question_text)
-
-# get bag-of-words vector for a given question
-# bow4 = bow_transformer.transform([question_text])
-# print bow4
-# print bow4.shape
-
-# get feature (word) based on id/index
-# print bow_transformer.get_feature_names()[307]
-
-# sparse matrix
-messages_bow = bow_transformer.transform(training_data.get(question_text_key))
-print 'sparse matrix shape:', messages_bow.shape
-print 'number of non-zeros:', messages_bow.nnz
-print 'sparsity: %.2f%%' % (100.0 * messages_bow.nnz / (messages_bow.shape[0] * messages_bow.shape[1]))
+# create a term-document matrix
+count_vect = CountVectorizer(analyzer='word')
+td_matrix = count_vect.fit_transform(training_data.get(question_text_key))
+print td_matrix
+print
 
 #  term weighting and normalization
-tfidf_transformer = TfidfTransformer().fit(messages_bow)
-# tfidf4 = tfidf_transformer.transform(bow4)
-# print tfidf4
+tfidf_transformer = TfidfTransformer().fit(td_matrix)
+training_tfidf = tfidf_transformer.transform(td_matrix)
 
-# What is the IDF (inverse document frequency) of the word
-print tfidf_transformer.idf_[bow_transformer.vocabulary_['what']]
-print tfidf_transformer.idf_[bow_transformer.vocabulary_['how']]
+# TODO: Remove all code below; Update to match current scikit-learn and base on my dataset
 
-# transform the entire bag-of-words corpus into TF-IDF corpus at once
-messages_tfidf = tfidf_transformer.transform(messages_bow)
-print messages_tfidf.shape
+# --- From tutorial: http://radimrehurek.com/data_science_python/#Step-4:-Training-a-model,-detecting-spam
+# Prediction with Bayes
 
+# detector = MultinomialNB().fit(training_tfidf, training_data[class_label])
 
+# all_predictions = detector.predict(training_tfidf)
+# print all_predictions
+#
+# print 'accuracy', accuracy_score(training_data[class_label], all_predictions)
+# print 'confusion matrix\n', confusion_matrix(training_data[class_label], all_predictions)
+# print '(row=expected, col=predicted)'
+#
+# print classification_report(training_data[class_label], all_predictions)
+
+# split all the training data into both training and test data (test data = 20%)
+question_train, question_test, label_train, label_test = train_test_split(training_data[question_text_key],
+                                                                          training_data[class_label], test_size=0.2)
+
+pipeline_svm = Pipeline([
+    ('vect', TfidfVectorizer(analyzer='word')),
+    ('tfidf', TfidfTransformer()),
+    ('clf', SVC()),
+])
+
+# --- From tutorial: http://radimrehurek.com/data_science_python/#Step-6:-How-to-tune-parameters?
+
+# , 10000, 100000; 10^4 & 10^5
+
+# pipeline parameters to automatically explore and tune
+param_svm = [
+    {'classifier__C': [1, 10, 100, 1000], 'classifier__kernel': ['linear']},
+    {'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['rbf']},
+]
+
+grid_svm = GridSearchCV(
+    pipeline_svm,  # pipeline from above
+    param_grid=param_svm,  # parameters to tune via cross validation
+    refit=True,  # fit using all data, on the best detected classifier
+    n_jobs=-1,  # number of cores to use for parallelization; -1 for "all cores"
+    scoring='accuracy',  # what score are we optimizing?
+    cv=StratifiedKFold(n_folds=5),  # what type of cross validation to use
+)
+
+svm_detector = grid_svm.fit(question_train, label_train)  # find the best combination from param_svm
+print svm_detector.grid_scores_
+
+# Added for testing (fails, obviously)
+
+# good question, ID: 927358
+print svm_detector.predict(["I committed the wrong files to Git. How can I undo this commit?"])[0]
+# bad question, ID: 27391628
+bad_question = "You like C++ a lot. Now you have a compiled binary file of a library, " \
+               "a header that provides the link and a manual containing instructions on how to use the library. " \
+               "How can you access the private data member of the class? Note this is only specific to C++. " \
+               "Normally there's no way you can access a private data member other than making " \
+               "friends or writing a getter function, both of which require changing the interface of the " \
+               "said class. C++ is a bit different in that you can think of it as a wrapper of C. " \
+               "This is not a problem from a textbook or class assignment."
+print svm_detector.predict([bad_question])[0]
+
+print confusion_matrix(label_test, svm_detector.predict(question_test))
+print classification_report(label_test, svm_detector.predict(question_test))

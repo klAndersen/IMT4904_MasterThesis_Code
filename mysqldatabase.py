@@ -42,6 +42,7 @@ class MySQLDatabase:
     '''
     To reduce data amount when retrieving training data, a table was
     created which contains only Questions with votes/score < 0.
+
     Size-wise this was beneficial, since the Posts has a file size of 30.6GB,
     and this only has a file size of 0.7GB
     '''
@@ -49,32 +50,38 @@ class MySQLDatabase:
     __DEFAULT_POSITIVE_VOTE_VALUE = int(50)
     '''
     Default value to use in WHERE clause for good questions
+
     (Value = 50)
     '''
     __DEFAULT_NEGATIVE_VOTE_VALUE = int(-10)
     '''
     Default value to use in WHERE clause for bad questions
+
     (Value = -10)
     '''
     # "Constant" values: Column names
     POSTS_VOTES_KEY = "Score"
     '''
     Column identifier/key: Score
+
     Amount of votes/scores on a given question
     '''
     POSTS_TITLE_KEY = "Title"
     '''
     Column identifier/key: Title
+
     The title of the question as seen on StackOverflow
     '''
     POSTS_QUESTION_TEXT_KEY = "Body"
     '''
     Column identifier/key: Body
+
     The question text
     '''
     CLASS_LABEL_KEY = "label"
     '''
     Column identifier/key: label
+
     Label for the retrieved training data.
     '''
 
