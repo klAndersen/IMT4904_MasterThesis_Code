@@ -33,19 +33,20 @@ def strip_tags(html):
         html (str): HTML text to convert to string
 
     Returns:
-        str: String without HTML elements
+        str: String without HTML elements || None upon failure
 
     """
     try:
         html = HTMLParser().unescape(html)
         stripper = HTMLStripper()
         html = remove_code_element_from_html(html)
+        if html is None:
+            return None
         stripper.feed(html)
         return stripper.get_data()
     except TypeError as error:
-        print "=============ERROR========="
-        print html
-        print error.message
+        # print html
+        print "Error occurred in htmlstripper.strip_tags", error.message
     return None
 
 
@@ -56,14 +57,14 @@ def remove_code_element_from_html(html=str, encoding='utf-8'):
     Since Questions can contain varying size of code examples, this needs to be
     removed for improved feature extraction. This function looks for code
     samples by looking for the <code> element. When found, it is removed, but the
-    tail (if any) is added to the parent to which the <code> element belonged.
-
-    The tail is the text (or content) following the given <code> element
-    (which would be removed if not kept). After all <code> elements has been
-    removed, the cleaned html string is returned.
+    tail^ (if any) is added to the parent to which the <code> element belonged.
 
     To also take in account bad HTML/invalid HTML tags, BeatifulSoup is used
     to add end tags for those missing it.
+
+    ^The tail is the text (or content) following the given <code> element
+    (which would be removed if not kept). After all <code> elements has been
+    removed, the cleaned html string is returned.
 
     Arguments:
         html (str): The HTML text to remove <code> blocks from
@@ -82,19 +83,16 @@ def remove_code_element_from_html(html=str, encoding='utf-8'):
         for child in root.iter(find):
             parent = child.getparent()
             parent.remove(child)
-            print "attr", getattr(parent, tail_attr, None)
-            print "attr", getattr(child, tail_attr, None)
             # to avoid loss of tail, add it to parent
             if getattr(child, tail_attr, None) is not None:
                 if getattr(parent, tail_attr, None) is None:
                     parent.tail = ""
                 parent.tail += getattr(child, tail_attr, '')
         return etree.tostring(root)
+    except TypeError as error:
+        print "TypeError occurred in htmlstripper.remove_code_element_from_html", error.message
     except etree.XMLSyntaxError as error:
         # print html
-        print error.message
+        print "XMLSyntaxError occurred in htmlstripper.remove_code_element_from_html", error.message
     return None
 
-
-html_t = "<p> a simple <code> test </code> </p>"
-print remove_code_element_from_html(html_t)

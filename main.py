@@ -11,17 +11,17 @@ from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKF
 from sklearn.metrics import classification_report, confusion_matrix
 
 
-limit = 100  # 10 # 100  # 1000  # 10000
+limit = 1000  # 10 # 100  # 1000  # 10000
 class_label = MySQLDatabase.CLASS_LABEL_KEY
 MySQLDatabase().set_vote_value_params()
 question_text_key, training_data = MySQLDatabase().retrieve_training_data(limit)
 
-# get and print the length of question text
+# get and set the length of each question text
 training_data['length'] = training_data[question_text_key].map(lambda text: len(text))
 
-question_text = training_data.get_value(index=0, col=question_text_key)
-print question_text
-print
+# question_text = training_data.get_value(index=0, col=question_text_key)
+# print question_text
+# print
 
 # create a term-document matrix
 count_vect = CountVectorizer(analyzer='word')
@@ -36,18 +36,6 @@ training_tfidf = tfidf_transformer.transform(td_matrix)
 # TODO: Remove all code below; Update to match current scikit-learn and base on my dataset
 
 # --- From tutorial: http://radimrehurek.com/data_science_python/#Step-4:-Training-a-model,-detecting-spam
-# Prediction with Bayes
-
-# detector = MultinomialNB().fit(training_tfidf, training_data[class_label])
-
-# all_predictions = detector.predict(training_tfidf)
-# print all_predictions
-#
-# print 'accuracy', accuracy_score(training_data[class_label], all_predictions)
-# print 'confusion matrix\n', confusion_matrix(training_data[class_label], all_predictions)
-# print '(row=expected, col=predicted)'
-#
-# print classification_report(training_data[class_label], all_predictions)
 
 # split all the training data into both training and test data (test data = 20%)
 question_train, question_test, label_train, label_test = train_test_split(training_data[question_text_key],

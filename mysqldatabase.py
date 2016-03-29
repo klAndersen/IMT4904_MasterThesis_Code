@@ -193,7 +193,7 @@ class MySQLDatabase:
     @staticmethod
     def __remove_html_from_text(column_name, text_data=pandas.DataFrame):
         """
-        Removes HTML elements (if any) from the text
+        Removes HTML elements (if any) from the text.
 
         Since all posts (questions, answers, comments, etc.) can have HTML-content,
         processing the text can become more difficult.
@@ -212,10 +212,20 @@ class MySQLDatabase:
             | ```htmlstripper.strip_tags()```
 
         """
+        invalid_question_list = list()
         for index in range(len(text_data)):
             temp_value = text_data.get_value(index=index, col=column_name)
             new_value = htmlstripper.strip_tags(temp_value.decode("utf-8"))
+            if new_value is None:
+                new_value = temp_value
+                invalid_question_list.append(index)
             text_data.set_value(index=index, col=column_name, value=new_value)
+        # in case some questions couldn't be properly HTML cleansed, remove them from the data set
+        counter = len(invalid_question_list) - 1
+        while counter > -1:
+            removal_index = invalid_question_list[counter]
+            text_data.drop(removal_index, inplace=True)
+            counter -= 1
         return text_data
 
     def select_all_records_from_tables(self, table_list, limit=1000):
