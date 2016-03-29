@@ -76,17 +76,25 @@ def remove_code_element_from_html(html=str, encoding='utf-8'):
         find = "code"
         tail_attr = "tail"
         # account for bad html tags
-        bsoup = BeautifulSoup(html, 'lxml')
+        bsoup = BeautifulSoup(html, 'lxml-xml')
         html = bsoup.prettify(encoding)
         root = etree.fromstring(html)
         for child in root.iter(find):
             parent = child.getparent()
             parent.remove(child)
+            print "attr", getattr(parent, tail_attr, None)
+            print "attr", getattr(child, tail_attr, None)
             # to avoid loss of tail, add it to parent
-            if getattr(child, tail_attr, '') is not None:
+            if getattr(child, tail_attr, None) is not None:
+                if getattr(parent, tail_attr, None) is None:
+                    parent.tail = ""
                 parent.tail += getattr(child, tail_attr, '')
         return etree.tostring(root)
     except etree.XMLSyntaxError as error:
-        print html
+        # print html
         print error.message
     return None
+
+
+html_t = "<p> a simple <code> test </code> </p>"
+print remove_code_element_from_html(html_t)
