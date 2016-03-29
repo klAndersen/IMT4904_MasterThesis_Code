@@ -65,8 +65,12 @@ pipeline_svm = Pipeline([
 
 # pipeline parameters to automatically explore and tune
 param_svm = [
+    # Values for the classifier (C & LINEAR kernel)
     {'classifier__C': [1, 10, 100, 1000], 'classifier__kernel': ['linear']},
+    # Values for the classifier (C, Gamma & RBF kernel)
     {'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['rbf']},
+    # Values for the classifier (C, SIGMOID kernel)
+    {'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['sigmoid']},
 ]
 
 grid_svm = GridSearchCV(

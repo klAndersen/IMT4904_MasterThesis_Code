@@ -63,3 +63,4 @@ target/
 
 # exclude configuration files that may have sensitive content
 *config.py
+*backup
