@@ -4,14 +4,14 @@ Main entry file, all user interaction is handled through this class
 
 from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline
-from mysqldatabase import MySQLDatabase
+from python35_version.mysqldatabase import MySQLDatabase
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
 from sklearn.metrics import classification_report, confusion_matrix
 
 
-limit = 1000  # 10 # 100  # 1000  # 10000
+limit = 10000  # 10 # 100  # 1000  # 10000
 class_label = MySQLDatabase.CLASS_LABEL_KEY
 MySQLDatabase().set_vote_value_params()
 question_text_key, training_data = MySQLDatabase().retrieve_training_data(limit)
@@ -20,34 +20,44 @@ question_text_key, training_data = MySQLDatabase().retrieve_training_data(limit)
 training_data['length'] = training_data[question_text_key].map(lambda text: len(text))
 
 # question_text = training_data.get_value(index=0, col=question_text_key)
-# print question_text
+# print(question_text
 # print
 
 # create a term-document matrix
-count_vect = CountVectorizer(analyzer='word')
-td_matrix = count_vect.fit_transform(training_data.get(question_text_key))
-print td_matrix
-print
+vectorizer = CountVectorizer(analyzer='word', min_df=1)
+td_matrix = vectorizer.fit_transform(training_data.get(question_text_key))
+print(td_matrix)
+print('\n')
+
+analyze = vectorizer.build_analyzer()
 
 #  term weighting and normalization
-tfidf_transformer = TfidfTransformer().fit(td_matrix)
-training_tfidf = tfidf_transformer.transform(td_matrix)
+tfidf_transformer = TfidfTransformer().fit_transform(td_matrix)
+# training_tfidf = tfidf_transformer.transform(td_matrix)
 
 # TODO: Remove all code below; Update to match current scikit-learn and base on my dataset
 
-# --- From tutorial: http://radimrehurek.com/data_science_python/#Step-4:-Training-a-model,-detecting-spam
+# --- From tutorial: http://radimrehurek.com/data_science_python/#Step-5:-How-to-run-experiments?
 
 # split all the training data into both training and test data (test data = 20%)
 question_train, question_test, label_train, label_test = train_test_split(training_data[question_text_key],
-                                                                          training_data[class_label], test_size=0.2)
+                                                                          training_data[class_label],
+                                                                          test_size=0.2,
+                                                                          random_state=0)
+
+print(training_data[question_text_key])
+
+print(len(question_train), len(question_test), len(question_train) + len(question_test))
+
+# --- From tutorial: http://radimrehurek.com/data_science_python/#Step-6:-How-to-tune-parameters?
+
+# In [42]
 
 pipeline_svm = Pipeline([
-    ('bow', TfidfVectorizer(analyzer='word')),
+    ('bow', TfidfVectorizer(analyzer='word', min_df=1)),
     ('tfidf', TfidfTransformer()),
     ('classifier', SVC()),  # <== change here
 ])
-
-# --- From tutorial: http://radimrehurek.com/data_science_python/#Step-6:-How-to-tune-parameters?
 
 # , 10000, 100000; 10^4 & 10^5
 
@@ -71,12 +81,12 @@ grid_svm = GridSearchCV(
 )
 
 svm_detector = grid_svm.fit(question_train, label_train)  # find the best combination from param_svm
-print svm_detector.grid_scores_
+print(svm_detector.grid_scores_)
 
 # Added for testing (fails, obviously)
 
 # good question, ID: 927358
-print svm_detector.predict(["I committed the wrong files to Git. How can I undo this commit?"])[0]
+print(svm_detector.predict(["I committed the wrong files to Git. How can I undo this commit?"])[0])
 # bad question, ID: 27391628
 bad_question = "You like C++ a lot. Now you have a compiled binary file of a library, " \
                "a header that provides the link and a manual containing instructions on how to use the library. " \
@@ -85,7 +95,7 @@ bad_question = "You like C++ a lot. Now you have a compiled binary file of a lib
                "friends or writing a getter function, both of which require changing the interface of the " \
                "said class. C++ is a bit different in that you can think of it as a wrapper of C. " \
                "This is not a problem from a textbook or class assignment."
-print svm_detector.predict([bad_question])[0]
+print(svm_detector.predict([bad_question])[0])
 
-print confusion_matrix(label_test, svm_detector.predict(question_test))
-print classification_report(label_test, svm_detector.predict(question_test))
+print(confusion_matrix(label_test, svm_detector.predict(question_test)))
+print(classification_report(label_test, svm_detector.predict(question_test)))

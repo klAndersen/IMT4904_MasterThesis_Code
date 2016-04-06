@@ -1,0 +1,10 @@
+https://dev.mysql.com/doc/connector-python/en/connector-python-examples.html
+
+mysql_parameters = {
+    'user': 'user',
+    'password': 'password',
+    'host': '127.0.0.1',
+    'db': 'so_dump_march',  # so_dump_aug  #  so_dump_march
+    'raise_on_warnings': True,
+    'autocommit': True,
+}

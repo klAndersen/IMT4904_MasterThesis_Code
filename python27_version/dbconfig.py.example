@@ -6,5 +6,5 @@ mysql_parameters = {
     'host': 'localhost',
     'user': 'user',
     'passwd': 'password',
-    'db': 'so_dump'
+    'db': 'so_dump_march'  # so_dump_aug  #  so_dump_march
 }
