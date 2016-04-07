@@ -93,6 +93,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/python35_version/constants.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/python35_version/dbconfig.py">
           <value>
             <set />
@@ -103,12 +108,27 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/python35_version/htmlstripper.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/python35_version/main.py">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/python35_version/mysqldatabase.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/python35_version/training_data.dat">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/python35_version/training_data/training_data_10.dat">
           <value>
             <set />
           </value>
@@ -143,12 +163,22 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/panda_to_libsvm.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../scikit-learn tutorials/sklearn_tutorial/data_representation.py">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/../scikit-learn tutorials/sklearn_tutorial/machine_learning_by_amueller.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/smvlight.dat">
           <value>
             <set />
           </value>

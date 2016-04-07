@@ -5,6 +5,8 @@ from lxml import etree
 from bs4 import BeautifulSoup
 from html.parser import HTMLParser
 
+from constants import QUESTION_HAS_CODE_KEY
+
 
 class HTMLStripper(HTMLParser):
     """
@@ -49,13 +51,13 @@ def strip_tags(html_data):
         html_data (str): HTML text to convert to string
 
     Returns:
-        str: String without HTML elements || None upon failure
+        str: String without HTML elements || None (if error)
 
     """
     try:
         html_data = html.unescape(html_data)
         stripper = HTMLStripper()
-        html_data = remove_code_element_from_html(html_data)
+        html_data = set_has_codeblock(html_data)
         if html_data is None:
             return None
         stripper.feed(html_data)
@@ -66,49 +68,42 @@ def strip_tags(html_data):
     return None
 
 
-def remove_code_element_from_html(html_data=str, encoding='utf-8'):
+def set_has_codeblock(html_data=str, encoding='utf-8'):
     """
-    Removes the code block from the text by looking for the <code> tag
+    Replaces the content of the <code> tag (if exists) with the value 'has_codeblock'
 
-    Since Questions can contain varying size of code examples, this needs to be
-    removed for improved feature extraction. This function looks for code
-    samples by looking for the <code> element. When found, it is removed, but the
-    tail^ (if any) is added to the parent to which the <code> element belonged.
+    Since Questions can contain varying size of code examples, the content can create
+    a lot of bad features. To account for this, the code examples are replaced with a
+    single value indicating that this question contains one or more code examples.
+    This is done by converting the HTML into XML and looking for the <code> tag.
 
-    To also take in account bad HTML/invalid HTML tags, BeatifulSoup is used
-    to add end tags for those missing it.
-
-    ^The tail is the text (or content) following the given <code> element
-    (which would be removed if not kept). After all <code> elements has been
-    removed, the cleaned html string is returned.
+    If the question contains the <code> tag, the value (the text) is replaced by
+    a 'has_codeblock' value. To account for bad HTML/invalid HTML tags, BeatifulSoup
+    is used to add end tags for those missing it.
 
     Arguments:
-        html_data (str): The HTML text to remove <code> blocks from
+        html_data (str): The HTML text to search and replace <code> text
         encoding (str, default='utf-8'): Encoding for the HTML string
 
     Returns:
-        str: String where the <code> tag and its content has been removed
+        str: HTML string where the <code> tag contains a 'has_codeblock' value
+
+    See:
+    ```constants.QUESTION_HAS_CODE_KEY```
     """
     try:
         find = "code"
-        tail_attr = "tail"
         # account for bad html tags
         bsoup = BeautifulSoup(html_data, 'lxml-xml')
         html_data = bsoup.prettify(encoding)
         root = etree.fromstring(html_data)
         for child in root.iter(find):
-            parent = child.getparent()
-            parent.remove(child)
-            # to avoid loss of tail, add it to parent
-            if getattr(child, tail_attr, None) is not None:
-                if getattr(parent, tail_attr, None) is None:
-                    parent.tail = ""
-                parent.tail += getattr(child, tail_attr, '')
+            child.text = QUESTION_HAS_CODE_KEY
         return etree.tostring(root, encoding="unicode")
     except TypeError as error:
-        print("TypeError occurred in htmlstripper.remove_code_element_from_html", error)
+        print("TypeError in htmlstripper.set_has_codeblock", error)
     except etree.XMLSyntaxError as error:
         # print html
-        print("XMLSyntaxError occurred in htmlstripper.remove_code_element_from_html", error)
+        print("XMLSyntaxError in htmlstripper.set_has_codeblock", error)
     return None
 

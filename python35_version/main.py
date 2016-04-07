@@ -2,57 +2,81 @@
 Main entry file, all user interaction is handled through this class
 """
 
+from pandas import DataFrame
 from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline
+from sklearn.externals.joblib import Memory
+from constants import CLASS_LABEL_KEY, QUESTION_TEXT_KEY
 from python35_version.mysqldatabase import MySQLDatabase
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.datasets import dump_svmlight_file, load_svmlight_file
+
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
-from sklearn.metrics import classification_report, confusion_matrix
+
+mem = Memory("./mem_cache")
 
 
-limit = 10000  # 10 # 100  # 1000  # 10000
-class_label = MySQLDatabase.CLASS_LABEL_KEY
-MySQLDatabase().set_vote_value_params()
-question_text_key, training_data = MySQLDatabase().retrieve_training_data(limit)
+@mem.cache
+def load_training_data(file_location=str, load_from_database=False, limit=1000):
+    """
+    If ```load_from_database``` is True, retrieves and stores data from database to file.
 
-# get and set the length of each question text
-training_data['length'] = training_data[question_text_key].map(lambda text: len(text))
+    Arguments:
+        file_location (str): Path + filename of libsvm file to save/load (e.g. 'training_data')
+        load_from_database (bool): Should data be retrieved from database?
+        limit (int): Amount of records to retrieve from database (default=1000)
 
-# question_text = training_data.get_value(index=0, col=question_text_key)
-# print(question_text
-# print
+    Returns:
+         (pandas.DataFrame.from_csv, sklearn.datasets.load_svmlight_file):
+         Tuple containing a pandas.DataFrame (all data retrieved from database) and
+         tuple with training data (load_svmlight_file)
 
-# create a term-document matrix
-vectorizer = CountVectorizer(analyzer='word', min_df=1)
-td_matrix = vectorizer.fit_transform(training_data.get(question_text_key))
-print(td_matrix)
-print('\n')
+    See:
+        | ```MySQLDatabase().retrieve_training_data```
+        | ```pandas.DataFrame.to_csv```
+        | ```pandas.DataFrame.from_csv```
+        | ```sklearn.datasets.dump_svmlight_file```
+        | ```sklearn.datasets.load_svmlight_file```
+    """
+    svm_file = file_location + ".dat"
+    csv_file = file_location + ".csv"
+    if load_from_database:
+        comment = u"label: (-1: Bad question, +1: Good question); features: (term_id, length)"
+        MySQLDatabase().set_vote_value_params()
+        data = MySQLDatabase().retrieve_training_data(limit)
+        # create a term-document matrix
+        vectorizer = CountVectorizer(analyzer='word', min_df=1)
+        td_matrix = vectorizer.fit_transform(data.get(QUESTION_TEXT_KEY))
+        data.to_csv(csv_file)
+        dump_svmlight_file(td_matrix, data[CLASS_LABEL_KEY], f=svm_file, comment=comment)
+    return DataFrame.from_csv(csv_file), load_svmlight_file(svm_file)
 
-analyze = vectorizer.build_analyzer()
+db_limit = 100  # 10 # 100  # 1000  # 10000
+file_path = "./training_data/"
+filename = file_path + "training_data_" + str(db_limit)
 
-#  term weighting and normalization
-tfidf_transformer = TfidfTransformer().fit_transform(td_matrix)
-# training_tfidf = tfidf_transformer.transform(td_matrix)
+so_dataframe, (training_data, class_labels) = load_training_data(filename, False, db_limit)
+
+# term weighting and normalization
+tfidf_transformer = TfidfTransformer().fit_transform(training_data)
+
+# exit(0)
 
 # TODO: Remove all code below; Update to match current scikit-learn and base on my dataset
 
 # --- From tutorial: http://radimrehurek.com/data_science_python/#Step-5:-How-to-run-experiments?
 
 # split all the training data into both training and test data (test data = 20%)
-question_train, question_test, label_train, label_test = train_test_split(training_data[question_text_key],
-                                                                          training_data[class_label],
+question_train, question_test, label_train, label_test = train_test_split(so_dataframe[QUESTION_TEXT_KEY],
+                                                                          class_labels,
                                                                           test_size=0.2,
                                                                           random_state=0)
-
-print(training_data[question_text_key])
-
-print(len(question_train), len(question_test), len(question_train) + len(question_test))
 
 # --- From tutorial: http://radimrehurek.com/data_science_python/#Step-6:-How-to-tune-parameters?
 
 # In [42]
-
 pipeline_svm = Pipeline([
     ('bow', TfidfVectorizer(analyzer='word', min_df=1)),
     ('tfidf', TfidfTransformer()),

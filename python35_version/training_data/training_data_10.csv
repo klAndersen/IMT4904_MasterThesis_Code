@@ -1,0 +1,122 @@
+,Id,Score,ViewCount,Body,Title,AnswerCount,CommentCount,AcceptedAnswerId,OwnerUserId,CreationDate,ClosedDate,label,length
+0,35339,-7,1074,"
+ Let X be the set of all sets that do not contain themselves. Is X a member of X?
+",Russell's Paradox,3,0,35409.0,658.0,2008-08-29 21:27:23,2011-08-10 03:40:44,-1,83
+1,43086,-6,564,"
+ What is the best way to multi-thread in the C language? I want something that is very efficient and not a CPU hog. Thanks.
+",Best way to multi-thread?,3,0,43179.0,130278.0,2008-09-04 02:24:38,2011-09-16 09:36:47,-1,125
+2,213486,-7,7058,"
+ I've got problems installating the VMWARE ESXi Server.
+The Installation finishes without any error messages and prompts me to reboot.
+After pressing Enter the System reboots. While booting through the yellow loading-screen it switches to black and displays the following Error-Message:
+",VMWARE ESXi PANIC: Failed to find HD boot partition,1,0,345688.0,19671.0,2008-10-17 19:14:03,,-1,288
+3,377361,-7,26418,"
+ 2^15 = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.
+",Sum of the digits of the number 2^1000,11,13,,40945.0,2008-12-18 09:41:49,2012-10-11 10:51:44,-1,68
+4,416914,-6,3129,"
+ This post is not really a question, but it could be useful to share some coding tips.
+",Optimizing PHP string concatenation,5,8,,51760.0,2009-01-06 15:16:05,2012-12-10 07:54:04,-1,88
+5,528035,-6,1324,"
+ 
+  Which programming languages are not supported by Eclipse?
+ 
+ 
+  How do we change this fact?
+ 
+",Which programming languages are not supported by Eclipse?,4,1,528047.0,63679.0,2009-02-09 12:55:08,2014-01-24 10:19:04,-1,99
+6,583177,-6,16322,"
+ Is it possible to write an infinite for loop in VB.NET?
+",VB.NET Infinite For Loop,4,13,583194.0,62572.0,2009-02-24 19:22:56,,-1,58
+7,621333,-6,5805,"
+ How to use Unicode available in vb6 in vb.net?
+ 
+  Is there any equivalent of vb6 Unicode in vb.net??
+ 
+",Unicode in vb.net,3,3,,,2009-03-07 04:55:47,2012-09-01 00:46:41,-1,106
+8,666387,-6,181,"
+ I have this code and for some reason I can't get it to work?
+",Can anyone help with a Java problem?,1,7,666419.0,80378.0,2009-03-20 14:28:23,,-1,63
+9,709248,-7,1241,"
+ I have a string aBc12def6
+i want to convert the string into a pattern template (say aBc##def#) then generate values to place into the blank spaces (ex aBc00def0, aBc00def1 ... aBc25def9 ...). I dont want to do it all at once. I want to generate it one at a time and test the string. How do i do this? using C#
+","strings, fill in the blank. C#",3,3,2198850.0,34537.0,2009-04-02 10:51:02,2012-10-17 02:36:37,-1,312
+10,4,385,26265,"
+ I want to use a track-bar to change a form's opacity.
+",When setting a form's opacity should I use a decimal or double?,13,1,7.0,8.0,2008-07-31 21:42:52,,1,56
+11,6,173,12787,"
+ I have an absolutely positioned
+ has_code
+ containing several children, one of which is a relatively positioned
+ has_code
+ . When I use a
+ 
+  percentage-based width
+ 
+ on the child
+ has_code
+ , it collapses to '0' width on IE7, but not on Firefox or Safari.
+",Percentage width child element in absolutely positioned parent on IE7,5,0,31.0,9.0,2008-07-31 22:08:08,,1,260
+12,9,1194,305072,"
+ Given a
+ has_code
+ representing a person's birthday, how do I calculate their age?
+",How do I calculate someone's age in C#?,54,5,1404.0,1.0,2008-07-31 23:40:59,,1,85
+13,11,994,104400,"
+ Given a specific
+ has_code
+ value, how do I display relative time, like:
+",How can relative time be calculated in C#?,33,11,1248.0,1.0,2008-07-31 23:55:37,,1,75
+14,13,384,111349,"
+ Is there a standard way for a Web Server to determine what time zone offset a user is in?
+",Determining a web user's time zone,23,3,357.0,9.0,2008-08-01 00:42:38,,1,92
+15,14,247,74181,"
+ What is the difference between
+ 
+  has_code
+ 
+ and
+ 
+  has_code
+ 
+ in .NET?
+",Difference between Math.Floor() and Math.Truncate(),8,1,,11.0,2008-08-01 00:59:11,,1,78
+16,16,56,65032,"
+ How do you expose a
+ 
+  LINQ
+ 
+ query as an
+ 
+  ASMX
+ 
+ web service? Usually, from the business tier, I can return a typed
+ has_code
+ or
+ has_code
+ which can be serialized for transport over
+ 
+  ASMX
+ 
+ .
+",Filling a DataSet or DataTable from a LINQ query result set,5,0,12446.0,2.0,2008-08-01 04:59:33,,1,207
+17,17,85,37551,"
+ How do I store binary data in
+ 
+  MySQL
+ 
+ ?
+",Binary Data in MySQL,10,0,26.0,2.0,2008-08-01 05:09:55,,1,47
+18,19,198,30930,"
+ Solutions are welcome in any language. :-) I'm looking for the fastest way to obtain the value of π, as a personal challenge. More specifically I'm using ways that don't involve using
+ has_code
+ d constants like
+ has_code
+ , or hard-coding the number in.
+",What is the fastest way to get the value of π?,22,15,531.0,13.0,2008-08-01 05:21:22,,1,257
+19,24,69,33505,"
+ If I have a trigger
+ 
+  before the update
+ 
+ on a table, how can I throw an error that prevents the update on that table?
+",Throw an error in a MySQL trigger,4,0,49.0,22.0,2008-08-01 12:12:19,,1,124
