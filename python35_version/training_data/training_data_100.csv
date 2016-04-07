@@ -1,21 +1,108 @@
 ,Id,Score,ViewCount,Body,Title,AnswerCount,CommentCount,AcceptedAnswerId,OwnerUserId,CreationDate,ClosedDate,label,length
 0,35339,-7,1074,"
  Let X be the set of all sets that do not contain themselves. Is X a member of X?
-",Russell's Paradox,3,0,35409.0,658.0,2008-08-29 21:27:23,2011-08-10 03:40:44,-1,83
+
+",Russell's Paradox,3,0,35409.0,658.0,2008-08-29 21:27:23,2011-08-10 03:40:44,-1,84
 1,43086,-6,564,"
  What is the best way to multi-thread in the C language? I want something that is very efficient and not a CPU hog. Thanks.
-",Best way to multi-thread?,3,0,43179.0,130278.0,2008-09-04 02:24:38,2011-09-16 09:36:47,-1,125
+
+",Best way to multi-thread?,3,0,43179.0,130278.0,2008-09-04 02:24:38,2011-09-16 09:36:47,-1,126
 2,213486,-7,7058,"
  I've got problems installating the VMWARE ESXi Server.
 The Installation finishes without any error messages and prompts me to reboot.
 After pressing Enter the System reboots. While booting through the yellow loading-screen it switches to black and displays the following Error-Message:
-",VMWARE ESXi PANIC: Failed to find HD boot partition,1,0,345688.0,19671.0,2008-10-17 19:14:03,,-1,288
+
+
+ PANIC: Failed to find HD boot partition
+
+
+ All modules have been loaded without any errors.
+After typing unsupported into the console the busybox comes up.
+I tooked a look into the /dev/disks directory but no disk devices gets listed in difference to the installation process.
+Switching to the system-console during installation both sata disks on MPC51 controller are shown.
+The controllers are named vmhba0 and vmhba32.
+
+
+ Does anyone know how to solve the problem?!
+
+
+ Hardware is a ESPRIMO P5615 (nForce4) from Fujitsu-Siemens.
+
+",VMWARE ESXi PANIC: Failed to find HD boot partition,1,0,345688.0,19671.0,2008-10-17 19:14:03,,-1,824
 3,377361,-7,26418,"
  2^15 = 32768 and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26.
-",Sum of the digits of the number 2^1000,11,13,,40945.0,2008-12-18 09:41:49,2012-10-11 10:51:44,-1,68
+
+
+ What is the sum of the digits of the number 2 power of 1000 (2^1000)?
+
+
+ Can anyone provide the solution or algorithm for this problem in java?
+
+",Sum of the digits of the number 2^1000,11,13,,40945.0,2008-12-18 09:41:49,2012-10-11 10:51:44,-1,216
 4,416914,-6,3129,"
  This post is not really a question, but it could be useful to share some coding tips.
-",Optimizing PHP string concatenation,5,8,,51760.0,2009-01-06 15:16:05,2012-12-10 07:54:04,-1,88
+
+
+ Here is the one I'd like to share with you. I'm going to show 4 examples that do the same thing. But only the last one will be the best.
+
+has_codeblock
+
+ I'm sure you all know that
+ 
+  has_codeblock
+ 
+ won't work, but still, I'm pretty sure that you use double quote to display a simple information.
+ 
+  This is bad
+ 
+ .
+
+
+ Well let's begin : The first one is bad (as well as the second) because using double quote forces php to scan the string to look for a substitution to be done (I mean a variable).
+
+
+ The second one is a little better, since php has no replacement to do.
+
+
+ The third one, is better because of simple quote, so that the language knows he can just send the text without processing, but the ""bad"" thing is the use of concatenation (dot operator, like in the second example).
+
+
+ The last one uses simple quote, and the coma operator. Why is this solution better?
+
+
+ Well, what happens when Using the third solution?
+
+
+ php creates a string, containing
+ 
+  has_codeblock
+ 
+ , then it has to enlarge it, to put the content of foo variable (""John SMITH""), and then, enlarge it again to put
+ 
+  has_codeblock
+ 
+ sentence.
+Then,
+ 
+  has_codeblock
+ 
+ can use this, to ... echo it :)
+
+
+ Whereas in the 4th one, the only thing to do for
+ 
+  has_codeblock
+ 
+ is to send ""Hello "", then $foo's content, then "" Welcome on my website."" to the output, and that is all!
+Because echo just has to send the text, without creating a string that will have to be enlarged to contain the whole text (that would have been concave, which has to be grown (because of concatenation) and then displayed.
+
+
+ I'll try to find back some benchmarks and put them here.
+
+
+ Fell free to comment or react, and excuse my English, this is not my mother tongue.
+
+",Optimizing PHP string concatenation,5,8,,51760.0,2009-01-06 15:16:05,2012-12-10 07:54:04,-1,1836
 5,528035,-6,1324,"
  
   Which programming languages are not supported by Eclipse?
@@ -23,47 +110,136 @@ After pressing Enter the System reboots. While booting through the yellow loadin
  
   How do we change this fact?
  
-",Which programming languages are not supported by Eclipse?,4,1,528047.0,63679.0,2009-02-09 12:55:08,2014-01-24 10:19:04,-1,99
+
+",Which programming languages are not supported by Eclipse?,4,1,528047.0,63679.0,2009-02-09 12:55:08,2014-01-24 10:19:04,-1,100
 6,583177,-6,16322,"
  Is it possible to write an infinite for loop in VB.NET?
-",VB.NET Infinite For Loop,4,13,583194.0,62572.0,2009-02-24 19:22:56,,-1,58
+
+
+ If so, what is the syntax?
+
+",VB.NET Infinite For Loop,4,13,583194.0,62572.0,2009-02-24 19:22:56,,-1,89
 7,621333,-6,5805,"
  How to use Unicode available in vb6 in vb.net?
  
   Is there any equivalent of vb6 Unicode in vb.net??
  
-",Unicode in vb.net,3,3,,,2009-03-07 04:55:47,2012-09-01 00:46:41,-1,106
+
+",Unicode in vb.net,3,3,,,2009-03-07 04:55:47,2012-09-01 00:46:41,-1,107
 8,666387,-6,181,"
  I have this code and for some reason I can't get it to work?
-",Can anyone help with a Java problem?,1,7,666419.0,80378.0,2009-03-20 14:28:23,,-1,63
+
+
+ Can anyone see the problem?
+
+
+ I need this data to be able to return all the records that contain the same name that is entered in the mNameSearchDelete textbox. however no records are returned which should be there.
+
+
+ thank you
+
+has_codeblock
+",Can anyone help with a Java problem?,1,7,666419.0,80378.0,2009-03-20 14:28:23,,-1,311
 9,709248,-7,1241,"
  I have a string aBc12def6
 i want to convert the string into a pattern template (say aBc##def#) then generate values to place into the blank spaces (ex aBc00def0, aBc00def1 ... aBc25def9 ...). I dont want to do it all at once. I want to generate it one at a time and test the string. How do i do this? using C#
-","strings, fill in the blank. C#",3,3,2198850.0,34537.0,2009-04-02 10:51:02,2012-10-17 02:36:37,-1,312
+
+","strings, fill in the blank. C#",3,3,2198850.0,34537.0,2009-04-02 10:51:02,2012-10-17 02:36:37,-1,313
 10,724103,-6,11568,"
  how to create a modal popup window with background with gray color using javascript and css.
-",How to create a modal popup using javascript,5,1,,68381.0,2009-04-07 04:06:43,,-1,95
+
+
+ can any body show me the example.
+
+
+ it's urgent
+
+",How to create a modal popup using javascript,5,1,,68381.0,2009-04-07 04:06:43,,-1,148
 11,736670,-7,19231,"
  I have an array, and need to find the index of the smallest item, using Java or C, without altering the content or ordering of the array.
-",How do I find the smallest item in an array?,14,3,736695.0,66593.0,2009-04-10 04:10:15,2015-01-14 03:32:19,-1,140
+
+
+ For example, with the input:
+
+has_codeblock
+
+ 0 should be returned.
+
+
+ I am unsure how to do this, can anybody help?
+
+",How do I find the smallest item in an array?,14,3,736695.0,66593.0,2009-04-10 04:10:15,2015-01-14 03:32:19,-1,261
 12,771673,-8,631,"
  How can I hide my executable so it doesn't show up in task manager when running?  There are a lot of EXEs running with the same name, and I want to avoid confusing users.
-",Disable Exe From Task Manager,3,4,,63213.0,2009-04-21 08:47:50,2012-01-24 09:27:51,-1,173
+
+
+ 
+  Update
+ 
+
+
+ OK, fine.  Tell me, how can I disallow the EXE from being killed by others from Task Manager?
+
+",Disable Exe From Task Manager,3,4,,63213.0,2009-04-21 08:47:50,2012-01-24 09:27:51,-1,286
 13,798416,-7,981,"
  Can anyone help me fix the following javascript code?
-",How do I fix this calendar javascript code?,2,9,,96225.0,2009-04-28 14:59:07,2012-04-21 17:28:36,-1,56
+
+
+ It is supposed to produce a calendar, but the first line is not right.
+
+
+ Two problems that I can see:
+
+
+ 
+  The 1st of april is not on a sunday, so it starts on the wrong day
+ 
+ 
+  The line is too long, unless April of 2009 really has a first week containing 18 days
+ 
+
+
+ I'd appreciate any help you can give me.
+
+
+ Here's a screenshot showing the problem for April 2009 (which starts on Wednesday btw).
+
+
+ 
+  ?
+ 
+
+
+ And here's the faulty javascript code.
+
+has_codeblock
+",How do I fix this calendar javascript code?,2,9,,96225.0,2009-04-28 14:59:07,2012-04-21 17:28:36,-1,531
 14,841124,-6,159,"
  This table is not printing properly
-",Problem in html code,1,3,,66593.0,2009-05-08 18:18:28,2012-09-30 10:52:09,-1,38
+
+has_codeblock
+",Problem in html code,1,3,,66593.0,2009-05-08 18:18:28,2012-09-30 10:52:09,-1,53
 15,858109,-6,452,"
  I want to know how to find an element in list without iteration
-",List Element without iteration,3,2,,46646.0,2009-05-13 13:58:28,,-1,66
+
+",List Element without iteration,3,2,,46646.0,2009-05-13 13:58:28,,-1,67
 16,941156,-11,768,"
  Why do we need callbacks in ASP.NET or any server side technology?
-",Why do we need callbacks in ASP.NET or any server side technology?,6,1,941175.0,159072.0,2009-06-02 18:32:40,2012-08-20 13:35:56,-1,69
+
+
+ One answer can be, to achieve asynchronous calls.
+
+
+ But I am not satisfied with this answer.
+
+
+ Please explain it in a different way.
+
+",Why do we need callbacks in ASP.NET or any server side technology?,6,1,941175.0,159072.0,2009-06-02 18:32:40,2012-08-20 13:35:56,-1,208
 17,992389,-7,1046,"
  How would you Subclass an NSOutlineView?
-",Subclassing NSOutlineView,2,2,992455.0,92714.0,2009-06-14 07:47:49,2013-12-31 02:34:01,-1,43
+
+",Subclassing NSOutlineView,2,2,992455.0,92714.0,2009-06-14 07:47:49,2013-12-31 02:34:01,-1,44
 18,1031150,-6,885,"
  Searching for a js script, which will show some
  
@@ -74,79 +250,254 @@ i want to convert the string into a pattern template (say aBc##def#) then genera
   until the page loads all images
  
  .
-",Loading message,4,2,1031188.0,99250.0,2009-06-23 07:43:20,,-1,146
+
+
+ Important -
+ 
+  it mustn't use any js framework
+ 
+ (jquery, mootools, etc), must be an ordinary js script.
+
+
+ Message must disappear when the page is loaded.
+
+",Loading message,4,2,1031188.0,99250.0,2009-06-23 07:43:20,,-1,308
 19,1035459,-7,1210,"
  i'm reposting this post i just posted a while ago.
  
   http://stackoverflow.com/questions/1035266/how-do-i-write-a-javascript-alert-box-to-give-a-yes-or-no-question-and-integrate/1035285#1035285
  
-",how do i write a javascript alert box to give a yes or no question and integrate with php calls? (repost),3,3,,112924.0,2009-06-23 21:51:25,2016-01-04 23:26:13,-1,199
+
+
+ i wasnt getting anymore responses so i figured the post got lost in somewhere out there.
+what i tried doing was this
+
+has_codeblock
+
+ and it didnt work. the record just got deleted once i pressed the link to delete.
+what am i doing wrong? thanks
+
+
+ ps: i cant do ajax yet im looking for a simple way of doing it so i can comprehend how it works
+
+
+ thanks
+
+",how do i write a javascript alert box to give a yes or no question and integrate with php calls? (repost),3,3,,112924.0,2009-06-23 21:51:25,2016-01-04 23:26:13,-1,558
 20,1037193,-6,2133,"
  Where do I get a link to install Qt with the MinGW cross compiler in Linux?
-",Install MinGW for SUSE Linux,4,2,1037207.0,119570.0,2009-06-24 08:56:22,2013-11-29 04:57:42,-1,78
+
+",Install MinGW for SUSE Linux,4,2,1037207.0,119570.0,2009-06-24 08:56:22,2013-11-29 04:57:42,-1,79
 21,1065211,-8,1067,"
  If I have a class in
- has_code
+ 
+  has_codeblock
+ 
  like:
-",How can I use a class from a header file in a source file using extern but not #include?,10,9,1066423.0,51816.0,2009-06-30 18:26:59,,-1,40
-22,1087576,-6,488,"
- has_code
-",ERROR ON: numApprovals = (int)cmd.ExecuteScalar();,4,2,1087608.0,1709270.0,2009-07-06 15:19:02,2012-01-24 08:26:28,-1,11
+
+has_codeblock
+
+ How can I use it in framework.cpp using the
+ 
+  has_codeblock
+ 
+ keyword, where I need to instantiate the class and call
+ 
+  has_codeblock
+ 
+ ?
+
+
+ 
+
+
+ Edit:
+
+
+ 
+  has_codeblock
+ 
+ is not allowed.
+
+",How can I use a class from a header file in a source file using extern but not #include?,10,9,1066423.0,51816.0,2009-06-30 18:26:59,,-1,264
+22,1087576,-6,488,"has_codeblock
+",ERROR ON: numApprovals = (int)cmd.ExecuteScalar();,4,2,1087608.0,1709270.0,2009-07-06 15:19:02,2012-01-24 08:26:28,-1,14
 23,1124760,-6,1484,"
  I have 4 check box when i select anyone of the check box need to display the respective check box and text box.
-",Jquery - multiple checkbox and multiple textbox,1,4,,1486512.0,2009-07-14 11:18:43,,-1,114
+
+
+ input type=""checkbox"" id=""acheck[]"" value='name'
+
+
+ input type=""textbox"" id=""productfield"" value=' '
+
+
+ jquery Code:
+
+has_codeblock
+",Jquery - multiple checkbox and multiple textbox,1,4,,1486512.0,2009-07-14 11:18:43,,-1,249
 24,1139749,-6,969,"
  I was having a discussion with a colleague about whether or not the following is possible:
-",How can I run my application in place of the default Windows XP shell?,2,8,,102062.0,2009-07-16 19:22:28,,-1,93
+
+
+ 
+  Install an MFC application from a USB drive in Windows XP (this installation would be initiated manually by a user with sufficient privileges to install software).
+ 
+ 
+  After rebooting, this application should start instead of the default Windows XP shell (explorer.exe).
+ 
+
+
+ Does anyone know how I might accomplish this?
+
+",How can I run my application in place of the default Windows XP shell?,2,8,,102062.0,2009-07-16 19:22:28,,-1,424
 25,1171100,-6,1679,"
  How can I add a friend invite feature to my newly created Facebook application?
-",Friend Invite Feature for Facebook Applications,2,1,,129099.0,2009-07-23 11:19:09,2015-03-24 14:00:41,-1,82
+
+",Friend Invite Feature for Facebook Applications,2,1,,129099.0,2009-07-23 11:19:09,2015-03-24 14:00:41,-1,83
 26,1181615,-6,181,"
  In a 80486 computer, what is the worst case (include the fetch) number of memory accesses of this instruction:
-",Worst case memory access in 80x86 assembly,1,5,1181642.0,144904.0,2009-07-25 08:43:05,,-1,113
+
+has_codeblock
+
+ It is known that an opcode with no operands is two bytes in length.
+
+",Worst case memory access in 80x86 assembly,1,5,1181642.0,144904.0,2009-07-25 08:43:05,,-1,199
 27,1203926,-7,339,"
  When I try to execute my program, I get an error. I can't read the last value in ""
- has_code
+ 
+  has_codeblock
+ 
  "":
-",Why does this C function not return an integer value?,2,9,1203935.0,165402.0,2009-07-30 01:04:36,,-1,99
+
+has_codeblock
+
+ What could be causing this behavior?
+
+",Why does this C function not return an integer value?,2,9,1203935.0,165402.0,2009-07-30 01:04:36,,-1,164
 28,1233548,-6,1575,"
  Suddenly, in editing mode i can't move the cells.
 Before i could.
-",Reorder cells - Stop working,3,4,,151093.0,2009-08-05 14:15:56,2011-10-26 19:29:44,-1,68
+
+
+ I didn't change anything.
+
+
+ thx
+
+",Reorder cells - Stop working,3,4,,151093.0,2009-08-05 14:15:56,2011-10-26 19:29:44,-1,105
 29,1263266,-6,15410,"
  i want download all images stored in html(web page) , i dont know how much image will be download , and i don`t want use ""HTML AGILITY PACK""
-",c# find image in html and download them,4,5,,69821.0,2009-08-11 22:11:25,,-1,143
+
+
+ i search in google but all site make me more confused ,
+
+
+ i tried regex but only one result ... ,
+
+",c# find image in html and download them,4,5,,69821.0,2009-08-11 22:11:25,,-1,246
 30,1346796,-13,901,"
  How do I get a Row from a Gridview control in DevExpress?
-",Getting Row from Gridview in Dev Express?,3,0,1346898.0,,2009-08-28 12:47:17,,-1,60
+
+",Getting Row from Gridview in Dev Express?,3,0,1346898.0,,2009-08-28 12:47:17,,-1,61
 31,1350378,-6,7479,"
  What is Median of Sorted Arrays in O(log n) complexity ?
-",What is Median of Sorted Arrays in O(log n) complexity?,4,7,1350400.0,164299.0,2009-08-29 03:42:43,2012-10-28 04:44:33,-1,59
+
+",What is Median of Sorted Arrays in O(log n) complexity?,4,7,1350400.0,164299.0,2009-08-29 03:42:43,2012-10-28 04:44:33,-1,60
 32,1354684,-7,208,"
  
   How can you find files by the following regex?
  
-",How can I find filenames that do not have a . in them?,3,3,1354702.0,,2009-08-30 19:18:50,2012-08-22 13:51:08,-1,54
+
+has_codeblock
+
+ The solution may be in the commands: find, perl, ls
+
+",How can I find filenames that do not have a . in them?,3,3,1354702.0,,2009-08-30 19:18:50,2012-08-22 13:51:08,-1,124
 33,1370865,-6,5811,"
  I thought else at the end of
- has_code
-",java: is else necessary after if else if statements?,3,5,1370882.0,163957.0,2009-09-03 00:30:22,2012-08-30 01:01:03,-1,41
-34,1417123,-8,354,"
- has_code
-",Which object is created in which part of memory?,2,10,1417139.0,104085.0,2009-09-13 07:45:37,,-1,11
+ 
+  has_codeblock
+ 
+
+
+ is not necessary in java but unless I put it in the code does not work. why is this?
+
+",java: is else necessary after if else if statements?,3,5,1370882.0,163957.0,2009-09-03 00:30:22,2012-08-30 01:01:03,-1,140
+34,1417123,-8,354,"has_codeblock
+
+ At the above code, which object and reference is created in the which part of memory? (I mean Heap and Stack)
+
+
+ 
+
+",Which object is created in which part of memory?,2,10,1417139.0,104085.0,2009-09-13 07:45:37,,-1,131
 35,1447981,-6,2479,"
  How can I run a jsp program?
-",How can I run a jsp program?,2,0,,80359.0,2009-09-19 06:51:33,2012-11-26 13:59:52,-1,31
+
+",How can I run a jsp program?,2,0,,80359.0,2009-09-19 06:51:33,2012-11-26 13:59:52,-1,32
 36,1480556,-6,2045,"
  how to use the templatetag of django app?
-",django templatetag?,1,1,,243774.0,2009-09-26 06:13:06,2012-08-28 21:38:07,-1,44
+
+",django templatetag?,1,1,,243774.0,2009-09-26 06:13:06,2012-08-28 21:38:07,-1,45
 37,1486723,-8,4692,"
  Does PHP include any function like
- has_code
+ 
+  has_codeblock
+ 
  and
- has_code
+ 
+  has_codeblock
+ 
  ?
-",Does PHP include toupper and tolower functions?,4,5,1486731.0,177785.0,2009-09-28 12:16:27,2012-03-28 18:00:59,-1,65
+
+
+ I want a
+ 
+  has_codeblock
+ 
+ function which will convert
+ 
+  has_codeblock
+ 
+ to
+ 
+  has_codeblock
+ 
+ or
+ 
+  has_codeblock
+ 
+ to
+ 
+  has_codeblock
+ 
+ .
+
+
+ Similarly,
+ 
+  has_codeblock
+ 
+ should convert
+ 
+  has_codeblock
+ 
+ to
+ 
+  has_codeblock
+ 
+ or
+ 
+  has_codeblock
+ 
+ to
+ 
+  has_codeblock
+ 
+ .
+
+",Does PHP include toupper and tolower functions?,4,5,1486731.0,177785.0,2009-09-28 12:16:27,2012-03-28 18:00:59,-1,387
 38,1523141,-7,315,"
  quandry is  - which of the following two method  performs best
  
@@ -159,31 +510,110 @@ Before i could.
  Choices - Create Object on the fly or do a lookup from a dictionary
  
  Execution speed - called x times per second
-",C# performance question,5,3,1523168.0,135852.0,2009-10-06 01:04:17,,-1,331
+
+
+ NB - i need to deliver the working code first and then go for optimization hence if any theorists can provide glimpses on behind the scene info, that'll help before i get to the actual performance test possibly by eod thu
+
+
+ Definitions -
+
+has_codeblock
+
+ 
+  Method 1
+ 
+
+has_codeblock
+
+ 
+  Method 2
+ 
+
+has_codeblock
+",C# performance question,5,3,1523168.0,135852.0,2009-10-06 01:04:17,,-1,650
 39,1531874,-9,1464,"
  I am even starting to doubt ASP .Net....I should have opted for php on this project...
 It seems ASP >net is only good in IE and never good in Firefox,Safari etc
 Is there a way to just make my pages render correctly in Other browsers other than IE.....
 The last time I was told to put .browser in my project and that really worked....for a season...now only the master page shows and content inside the content placeholders does not show....
-",My asp .net Master Page is not correctly rendering in Firefox,2,5,1532169.0,174188.0,2009-10-07 14:08:56,2012-08-13 01:05:48,-1,443
-40,1570081,-7,197,"
- has_code
-",Any other way to make the query shorter?,2,5,,182350.0,2009-10-15 03:02:29,2012-04-21 17:28:17,-1,11
+
+",My asp .net Master Page is not correctly rendering in Firefox,2,5,1532169.0,174188.0,2009-10-07 14:08:56,2012-08-13 01:05:48,-1,444
+40,1570081,-7,197,"has_codeblock
+",Any other way to make the query shorter?,2,5,,182350.0,2009-10-15 03:02:29,2012-04-21 17:28:17,-1,14
 41,1570316,-6,987,"
  I have a string named group.
-",Get specific data from a string? C#,2,3,1570799.0,430543.0,2009-10-15 04:46:31,,-1,31
+
+has_codeblock
+
+ So my issue is that I want my output to be something like this:
+
+
+ 17
+ 
+ 11
+
+
+ so these 2 numbers should be stored in the database as two records. and another case if the
+
+has_codeblock
+
+ it will store 3 values in the database. The number of groups always differs in different strings it can be 1 or many.
+
+
+ 17
+ 
+ 11
+ 
+ 05
+
+
+ the database structure is like this:
+ 
+ 
+  has_codeblock
+ 
+
+
+ Thanks. Hope to hear from you guys soon.
+
+",Get specific data from a string? C#,2,3,1570799.0,430543.0,2009-10-15 04:46:31,,-1,479
 42,1580471,-6,335,"
  I want to make a
- has_code
+ 
+  has_codeblock
+ 
  button on Start>Run i.e but when I do it will not do signalled event?
-",How to mix C++ and external buttons on seperate window?,2,7,1658902.0,69467.0,2009-10-16 21:14:38,,-1,100
+
+
+ Im sorry I have seen that you do not get the question.
+
+
+ Ok basically when you create a button with
+ 
+  has_codeblock
+ 
+ ; I want to do that but put on a different window with
+ 
+  has_codeblock
+ 
+ which I have already done now the button does not work so I need my program to someone get when it is clicked from the Run window as example!
+
+
+ And yes you have it, but it's not making the button is the problem it's getting when it's clicked with my program since it does not belong to it anymore!
+
+",How to mix C++ and external buttons on seperate window?,2,7,1658902.0,69467.0,2009-10-16 21:14:38,,-1,611
 43,1592257,-6,146,"
  If
- has_code
+ 
+  has_codeblock
+ 
  does
- has_code
+ 
+  has_codeblock
+ 
  work?
-","ObjectUtils.equal(x,y) null can work",2,6,,192808.0,2009-10-20 03:11:46,2012-01-19 21:23:25,-1,38
+
+","ObjectUtils.equal(x,y) null can work",2,6,,192808.0,2009-10-20 03:11:46,2012-01-19 21:23:25,-1,59
 44,1654302,-6,1250,"
  I have a existing application and I want to implement
  
@@ -194,37 +624,92 @@ The last time I was told to put .browser in my project and that really worked...
   App Store
  
  with some locked feature and if user tries to access those locked feature, they will get some message to buy unlock those features by buying the app.
-",iPhone + In App purchase,2,0,,178369.0,2009-10-31 12:53:11,,-1,310
+
+
+ Please tell me steps to implement this or some reference where step by step guidance is available.
+
+",iPhone + In App purchase,2,0,,178369.0,2009-10-31 12:53:11,,-1,413
 45,1694025,-6,4599,"
  Specially in comparison to C/C++ (which are declarative), how is Java imperative?
-",How is Java an 'imperative' programming language and not a 'declarative' one?,2,2,,182959.0,2009-11-07 18:51:45,,-1,84
+
+",How is Java an 'imperative' programming language and not a 'declarative' one?,2,2,,182959.0,2009-11-07 18:51:45,,-1,85
 46,1696896,-7,1556,"
  How can I to print the numbers from 1 to 100 in the following format?
-",how to check whether the number ends with 9 or not in numbers 1to 100,8,5,,206282.0,2009-11-08 15:37:22,2012-09-29 17:46:34,-1,72
+
+has_codeblock
+",how to check whether the number ends with 9 or not in numbers 1to 100,8,5,,206282.0,2009-11-08 15:37:22,2012-09-29 17:46:34,-1,87
 47,1697855,-10,344,"
  I'm wondering. Is there any way or online service for learning?
-",How can i understand a web site's language which is written by url rewriting method?,2,4,1697934.0,179446.0,2009-11-08 20:37:00,2012-03-29 12:48:48,-1,66
+
+",How can i understand a web site's language which is written by url rewriting method?,2,4,1697934.0,179446.0,2009-11-08 20:37:00,2012-03-29 12:48:48,-1,67
 48,1698947,-7,535,"
  I'm trying to block all user input in my app. That includes touch event,sleep button, home button, etc. It's for jailbroken device. So you can use whatever that works.
-",How to block all input on iPhone app(for jailbroken devices)?,3,1,,206564.0,2009-11-09 03:28:01,2012-04-21 17:28:02,-1,170
+
+
+ Thank you!
+
+",How to block all input on iPhone app(for jailbroken devices)?,3,1,,206564.0,2009-11-09 03:28:01,2012-04-21 17:28:02,-1,185
 49,1699513,-9,2517,"
  I want code for uploading and downloading a file in JSP.
-",Uploading and downloading a file in JSP,1,2,,206682.0,2009-11-09 07:06:30,2012-10-29 15:06:45,-1,59
+
+",Uploading and downloading a file in JSP,1,2,,206682.0,2009-11-09 07:06:30,2012-10-29 15:06:45,-1,60
 50,1779459,-10,8569,"
  Can anybody tell me how to write a multiplication function (in
- has_code
+ 
+  has_codeblock
+ 
  ) using recursion?
-",Code an integer multiplication function using recursion (in C),10,2,,2714770.0,2009-11-22 18:08:23,2012-08-22 13:51:00,-1,95
+
+",Code an integer multiplication function using recursion (in C),10,2,,2714770.0,2009-11-22 18:08:23,2012-08-22 13:51:00,-1,106
 51,1893768,-12,542,"
  See source code of this
  
   http://jsbin.com/iveso
  
  I can't change anything in xhtml code.
-",How to use css to style xhtml markup made only of divs like a table,2,6,1893837.0,84201.0,2009-12-12 15:32:16,2012-06-07 13:21:01,-1,95
+
+
+ And i need cross browser output exact like this.
+ 
+
+
+ How we can give same look with less and optimize css
+
+
+ This is CSS
+
+has_codeblock
+
+ 
+  Edit:
+ 
+
+
+ 
+  I found links which are useful for me
+ 
+
+
+ 
+  
+   
+    http://snook.ca/archives/html%5Fand%5Fcss/getting%5Fyour%5Fdi
+   
+  
+ 
+ 
+  
+   
+    http://www.dev-archive.net/articles/table-in-css.html
+   
+  
+ 
+
+",How to use css to style xhtml markup made only of divs like a table,2,6,1893837.0,84201.0,2009-12-12 15:32:16,2012-06-07 13:21:01,-1,457
 52,1895799,-8,2844,"
  If I have a network of nodes, how can I use genetic algorithms to calculate the shortest path between any two nodes?
-",How do I solve for the shortest path between nodes using genetic algorithms?,2,6,,230587.0,2009-12-13 07:01:52,2012-09-26 15:05:08,-1,119
+
+",How do I solve for the shortest path between nodes using genetic algorithms?,2,6,,230587.0,2009-12-13 07:01:52,2012-09-26 15:05:08,-1,120
 53,1896765,-6,186,"
  I have a ready made PHP class.
  
@@ -233,53 +718,136 @@ The last time I was told to put .browser in my project and that really worked...
    How would I go about doing this?
   
  
-",How can I use a class made in PHP?,5,5,1896769.0,229849.0,2009-12-13 15:04:24,,-1,138
+
+",How can I use a class made in PHP?,5,5,1896769.0,229849.0,2009-12-13 15:04:24,,-1,139
 54,1927719,-6,1084,"
  What is the most elegant way to convert the string ""a.pdf"" into ""a.jpg"" using Python?
-",What is the most elegant way of converting the string 'a.pdf' to 'a.jpg'?,10,4,1927729.0,95876.0,2009-12-18 11:39:08,2013-12-19 07:49:52,-1,88
+
+
+ I would like for my code to look beautiful.
+
+",What is the most elegant way of converting the string 'a.pdf' to 'a.jpg'?,10,4,1927729.0,95876.0,2009-12-18 11:39:08,2013-12-19 07:49:52,-1,136
 55,1935118,-10,327,"
  run:
-",Does anyone know what is this...?,3,1,,682281.0,2009-12-20 07:28:20,2012-02-07 19:11:02,-1,7
+
+has_codeblock
+
+ I'm getting this error while saving the data in the database.The database is
+ 
+  has_codeblock
+ 
+ base.
+
+",Does anyone know what is this...?,3,1,,682281.0,2009-12-20 07:28:20,2012-02-07 19:11:02,-1,129
 56,1948250,-6,149,"
  What benefits we can take using regex in xhtml css development?
-",What benefits we can take using regex in xhtml css development?,3,2,1948291.0,84201.0,2009-12-22 18:28:00,2013-07-09 00:55:11,-1,66
+
+
+ any tools and useful regex commands?
+
+",What benefits we can take using regex in xhtml css development?,3,2,1948291.0,84201.0,2009-12-22 18:28:00,2013-07-09 00:55:11,-1,107
 57,1988913,-7,425,"
  I am developing an app that needs to retrieve information from my web site when a user pushes a button, but I have no idea how can I do that!
-",How to make app retrieve information from a web site?,1,1,1988933.0,241969.0,2010-01-01 15:52:10,2011-12-05 20:32:59,-1,144
-58,1997795,-6,1017,"
- has_code
-",what is the 'decimal.getcontext().copy()' mean ,4,6,1997983.0,234322.0,2010-01-04 06:21:17,2012-01-26 13:11:21,-1,11
+
+",How to make app retrieve information from a web site?,1,1,1988933.0,241969.0,2010-01-01 15:52:10,2011-12-05 20:32:59,-1,145
+58,1997795,-6,1017,"has_codeblock
+
+ thanks.
+
+
+ what is the useful of a.
+
+",what is the 'decimal.getcontext().copy()' mean ,4,6,1997983.0,234322.0,2010-01-04 06:21:17,2012-01-26 13:11:21,-1,53
 59,1999144,-6,4013,"
  I am trying to call a variable for use in another function. The variable is only in the other function and not declared as a global variable. Does anyone know how to call the other variable. The code below shows the 'retval' variable being used but it is declared in the other function.
-",Calling a variable from another function Python,2,2,1999165.0,234435.0,2010-01-04 12:05:33,,-1,289
+
+has_codeblock
+
+ Thanks
+
+
+ The function I declare it in is:
+
+has_codeblock
+",Calling a variable from another function Python,2,2,1999165.0,234435.0,2010-01-04 12:05:33,,-1,364
 60,2019077,-6,182,"
  I've never used ext myself,
-",What's the principle inside ext?,1,3,,198729.0,2010-01-07 08:30:04,2012-08-23 12:44:14,-1,30
+
+
+ but I see there are many .java files in it.
+
+
+ The strange thing is that it's taken as javascript?
+
+
+ Why?
+
+",What's the principle inside ext?,1,3,,198729.0,2010-01-07 08:30:04,2012-08-23 12:44:14,-1,141
 61,2073276,-6,579,"
  i have asked this question 2 days before but I can not edit that(I don't know why)also i have changed some part of my classes.also I have checked it a lot but really I don't know that why it returns null value(on the console is written :
- has_code
+ 
+  has_codeblock
+ 
  ),please help me.
-",Why does it return a null value?!!(client/server application),3,3,,124339.0,2010-01-15 16:49:30,,-1,269
+
+
+ at first i get the text from a text area which get text from client and then i will set it to my text area which is the output(like chat frame in Yahoo Messenger)  and then i will send that text to my MainClient class.
+
+
+ my send button action performed in my chat frame:(I have tested the String text in the chat frame and it wasn't null)
+
+has_codeblock
+
+ my MainClient class:(a part of that)
+
+has_codeblock
+
+ my MainServer class:(a part of that)
+
+has_codeblock
+
+ At first I will run the MainServer and then I will run the MainClient(which will show the chat frame).
+
+
+ 
+  EDIT:please start reading from this part: these are two classes ,one for gui and the other for client.(network) it returns nothing on the console for server so it will return nothing to the client.please help me thanks. my GUI class:(a part of that) (like a chat frame which by clicking on the Send button .I will send something for the server)
+ 
+
+
+ 
+  my gui class(chat frame) a part of that:
+ 
+
+has_codeblock
+
+ 
+  my MainClient class:(a part of that)
+ 
+
+has_codeblock
+
+ 
+  at first I will run the client class So the gui class will be run which name is chat Frame.
+ 
+
+",Why does it return a null value?!!(client/server application),3,3,,124339.0,2010-01-15 16:49:30,,-1,1426
 62,2079249,-8,637,"
  I have pascal code (programming language actually doesn't mean anything):
  
+
+
  
+  box[1] := 14;
   
-   box[1] := 14;
+   box[2] := 2;
    
-    box[2] := 2;
+    box[3] := 4;
     
-     box[3] := 4;
+     box[4] := 5;
      
-      box[4] := 5;
+      box[5] := 6;
       
-       box[5] := 6;
-       
-        box[6] := 8;
-        
-       
-       
-        I want to get all possibilities. For instance, box[1] = box[6], then box[6] = box[1]. Yes, I can write it by my hand, but I guess I can make it more clever, by loop. Any suggestions?
+       box[6] := 8;
        
       
      
@@ -287,20 +855,39 @@ The last time I was told to put .browser in my project and that really worked...
    
   
  
-",All array possibilities,3,7,2080640.0,237681.0,2010-01-16 23:02:16,,-1,476
+
+
+ I want to get all possibilities. For instance, box[1] = box[6], then box[6] = box[1]. Yes, I can write it by my hand, but I guess I can make it more clever, by loop. Any suggestions?
+
+",All array possibilities,3,7,2080640.0,237681.0,2010-01-16 23:02:16,,-1,435
 63,2099662,-6,3001,"
  How do we split the value in an array suppose 124 into three different values 1,2,4?
  
  I want this to be done in java.
-",how to split the value in an array in java,4,4,,254667.0,2010-01-20 07:22:47,,-1,122
+
+",how to split the value in an array in java,4,4,,254667.0,2010-01-20 07:22:47,,-1,123
 64,2099822,-6,7304,"
  I couldn't find the advantages and disadvantages of using a database over plain files. Would you please help me?
-",What are the advantages and disadvantages of using a database over plain files?,2,2,2099851.0,124339.0,2010-01-20 08:06:26,,-1,115
+
+",What are the advantages and disadvantages of using a database over plain files?,2,2,2099851.0,124339.0,2010-01-20 08:06:26,,-1,116
 65,2127585,-6,495,"
  
   http://forums.alliedmods.net/showthread.php?t=64767
  
-",How would I port this delphi 7 prog to .net (C#)?,4,7,2127734.0,207117.0,2010-01-24 15:44:40,,-1,59
+
+
+ The source acts like its missing a ton of stuff I can't find like uh TBX and some other things
+
+
+ I don't really know the language, but I have hoping I could get it to compile with delphi 2009/2010.net and then see about porting its IL. (to C# I guess)
+
+
+ The reasoning behind this is because pawnstudio is crash happy but the program (layout, syntax highlighting, the fact that the intellisense (clamsense) works with functions from includes, in the file, etc) is really easy to use.
+
+
+ Can anyone help?
+
+",How would I port this delphi 7 prog to .net (C#)?,4,7,2127734.0,207117.0,2010-01-24 15:44:40,,-1,568
 66,2130654,-6,568,"
  
   
@@ -312,186 +899,512 @@ The last time I was told to put .browser in my project and that really worked...
    
   
  
- 
-  What is the purpose of Java synchronization, and how should I use it?
- 
-",When and why would I use Java synchronization?,2,1,,258208.0,2010-01-25 06:39:38,2012-01-26 13:04:11,-1,159
+
+
+ What is the purpose of Java synchronization, and how should I use it?
+
+",When and why would I use Java synchronization?,2,1,,258208.0,2010-01-25 06:39:38,2012-01-26 13:04:11,-1,157
 67,2166402,-6,444,"
  In this situation, is it better to use a loop or not?
-",Loop or no loop?,8,4,2166569.0,261608.0,2010-01-30 01:17:14,2013-07-12 00:20:47,-1,56
+
+has_codeblock
+
+ or
+
+has_codeblock
+",Loop or no loop?,8,4,2166569.0,261608.0,2010-01-30 01:17:14,2013-07-12 00:20:47,-1,91
 68,2206797,-8,21561,"
  I have to use Matlab to read a picture and make a joint histogram and I'm new to Matlab.  When I try to read the Image by using
- has_code
- function it does not work.
-",How do I load an image file in Matlab?,4,2,,266993.0,2010-02-05 11:24:28,,-1,168
-69,2210928,-6,717,"
- has_code
-   using namespace std;
-void main()
-{
-  int i = 0;
-  while (i
-  
  
-",How I do fibonaci sequence under 1000?,3,8,2210949.0,206504.0,2010-02-05 22:32:23,2012-01-25 18:38:04,-1,78
+  has_codeblock
+ 
+ function it does not work.
+
+has_codeblock
+
+ Can anyone help me figure out this problem?
+
+",How do I load an image file in Matlab?,4,2,,266993.0,2010-02-05 11:24:28,,-1,240
+69,2210928,-6,717,"has_codeblock
+
+ I'm so confused?? :(
+
+",How I do fibonaci sequence under 1000?,3,8,2210949.0,206504.0,2010-02-05 22:32:23,2012-01-25 18:38:04,-1,38
 70,2227902,-6,370,"
  I need to download something from server to local machine just by a visiting an url without any popup-window,using something like php or python.But cannot find a good solution.Is it possible or not?Hope someone can help me.
-",Is it possible to download something to a default local dir quietly using a server side script?,4,5,2228072.0,268530.0,2010-02-09 09:16:04,,-1,226
+
+",Is it possible to download something to a default local dir quietly using a server side script?,4,5,2228072.0,268530.0,2010-02-09 09:16:04,,-1,227
 71,2231383,-6,881,"
  I am an experienced video-slot type game developer. There is a small gaming company who wants to try their luck with an iPhone game, and they want me to work on it. They want to know how long it would take me to develop a game using Unity3D, given that they provide all the graphics and game rules. I don't have any experience with Unity3D or the iPhone, but I have done some programming on the mac and I know c# very well (unity uses c# scripts). Does anybody have an idea of a 'typical' project length? I understand this is extremely vague, I appreciate any comments.
-",Typical iPhone game project length with Unity3D,3,0,5249481.0,73992.0,2010-02-09 18:18:57,2012-08-22 17:30:21,-1,572
-72,2237154,-6,1591,"
- has_code
-","How can I write to the textfile with ""while""?",2,6,2237268.0,270308.0,2010-02-10 13:41:59,,-1,11
+
+",Typical iPhone game project length with Unity3D,3,0,5249481.0,73992.0,2010-02-09 18:18:57,2012-08-22 17:30:21,-1,573
+72,2237154,-6,1591,"has_codeblock
+
+ What else do I need to add to make my code run properly?
+
+","How can I write to the textfile with ""while""?",2,6,2237268.0,270308.0,2010-02-10 13:41:59,,-1,74
 73,2263523,-8,4064,"
  Does it happen automatically? How do can run it?
-",Does Java have automatic garbage collection?,5,15,2263526.0,179736.0,2010-02-15 00:56:34,2014-04-06 11:05:34,-1,51
+
+",Does Java have automatic garbage collection?,5,15,2263526.0,179736.0,2010-02-15 00:56:34,2014-04-06 11:05:34,-1,52
 74,2272978,-6,1933,"
  I have learned programming on .NET. It's been 4 years since I have started (serious) programming, I gained experience in VBA, JavaScript but mainly C#. I have spent a lot of time trying to grasp the good coding practices, object orientation etc.
-","From .NET to Delphi, an ERP on Delphi",11,12,,274361.0,2010-02-16 12:58:17,2014-04-29 12:14:32,-1,248
+
+
+ Now finally I have a job. The job is fixing/upgrading an ERP on a daily basis. Creating reports and maybe sometimes new stuff. I have absolutely no experience in Delphi, and no motivation to learn it especially when people are moving to .NEt from Delphi not in the reverse direction sa my manager expects :)
+
+
+ The question is that are there any tools that I write C# code and compile into this object pascal or whatever it is. Thanks in advance.
+
+","From .NET to Delphi, an ERP on Delphi",11,12,,274361.0,2010-02-16 12:58:17,2014-04-29 12:14:32,-1,699
 75,2274872,-7,568,"
  How do I make an application form in PHP that sends an e-mail using the
- has_code
+ 
+  has_codeblock
+ 
  function?
-",php email sending application form,3,0,,274570.0,2010-02-16 17:25:26,2012-04-21 01:00:02,-1,95
+
+",php email sending application form,3,0,,274570.0,2010-02-16 17:25:26,2012-04-21 01:00:02,-1,106
 76,2287477,-6,220,"
  Work on Asp.net vs08 C#.My textBox is bellow,
-",Asp.Net How to databind on C#,3,0,,108308.0,2010-02-18 09:23:09,,-1,48
+
+has_codeblock
+
+ this
+ 
+  has_codeblock
+ 
+ .aspx code want to write on .cs page how to?
+
+",Asp.Net How to databind on C#,3,0,,108308.0,2010-02-18 09:23:09,,-1,137
 77,2316701,-7,306,"
  Script runs fine in Solaris and Linux just not on the crippled MAC -- thus no build environment
-",how to make MAC recognize linux BASH? ,2,2,,279264.0,2010-02-23 08:31:53,2012-01-26 14:40:37,-1,98
+
+has_codeblock
+",how to make MAC recognize linux BASH? ,2,2,,279264.0,2010-02-23 08:31:53,2012-01-26 14:40:37,-1,113
 78,2341171,-7,5772,"
  I need some ajax code to do some functions with drop down.
-","ajax dropdown(country, state, city)",3,2,2341429.0,116512.0,2010-02-26 11:24:06,2013-04-06 21:39:41,-1,61
+
+
+ I have three table of values one for country, then state and city.
+
+
+ And i have three dropdown to show these values
+
+
+ first it should show
+
+
+ select country
+
+
+ select state
+
+
+ select city
+
+
+ in that drop downs(slect) respectively.
+
+
+ when i select united states from the first dropdown
+
+
+ in the second drop down it must show the states of the united states.
+
+
+ and again when i select  a state from the state dropdown
+
+
+ it must show the cities of that state in the third dropdown(city)
+
+
+ I want to do this with ajax.
+
+
+ can any one have a code to do this.
+
+
+ please help me.
+
+
+ Thanks
+
+","ajax dropdown(country, state, city)",3,2,2341429.0,116512.0,2010-02-26 11:24:06,2013-04-06 21:39:41,-1,655
 79,2351252,-6,1395,"
  The topic of mine is face recognition using artificial neural networks using MATLAB code.
-",Reducing Mean Square Error,1,1,,283098.0,2010-02-28 14:05:26,2012-04-22 13:27:54,-1,92
+
+
+ I tried my work by taking the images from web and started implementing the program by using neural networks.
+
+
+ By typing nprtool command in MATLAB ,i started training, testing and validating the images from database.
+
+
+ When i started to calculate the mean square error for each image ,the values of mse are being increased for each and every training.
+
+
+ I need to decrease the mse.
+
+
+ So is there any body to help me out in telling the command in MATLAB code.
+
+
+ Its also helpful for me if any body provides me the exact MATLAB code for face recognition using artificial neural networks.
+
+",Reducing Mean Square Error,1,1,,283098.0,2010-02-28 14:05:26,2012-04-22 13:27:54,-1,687
 80,2386724,-6,243,"
  Please Provide me sample code to carete wordpress plugin
-",how to create new plugin in wordpress?,3,0,,286876.0,2010-03-05 12:42:04,2012-04-21 00:59:52,-1,59
+
+",how to create new plugin in wordpress?,3,0,,286876.0,2010-03-05 12:42:04,2012-04-21 00:59:52,-1,60
 81,2387708,-6,146,"
  can u please show me how to query 3 tables using *? thanks
-",How to get data 3 tables?,2,1,2387738.0,207376.0,2010-03-05 15:12:29,,-1,61
+
+",How to get data 3 tables?,2,1,2387738.0,207376.0,2010-03-05 15:12:29,,-1,62
 82,2390479,-6,239,"
  here's the job description:
-",some microsoft products and XML on an interview,2,3,2390503.0,117700.0,2010-03-05 22:46:16,2011-11-30 19:37:40,-1,30
+
+has_codeblock
+
+ 
+  what is an XML schema? ive extracted data programmatically from XML files, but i dont understand what they mean by schema?
+ 
+ 
+  data analysis in SQL server environment - does this just mean knowing how to do joins and select statements?
+ 
+ 
+  SSRS (design and administration) - can someone please get me started on some basic tutorials where i can learn this?
+ 
+ 
+  what is Monarch and VorteXML and where can i learn the applications?
+ 
+
+",some microsoft products and XML on an interview,2,3,2390503.0,117700.0,2010-03-05 22:46:16,2011-11-30 19:37:40,-1,489
 83,2406196,-6,2226,"
  I'm new here and on python too, and i need a code to login an HTTPS webpage
 the page is: ritaj.birzeit.edu
 and how can i know if its correct username or password , can you help in this :)
-",Python: I need a code to auto login a website with HTTPS,1,0,2406221.0,288208.0,2010-03-09 02:08:17,2012-01-26 15:28:28,-1,190
+
+",Python: I need a code to auto login a website with HTTPS,1,0,2406221.0,288208.0,2010-03-09 02:08:17,2012-01-26 15:28:28,-1,191
 84,2443529,-6,1380,"
  I want to perform an HTTP redirect, but the way I am currently doing it isn't working. When I try redirect it just prints the status code, and the location header:
-",How do I issue an HTTP redirect with Perl's CGI.pm?,3,2,,225509.0,2010-03-14 19:55:46,,-1,166
+
+has_codeblock
+",How do I issue an HTTP redirect with Perl's CGI.pm?,3,2,,225509.0,2010-03-14 19:55:46,,-1,181
 85,2493469,-6,270,"
  Please help me find a grammar or automaton to decide the following language:
-",I need to find an automaton for this language,1,12,,299144.0,2010-03-22 15:27:47,2011-04-06 01:21:23,-1,79
+
+
+ a
+ 
+  n
+ 
+ b
+ 
+  n
+ 
+ c
+ 
+  n
+ 
+ where n≥1
+
+",I need to find an automaton for this language,1,12,,299144.0,2010-03-22 15:27:47,2011-04-06 01:21:23,-1,126
 86,2511691,-11,471,"
  For example, strlen() takes about 3*O(n). Why 3? I've wrote a really simple strlen-like function - it works much faster.
-",C: Why some string.h algorithms work slower than simple hand-made ones?,6,20,2511730.0,232371.0,2010-03-24 21:54:38,2012-06-07 13:20:24,-1,123
+
+has_codeblock
+
+ Well, some of my friends says, nearly all of string.h algorithms are slower than they should be.
+
+",C: Why some string.h algorithms work slower than simple hand-made ones?,6,20,2511730.0,232371.0,2010-03-24 21:54:38,2012-06-07 13:20:24,-1,238
 87,2536396,-6,188,"
  I would like to create a database where I store the links between people.
-",Storing connections between people in a MySql database,1,1,,298099.0,2010-03-29 07:36:08,2012-04-22 13:27:13,-1,76
+
+
+ I then need to bring back the records detailing which people are connected to which others.
+
+
+ I need to output: person1 is connected to person2 is connected with person3 etc.
+
+
+ 
+  How can I get started with this task?
+ 
+
+",Storing connections between people in a MySql database,1,1,,298099.0,2010-03-29 07:36:08,2012-04-22 13:27:13,-1,302
 88,2582653,-6,218,"
  How do you make a function read form a txt file and store random lines in a variable? It will be run over and over in a foreach loop. The language is PHP.
-",How do you make a function read form a txt file and store random lines in a variable?,3,3,,309716.0,2010-04-06 04:35:24,2012-04-22 13:26:59,-1,157
+
+
+ Im a new coder so I don't know things like this off the top of my head.
+
+",How do you make a function read form a txt file and store random lines in a variable?,3,3,,309716.0,2010-04-06 04:35:24,2012-04-22 13:26:59,-1,233
 89,2607158,-6,3401,"
  I want less methods. I want a common global TestClass from which I could use any of its value inside the class.
-",Java: how to have global values inside a class?,6,2,2607200.0,164148.0,2010-04-09 11:59:48,,-1,114
+
+has_codeblock
+
+ 
+  [Clarification Needed]
+ 
+ I cannot understand the no-use of GLOB.VARS. Please, see the code belowe where you cannot access the GLOB.VARS without an instance, hence the error. If I quarantee no malicious code can make an instance, is there any problem in using GLOB.vars?
+
+has_codeblock
+",Java: how to have global values inside a class?,6,2,2607200.0,164148.0,2010-04-09 11:59:48,,-1,420
 90,2633647,-6,90,"
  is it posible? i try this:
-",How to embed JavaScript in C++?,2,10,,,2010-04-13 22:28:57,2010-04-13 23:04:25,-1,29
+
+has_codeblock
+
+ b4 the function declaration s but it no work.why no?
+
+
+ Edit: it magicaly work now
+
+",How to embed JavaScript in C++?,2,10,,,2010-04-13 22:28:57,2010-04-13 23:04:25,-1,130
 91,2676903,-9,2263,"
  I want the code/program for paint brush in Visual C++ using open gl.It must include square,rectangle,triangle,circle,pencil,eraser and it must have buttons.
-",Visual C++ program for paint brush code using openGL,1,5,,282708.0,2010-04-20 16:33:47,2012-01-19 16:56:56,-1,159
+
+",Visual C++ program for paint brush code using openGL,1,5,,282708.0,2010-04-20 16:33:47,2012-01-19 16:56:56,-1,160
 92,2702832,-6,368,"
  While I was talking about javascript closure to my friend, I was told that using Mootools can prevent closures 100%. To my knowledege, a variable causes a closure. How does Mootools itself prevents javascript closure? I think my friend is saying that Mootools' functions are closure-safe functions.
-",Does Mootools prevents javascript closure 100%?,1,7,,100240.0,2010-04-24 01:25:08,,-1,301
+
+
+ Any suggestions?
+
+",Does Mootools prevents javascript closure 100%?,1,7,,100240.0,2010-04-24 01:25:08,,-1,322
 93,2703647,-6,5407,"
  I want to create web proxy . I googled it and even found some tutorial but those were in PHP.
  
   If somebody is having tutorial of web proxy creation in java then please post it here Or simply let me know what approach should i follow to create  web proxy. [ i will be using Tomcat { if that matters for your answer } ]
  
+
+
+ Thanks
+
+
  
-  Thanks
+  Edit
  
  
+  i guess i was not clear in stating what i require. Actually i am trying to develop a site like '
   
-   Edit
+   http://proxyug.com
   
-  
-   i guess i was not clear in stating what i require. Actually i am trying to develop a site like '
-   
-    http://proxyug.com
-   
-   /' .
-  
+  /' .
  
-",How to create a web proxy?,3,0,2704082.0,94813.0,2010-04-24 07:46:48,2016-03-02 01:48:05,-1,501
+
+",How to create a web proxy?,3,0,2704082.0,94813.0,2010-04-24 07:46:48,2016-03-02 01:48:05,-1,487
 94,2729986,-7,6130,"
  When I am running the application I can access the file..
 When I am running the executable that is created, I cannot access the file..
 Any suggestions?
-",access to the path is denied C#,4,8,2730016.0,85072.0,2010-04-28 13:48:09,2010-04-30 09:02:46,-1,154
+
+
+ The error I am getting is :
+access to the path 'E:\Javascript.js' is denied.
+
+",access to the path is denied C#,4,8,2730016.0,85072.0,2010-04-28 13:48:09,2010-04-30 09:02:46,-1,235
 95,2753540,-7,164,"
  I have a string that contains unwanted numbers ( any number higher than 5000 )
-",I want a function to remove numbers higher than 5000 in a string,2,3,2753563.0,330818.0,2010-05-02 13:10:40,2012-01-20 08:51:19,-1,81
+
+
+ I want a php function to remove any number higher than 5000.
+
+
+ thnx :)
+
+",I want a function to remove numbers higher than 5000 in a string,2,3,2753563.0,330818.0,2010-05-02 13:10:40,2012-01-20 08:51:19,-1,157
 96,2780442,-6,527,"
  I am running my java application. It shows up in the process tab of the task manager. I dont want users to kill that process?
-",How to create a process that cannot be killed?,3,9,2780468.0,322897.0,2010-05-06 10:47:58,,-1,128
+
+
+ And if possible i dont want my process to be in the process list also.
+
+
+ My application is a LAN administrator. I need to log client machines. If its possible for the user to kill my process there is no use in creating such an application.
+
+",How to create a process that cannot be killed?,3,9,2780468.0,322897.0,2010-05-06 10:47:58,,-1,373
 97,2787600,-6,920,"
  I have been bothered for so long by the MySQL injections and was thinking of a way to eliminate this problem all together. I have came up with something
  
   below
  
  hope that many people will find this useful.
-",MySQL INJECTION Solution,4,7,2787748.0,240215.0,2010-05-07 09:45:32,,-1,213
+
+
+ The only Draw back I can think of this is the partial search:
+Jo =>returns ""John"" by using the like %% statement.
+
+
+ Here is a php solution:
+
+has_codeblock
+
+ I know, I know that you still could inject using
+ 
+  has_codeblock
+ 
+ or any other type of injections...
+but this I think could solve half of your problem so the right mysql query is executed.
+
+
+ So my question is if anyone can find any draw backs on this then please feel free to comment here.
+
+
+ PLEASE GIVE AN ANSWER only if you think that this is a very useful solution and no major drawbacks are found OR you think is a bad idea all together...
+
+",MySQL INJECTION Solution,4,7,2787748.0,240215.0,2010-05-07 09:45:32,,-1,825
 98,2790428,-6,206,"
  Pay attentions that there is a space in it.
-","How do I check whether a string begins with ""GET "" or ""POST "" in c?",4,1,2790447.0,198729.0,2010-05-07 17:31:35,,-1,46
+
+
+ Which function can I use?
+
+","How do I check whether a string begins with ""GET "" or ""POST "" in c?",4,1,2790447.0,198729.0,2010-05-07 17:31:35,,-1,76
 99,2793222,-6,728,"
  i am developing android application website address how can implemented validation
-",how can validate website address in android application,2,3,2793664.0,275791.0,2010-05-08 06:58:55,2012-08-21 11:48:34,-1,85
+
+
+ example :  www.yahoo.com
+
+
+ please forward some solution
+
+",how can validate website address in android application,2,3,2793664.0,275791.0,2010-05-08 06:58:55,2012-08-21 11:48:34,-1,146
 100,4,385,26265,"
  I want to use a track-bar to change a form's opacity.
-",When setting a form's opacity should I use a decimal or double?,13,1,7.0,8.0,2008-07-31 21:42:52,,1,56
+
+
+ This is my code:
+
+has_codeblock
+
+ When I try to build it, I get this error:
+
+
+ 
+  Cannot implicitly convert type 'decimal' to 'double'.
+ 
+
+
+ I tried making
+ 
+  has_codeblock
+ 
+ a
+ 
+  has_codeblock
+ 
+ , but then the control doesn't work. This code has worked fine for me in VB.NET in the past.
+
+",When setting a form's opacity should I use a decimal or double?,13,1,7.0,8.0,2008-07-31 21:42:52,,1,353
 101,6,173,12787,"
  I have an absolutely positioned
- has_code
+ 
+  has_codeblock
+ 
  containing several children, one of which is a relatively positioned
- has_code
+ 
+  has_codeblock
+ 
  . When I use a
  
   percentage-based width
  
  on the child
- has_code
+ 
+  has_codeblock
+ 
  , it collapses to '0' width on IE7, but not on Firefox or Safari.
-",Percentage width child element in absolutely positioned parent on IE7,5,0,31.0,9.0,2008-07-31 22:08:08,,1,260
+
+
+ If I use
+ 
+  pixel width
+ 
+ , it works. If the parent is relatively positioned, the percentage width on the child works.
+
+
+ 
+  Is there something I'm missing here?
+ 
+ 
+  
+   Is there an easy fix for this besides the
+   
+    pixel-based width
+   
+   on the
+child?
+  
+ 
+ 
+  
+   Is there an area of the
+   
+    has_codeblock
+   
+   specification that covers this?
+  
+ 
+
+",Percentage width child element in absolutely positioned parent on IE7,5,0,31.0,9.0,2008-07-31 22:08:08,,1,660
 102,9,1194,305072,"
  Given a
- has_code
+ 
+  has_codeblock
+ 
  representing a person's birthday, how do I calculate their age?
-",How do I calculate someone's age in C#?,54,5,1404.0,1.0,2008-07-31 23:40:59,,1,85
+
+",How do I calculate someone's age in C#?,54,5,1404.0,1.0,2008-07-31 23:40:59,,1,96
 103,11,994,104400,"
  Given a specific
- has_code
+ 
+  has_codeblock
+ 
  value, how do I display relative time, like:
-",How can relative time be calculated in C#?,33,11,1248.0,1.0,2008-07-31 23:55:37,,1,75
+
+
+ 
+  2 hours ago
+ 
+ 
+  3 days ago
+ 
+ 
+  a month ago
+ 
+
+",How can relative time be calculated in C#?,33,11,1248.0,1.0,2008-07-31 23:55:37,,1,141
 104,13,384,111349,"
  Is there a standard way for a Web Server to determine what time zone offset a user is in?
-",Determining a web user's time zone,23,3,357.0,9.0,2008-08-01 00:42:38,,1,92
+
+
+ Perhaps from a
+ 
+  has_codeblock
+ 
+ header? Or part of the user-agent string?
+
+",Determining a web user's time zone,23,3,357.0,9.0,2008-08-01 00:42:38,,1,174
 105,14,247,74181,"
  What is the difference between
  
-  has_code
+  
+   has_codeblock
+  
  
  and
  
-  has_code
+  
+   has_codeblock
+  
  
  in .NET?
-",Difference between Math.Floor() and Math.Truncate(),8,1,,11.0,2008-08-01 00:59:11,,1,78
+
+",Difference between Math.Floor() and Math.Truncate(),8,1,,11.0,2008-08-01 00:59:11,,1,103
 106,16,56,65032,"
  How do you expose a
  
@@ -502,135 +1415,619 @@ Any suggestions?
   ASMX
  
  web service? Usually, from the business tier, I can return a typed
- has_code
+ 
+  has_codeblock
+ 
  or
- has_code
+ 
+  has_codeblock
+ 
  which can be serialized for transport over
  
   ASMX
  
  .
-",Filling a DataSet or DataTable from a LINQ query result set,5,0,12446.0,2.0,2008-08-01 04:59:33,,1,207
+
+
+ How can I do the same for a
+ 
+  LINQ
+ 
+ query? Is there a way to populate a typed
+ 
+  has_codeblock
+ 
+ or
+ 
+  has_codeblock
+ 
+ via a
+ 
+  LINQ
+ 
+ query?:
+
+has_codeblock
+
+ How can I get the resultset of a
+ 
+  LINQ
+ 
+ query into a
+ 
+  has_codeblock
+ 
+ or
+ 
+  has_codeblock
+ 
+ ? Alternatively, is the
+ 
+  LINQ
+ 
+ query serializeable so that I can expose it as an
+ 
+  ASMX
+ 
+ web service?
+
+",Filling a DataSet or DataTable from a LINQ query result set,5,0,12446.0,2.0,2008-08-01 04:59:33,,1,615
 107,17,85,37551,"
  How do I store binary data in
  
   MySQL
  
  ?
-",Binary Data in MySQL,10,0,26.0,2.0,2008-08-01 05:09:55,,1,47
+
+",Binary Data in MySQL,10,0,26.0,2.0,2008-08-01 05:09:55,,1,48
 108,19,198,30930,"
  Solutions are welcome in any language. :-) I'm looking for the fastest way to obtain the value of π, as a personal challenge. More specifically I'm using ways that don't involve using
- has_code
+ 
+  has_codeblock
+ 
  d constants like
- has_code
+ 
+  has_codeblock
+ 
  , or hard-coding the number in.
-",What is the fastest way to get the value of π?,22,15,531.0,13.0,2008-08-01 05:21:22,,1,257
+
+
+ The program below tests the various ways I know of. The inline assembly version is, in theory, the fastest option, though clearly not portable; I've included it as a baseline to compare the other versions against. In my tests, with built-ins, the
+ 
+  has_codeblock
+ 
+ version is fastest on GCC 4.2, because it auto-folds the
+ 
+  has_codeblock
+ 
+ into a constant. With
+ 
+  has_codeblock
+ 
+ specified, the
+ 
+  has_codeblock
+ 
+ version is fastest.
+
+
+ Here's the main testing program (
+ 
+  has_codeblock
+ 
+ ):
+
+has_codeblock
+
+ And the inline assembly stuff (
+ 
+  has_codeblock
+ 
+ ), noting that it will only work for x86 and x64 systems:
+
+has_codeblock
+
+ And a build script that builds all the configurations I'm testing (
+ 
+  has_codeblock
+ 
+ ):
+
+has_codeblock
+
+ Apart from testing between various compiler flags (I've compared 32-bit against 64-bit too, because the optimisations are different), I've also tried switching the order of the tests around. The
+ 
+  has_codeblock
+ 
+ version still comes out top every time, though.
+
+",What is the fastest way to get the value of π?,22,15,531.0,13.0,2008-08-01 05:21:22,,1,1305
 109,24,69,33505,"
  If I have a trigger
  
   before the update
  
  on a table, how can I throw an error that prevents the update on that table?
-",Throw an error in a MySQL trigger,4,0,49.0,22.0,2008-08-01 12:12:19,,1,124
+
+",Throw an error in a MySQL trigger,4,0,49.0,22.0,2008-08-01 12:12:19,,1,125
 110,25,74,6244,"
  I've been having issues getting the C sockets API to work properly in C++. Specifically, although I am including
- has_code
+ 
+  has_codeblock
+ 
  , I still get compile time errors telling me that
- has_code
+ 
+  has_codeblock
+ 
  is not defined. Am I missing something obvious, or could this be related to the fact that I'm doing this coding on
- has_code
+ 
+  has_codeblock
+ 
  and my problems are much more complicated?
-",How to use the C socket API in C++ on z/OS,10,0,1443907.0,23.0,2008-08-01 12:13:50,,1,356
+
+
+ 
+  
+   Update
+  
+  : Upon further investigation, I discovered that there is an #ifdef that I'm hitting. Apparently
+  
+   has_codeblock
+  
+  isn't happy unless I define which ""type"" of sockets I'm using with:
+ 
+ has_codeblock
+ 
+  Now, I personally have no idea what this
+  
+   has_codeblock
+  
+  is actually for, so if any
+  
+   has_codeblock
+  
+  sockets programmers are out there (all 3 of you), perhaps you could give me a rundown of how this all works?
+ 
+",How to use the C socket API in C++ on z/OS,10,0,1443907.0,23.0,2008-08-01 12:13:50,,1,847
 111,36,86,37016,"
  How can I monitor an SQL Server database for changes to a table without using triggers or modifying the structure of the database in any way? My preferred programming environment is
  
   .NET
  
  and C#.
-",Check for changes to an SQL Server table?,8,1,352.0,32.0,2008-08-01 12:35:56,,1,204
+
+
+ I'd like to be able to support any
+ 
+  SQL Server 2000
+ 
+ SP4 or newer. My application is a bolt-on data visualization for another company's product. Our customer base is in the thousands, so I don't want to have to put in requirements that we modify the third-party vendor's table at every installation.
+
+
+ By
+ 
+  ""changes to a table""
+ 
+ I mean changes to table data, not changes to table structure.
+
+
+ Ultimately, I would like the change to trigger an event in my application, instead of having to check for changes at an interval.
+
+
+ 
+  The best course of action given my requirements (no triggers or schema modification, SQL Server 2000 and 2005) seems to be to use the BINARY_CHECKSUM function in
+  
+   T-SQL
+  
+  . The way I plan to implement is this:
+ 
+ 
+  Every X seconds run the following query:
+ 
+ has_codeblock
+ 
+  and compare that against the stored value. If the value has changed, go through the table row by row using the query
+ 
+ has_codeblock
+ 
+  and compare the returned checksums against stored values.
+ 
+",Check for changes to an SQL Server table?,8,1,352.0,32.0,2008-08-01 12:35:56,,1,1231
 112,42,182,22950,"
  I am starting a new web application in PHP and this time around I want to create something that people can extend by using a plugin interface.
-",Best way to allow plugins for a PHP application,8,0,77.0,37.0,2008-08-01 12:50:18,,1,145
+
+
+ How does one go about writing 'hooks' into their code so that plugins can attach to specific events?
+
+",Best way to allow plugins for a PHP application,8,0,77.0,37.0,2008-08-01 12:50:18,,1,250
 113,48,167,157534,"
  Let's say you create a Wizard in an HTML form. One button goes back and one goes forward.  Since the
  
   back
  
  button appears first in the markup, when you press Enter it will use that button to submit the form.
-",Multiple submit buttons in an HTML form,19,0,31910.0,40.0,2008-08-01 13:01:17,,1,216
+
+
+ Example:
+
+has_codeblock
+
+ What I would like to do, is get to decide which button is used to submit the form when a user presses Enter. That way, when you press Enter the Wizard will move to the next page, not the previous. Do you have to use
+ 
+  has_codeblock
+ 
+ to do this?
+
+",Multiple submit buttons in an HTML form,19,0,31910.0,40.0,2008-08-01 13:01:17,,1,495
 114,85,67,28114,"
  What are your best practices around creating flat file database structures in PHP?  A lot of the more mature PHP flat file frameworks I see out there attempt to implement SQL-like query syntax, which is over the top for my purposes in most cases (I would just use a database at that point).
-",Flat File Databases,13,0,154.0,59.0,2008-08-01 14:19:52,2015-10-22 13:43:51,1,293
+
+
+ Are there any elegant tricks out there to get good performance and features with the small code overhead one would want by taking on this problem in the first place?
+",Flat File Databases,13,0,154.0,59.0,2008-08-01 14:19:52,2015-10-22 13:43:51,1,462
 115,88,63,31423,"
  So I find myself porting a game, that was originally written for the Win32 API, to Linux (well, porting the OS X port of the Win32 port to Linux). I have implemented
- has_code
+ 
+  has_codeblock
+ 
  by giving the uSeconds since the process start up:
-",Is gettimeofday() guaranteed to be of microsecond resolution?,10,0,98.0,61.0,2008-08-01 14:36:18,,1,230
+
+has_codeblock
+
+ This, coupled with
+ 
+  has_codeblock
+ 
+ giving a constant 1000000 as the frequency, works well
+ 
+  on my machine
+ 
+ , giving me a 64 bit variable that contains
+ 
+  has_codeblock
+ 
+ since the program's start up. So
+ 
+  is this portable?
+ 
+ I don't want to discover it works differently if the kernel was compiled in a certain way or anything like that. I am fine with it being non-portable to something other than Linux, however.
+
+",Is gettimeofday() guaranteed to be of microsecond resolution?,10,0,98.0,61.0,2008-08-01 14:36:18,,1,687
 116,90,137,52831,"
  Are there any really good tutorials explaining
  
   branching and merging
  
  with Apache Subversion?
-",Good branching and merging tutorials for TortoiseSVN?,3,0,,58.0,2008-08-01 14:41:24,2012-12-26 03:45:49,1,102
+
+
+ All the better if it's specific to TortoiseSVN client.
+
+",Good branching and merging tutorials for TortoiseSVN?,3,0,,58.0,2008-08-01 14:41:24,2012-12-26 03:45:49,1,161
 117,104,124,9415,"
  In .NET perspective:
-","Anatomy of a ""Memory Leak""",15,0,112.0,39.0,2008-08-01 15:12:34,,1,23
+
+
+ 
+  What is a
+  
+   
+    Memory Leak
+   
+  
+  ?
+ 
+ 
+  How can you determine whether your application leaks? What are the effects?
+ 
+ 
+  How can you prevent a memory leak?
+ 
+ 
+  If your application has memory leak, does it go away when the process exits or is killed? Or do memory leaks in your application affect other processes on the system even after process completion?
+ 
+ 
+  And what about unmanaged code accessed via COM Interop and/or P/Invoke?
+ 
+
+
+ I have some answers for these questions myself, but they are incomplete. What do you think?
+
+","Anatomy of a ""Memory Leak""",15,0,112.0,39.0,2008-08-01 15:12:34,,1,575
 118,123,64,53544,"
  Is there an existing application or library in
  
   Java
  
  which will allow me to convert a
- has_code
+ 
+  has_codeblock
+ 
  data file to
- has_code
+ 
+  has_codeblock
+ 
  file?
-",Java lib or app to convert CSV to XML file?,16,2,183.0,78.0,2008-08-01 16:08:52,,1,135
+
+
+ The
+ 
+  has_codeblock
+ 
+ tags would be provided through possibly the first row containing column headings.
+
+",Java lib or app to convert CSV to XML file?,16,2,183.0,78.0,2008-08-01 16:08:52,,1,266
 119,126,51,7374,"
  What is the ""purist"" or ""correct"" way to access an object's properties from within an object method that is not a getter/setter method?
-",How would you access Object properties from within an object method?,18,0,127.0,58.0,2008-08-01 16:10:30,2012-05-08 18:11:27,1,138
+
+
+ I know that from outside of the object you should use a getter/setter, but from within would you just do:
+
+
+ Java:
+
+has_codeblock
+
+ PHP:
+
+has_codeblock
+
+ or would you do:
+
+
+ Java:
+
+has_codeblock
+
+ PHP:
+
+has_codeblock
+
+ Forgive me if my Java is a little off, it's been a year since I programmed in Java...
+
+
+ 
+  EDIT:
+ 
+
+
+ It seems people are assuming I am talking about private or protected variables/properties only. When I learned OO I was taught to use getters/setters for every single property even if it was public (and actually I was told never to make any variable/property public). So, I may be starting off from a false assumption from the get go. It appears that people answering this question are maybe saying that you should have public properties and that those don't need getters and setters, which goes against what I was taught, and what I was talking about, although maybe that needs to be discussed as well. That's probably a good topic for a different question though...
+
+",How would you access Object properties from within an object method?,18,0,127.0,58.0,2008-08-01 16:10:30,2012-05-08 18:11:27,1,1132
 120,129,59,88621,"
  I've been banging my head against
- has_code
+ 
+  has_codeblock
+ 
  trying to get a lot of data out.  I've been given a database with nearly 300 tables in it and I need to turn this into a MySQL database.  My first call was to use bcp but unfortunately it doesn't produce valid CSV - strings aren't encapsulated, so you can't deal with any row that has a string with a comma in it (or whatever you use as a delimiter) and I would still have to hand write all of the create table statements, as obviously CSV doesn't tell you anything about the data types.
-",How to export data from SQL Server 2005 to MySQL,5,6,,48.0,2008-08-01 16:22:42,2012-07-03 14:30:16,1,535
+
+
+ What would be better is if there was some tool that could connect to both SQL Server and MySQL, then do a copy. You lose views, stored procedures, trigger, etc, but it isn't hard to copy a table that only uses base types from one DB to another... is it?
+
+
+ Does anybody know of such a tool?  I don't mind how many assumptions it makes or what simplifications occur, as long as it supports integer, float, datetime and string. I have to do a lot of pruning, normalising, etc. anyway so I don't care about keeping keys, relationships or anything like that, but I need the initial set of data in fast!
+
+",How to export data from SQL Server 2005 to MySQL,5,6,,48.0,2008-08-01 16:22:42,2012-07-03 14:30:16,1,1148
 121,163,69,6978,"
  Stack Overflow has a subversion version number at the bottom:
-",How do I sync the SVN revision number with my ASP.NET web site?,7,3,170.0,83.0,2008-08-01 18:00:13,,1,64
+
+
+ 
+  svn revision: 679
+ 
+
+
+ I want to use such automatic versioning with my
+ 
+  has_codeblock
+ 
+ , Windows Forms, WPD projects/solutions.
+
+
+ How do I implement this?
+
+",How do I sync the SVN revision number with my ASP.NET web site?,7,3,170.0,83.0,2008-08-01 18:00:13,,1,232
 122,173,236,59812,"
  I've been wanting to get my databases under version control.  Does anyone have any advice or recommended articles to get me started?
-",How do I version my SQL Server database?,28,6,516.0,83.0,2008-08-01 18:33:08,,1,135
+
+
+ I'll always want to have at least
+ 
+  some
+ 
+ data in there (as
+ 
+  alumb
+ 
+ mentions: user types and administrators).  I'll also often want a large collection of generated test data for performance measurement.
+
+",How do I version my SQL Server database?,28,6,516.0,83.0,2008-08-01 18:33:08,,1,351
 123,176,72,64151,"
  On one Linux Server running Apache and PHP 5, we got multiple Virtual Hosts with separate logfiles and everything. The only thing we cannot seem to separate between virtual hosts is the php
- has_code
+ 
+  has_codeblock
+ 
  .
-",error_log per Virtual Host?,10,0,207.0,91.0,2008-08-01 18:37:40,,1,205
+
+
+ Overriding this setting in the
+ 
+  has_codeblock
+ 
+ of the
+ 
+  has_codeblock
+ 
+ does not seem to do anything.
+
+
+ Did I overlook something? Is there a way to have separate php
+ 
+  has_codeblock
+ 
+ for each Virtual Host?
+
+",error_log per Virtual Host?,10,0,207.0,91.0,2008-08-01 18:37:40,,1,438
 124,289,503,339028,"
- I often have to sort a dictionary, consisting of keys  values, by value. For example, I have a hash of words and respective frequencies, that I want to order by frequency.
-",How do you sort a dictionary by value?,19,0,298.0,109.0,2008-08-02 00:40:58,,1,174
+ I often have to sort a dictionary, consisting of keys & values, by value. For example, I have a hash of words and respective frequencies, that I want to order by frequency.
+
+
+ There is a
+ 
+  has_codeblock
+ 
+ which is good for a single value (say frequency), that I want to map it back to the word.
+
+
+ 
+  SortedDictionary
+ 
+ orders by key, not value. Some resort to a
+ 
+  custom class
+ 
+ , but is there a cleaner way?
+
+",How do you sort a dictionary by value?,19,0,298.0,109.0,2008-08-02 00:40:58,,1,420
 125,308,83,19138,"
  I often run into the following problem.
-",Is there a version control system for database structure changes?,25,1,360.0,106.0,2008-08-02 01:52:54,,1,42
+
+
+ I work on some changes to a project that require new tables or columns in the database. I make the database modifications and continue my work. Usually, I remember to write down the changes so that they can be replicated on the live system. However, I don't always remember what I've changed and I don't always remember to write it down.
+
+
+ So, I make a push to the live system and get a big, obvious error that there is no
+ 
+  has_codeblock
+ 
+ , ugh.
+
+
+ Regardless of the fact that this may not be the best practice for this situation, is there a version control system for databases? I don't care about the specific database technology. I just want to know if one exists. If it happens to work with MS SQL Server, then great.
+
+",Is there a version control system for database structure changes?,25,1,360.0,106.0,2008-08-02 01:52:54,,1,774
 126,328,125,60669,"
  What are some guidelines for maintaining responsible session security with PHP?  There's information all over the web and it's about time it all landed in one place!
-",PHP Session Security,13,0,7488.0,59.0,2008-08-02 02:41:34,,1,168
+
+",PHP Session Security,13,0,7488.0,59.0,2008-08-02 02:41:34,,1,169
 127,361,115,153299,"
  How would I go about generating a list of all possible permutations of a string between x and y characters in length, containing a variable list of characters.
-",Generate list of all possible permutations of a string,33,0,362.0,115.0,2008-08-02 06:57:57,,1,162
+
+
+ Any language would work, but it should be portable.
+
+",Generate list of all possible permutations of a string,33,0,362.0,115.0,2008-08-02 06:57:57,,1,218
 128,371,334,75872,"
  This is a tricky one and I've always relied on techniques, such as permission-based emails (i.e. only sending to people you have permission to send to) and not using blatantly
  
   spamish
  
  terminology.
-",How do you make sure email you send programmatically is not automatically marked as spam?,18,0,396.0,49.0,2008-08-02 08:19:18,,1,206
+
+
+ Of late, some of the emails I send out programmatically have started being shuffled into people's spam folder automatically and I'm wondering what I can do about it.
+
+
+ This is despite the fact that these particular emails are not ones that humans would mark as spam, specifically, they are emails that contain license keys that people have paid good money for, so I don't think they're going to consider them spam
+
+
+ I figure this is a big topic in which I am essentially an ignorant simpleton.
+
+",How do you make sure email you send programmatically is not automatically marked as spam?,18,0,396.0,49.0,2008-08-02 08:19:18,,1,706
 129,402,71,66346,"
  Note: this question is from 2008 and now is of only historic interest.
-","iPhone app in landscape mode, 2008 systems",9,2,2530953.0,136.0,2008-08-02 10:47:08,,1,73
+
+
+ 
+  What's the best way to create an iPhone application that runs in landscape mode from the start, regardless of the position of the device?
+ 
+ 
+  Both programmatically and using the Interface Builder.
+ 
+","iPhone app in landscape mode, 2008 systems",9,2,2530953.0,136.0,2008-08-02 10:47:08,,1,280
 130,549,3721,388921,"
  Form-based authentication for websites
-",The definitive guide to form-based website authentication,14,11,477578.0,136.0,2008-08-02 19:51:50,,1,41
+
+
+ We believe that Stack Overflow should not just be a resource for very specific technical questions, but also for general guidelines on how to solve variations on common problems. ""Form based authentication for websites"" should be a fine topic for such an experiment.
+
+
+ It should include topics such as:
+
+
+ 
+  How to log in
+ 
+ 
+  How to remain logged in
+ 
+ 
+  How to store passwords
+ 
+ 
+  Using secret questions
+ 
+ 
+  Forgotten username/password functionality
+ 
+ 
+  
+   OpenID
+  
+ 
+ 
+  ""Remember me"" checkbox
+ 
+ 
+  Browser autocompletion of usernames and passwords
+ 
+ 
+  Secret URLs (public
+  
+   URL
+  
+  protected by digest)
+ 
+ 
+  Checking password strength
+ 
+ 
+  E-mail validation
+ 
+ 
+  and much more about
+  
+   form based authentication
+  
+  ...
+ 
+
+
+ It should not include things like:
+
+
+ 
+  roles and authorization
+ 
+ 
+  HTTP basic authentication
+ 
+
+
+ Please help us by
+
+
+ 
+  Suggesting subtopics
+ 
+ 
+  Submitting good articles about this subject
+ 
+ 
+  Editing the official answer
+ 
+
+",The definitive guide to form-based website authentication,14,11,477578.0,136.0,2008-08-02 19:51:50,,1,1034
 131,564,136,125151,"
  I was just sitting at my local
  
@@ -647,26 +2044,103 @@ Any suggestions?
   Joel Spolsky
  
  saying something about a particular type of programmer knowing the difference between an int and an Integer in Java/C# (Object Oriented Programming Languages).
-",What is the difference between an int and an Integer in Java and C#?,17,2,566.0,25.0,2008-08-02 21:47:34,,1,321
+
+
+ After a quick 'brain check,' I realized, to my dismay, that I didn't know the answer.
+
+",What is the difference between an int and an Integer in Java and C#?,17,2,566.0,25.0,2008-08-02 21:47:34,,1,411
 132,626,268,60545,"
  In Ruby 1.8, there are subtle differences between proc/lambda on the one hand, and
- has_code
+ 
+  has_codeblock
+ 
  on the other.
-","When to use lambda, when to use Proc.new?",14,2,723.0,136.0,2008-08-03 06:40:54,,1,110
+
+
+ 
+  What are those differences?
+ 
+ 
+  Can you give guidelines on how to decide which one to choose?
+ 
+ 
+  In Ruby 1.9, proc and lambda are different. What's the deal?
+ 
+
+","When to use lambda, when to use Proc.new?",14,2,723.0,136.0,2008-08-03 06:40:54,,1,292
 133,650,73,41541,"
  I would like the version property of my application to be incremented for each build but I'm not sure on how to enable this functionality in Visual Studio (2005/2008). I have tried to specify the AssemblyVersion as 1.0.* but it doesn't get me exactly what I want.
-",Automatically update version number,6,1,655.0,143.0,2008-08-03 11:12:52,,1,266
+
+
+ I'm also using a settings file and in earlier attempts when the assembly version changed my settings got reset to the default since the application looked for the settings file in another directory.
+
+
+ I would like to be able to display a version number in the form of 1.1.38 so when a user finds a problem I can log the version they are using as well as tell them to upgrade if they have an old release.
+
+
+ A short explanation of how the versioning works would also be appreciated. When does the build and revision number get incremented?
+",Automatically update version number,6,1,655.0,143.0,2008-08-03 11:12:52,,1,809
 134,752,357,213957,"
  One may not always know the Type of an object at compile-time, but may need to create an instance of the Type.  How do you get a new object instance from a Type?
 ",Get a new object instance from a Type,12,0,755.0,192.0,2008-08-03 16:29:03,,1,164
 135,773,205,86900,"
  I haven't been able to find an understandable explanation of how to actually use Python's
- has_code
+ 
+  has_codeblock
+ 
  function.  What I'm trying to do is this:
-",How do I use Python's itertools.groupby()?,8,0,7286.0,207.0,2008-08-03 18:27:09,,1,145
+
+
+ 
+  Take a list - in this case, the children of an objectified
+  
+   has_codeblock
+  
+  element
+ 
+ 
+  Divide it into groups based on some criteria
+ 
+ 
+  Then later iterate over each of these groups separately.
+ 
+
+
+ I've reviewed
+ 
+  the documentation
+ 
+ , and
+ 
+  the examples
+ 
+ , but I've had trouble trying to apply them beyond a simple list of numbers.
+
+
+ So, how do I use of
+ 
+  has_codeblock
+ 
+ ?  Is there another technique I should be using?  Pointers to good ""prerequisite"" reading would also be appreciated.
+
+",How do I use Python's itertools.groupby()?,8,0,7286.0,207.0,2008-08-03 18:27:09,,1,676
 136,845,76,32571,"
  Suppose I have the following CSS rule in my page:
-",How can I detect which font was used in a web page?,9,2,849.0,238.0,2008-08-03 21:42:37,,1,52
+
+has_codeblock
+
+ How can I detect which one of the defined fonts was used in the user's browser?
+
+
+ 
+  Edit for people wondering why I want to do this:
+ 
+ The font I'm detecting contains glyph's that are not available in other fonts and when the user does not have the font I want to display a link asking the user to download that font so they can use my web application with the correct font.
+
+
+ Currently I am displaying the download font link for all users, I want to only display this for people who do not have the correct font installed.
+
+",How can I detect which font was used in a web page?,9,2,849.0,238.0,2008-08-03 21:42:37,,1,598
 137,871,394,491060,"
  I've been using
  
@@ -681,20 +2155,66 @@ Any suggestions?
   TortoiseSVN
  
  , I can't really imagine how it could be any better.
-",Why is Git better than Subversion?,30,11,875.0,203.0,2008-08-03 22:38:29,,1,199
+
+
+ Yet there's a growing number of developers claiming that Subversion has problems and that we should be moving to the new breed of distributed version control systems, such as
+ 
+  Git
+ 
+ .
+
+
+ How does Git improve upon Subversion?
+
+",Why is Git better than Subversion?,30,11,875.0,203.0,2008-08-03 22:38:29,,1,432
 138,879,100,66909,"
  Are PHP variables passed by value or by reference?
-",Are PHP Variables passed by value or by reference?,12,1,885.0,58.0,2008-08-03 22:51:41,,1,53
+
+",Are PHP Variables passed by value or by reference?,12,1,885.0,58.0,2008-08-03 22:51:41,,1,54
 139,888,381,272920,"
  How do you debug
  
   PHP
  
  scripts?
-",How do you debug PHP scripts?,29,14,890.0,131.0,2008-08-03 23:18:21,,1,39
+
+
+ I am aware of basic debugging such as using the Error Reporting. The breakpoint debugging in
+ 
+  PHPEclipse
+ 
+ is also quite useful.
+
+
+ What is the
+ 
+  best
+ 
+ (in terms of fast and easy) way to debug in phpStorm or any other IDE?
+
+",How do you debug PHP scripts?,29,14,890.0,131.0,2008-08-03 23:18:21,,1,274
 140,935,70,138268,"
  Attempting to insert an escape character into a table results in a warning.
-",String literals and escape characters in postgresql,6,0,938.0,246.0,2008-08-04 01:00:24,,1,78
+
+
+ For example:
+
+has_codeblock
+
+ Produces the warning:
+
+has_codeblock
+
+ (
+ 
+  Using PSQL 8.2
+ 
+ )
+
+
+ Anyone know how to get around this?
+
+",String literals and escape characters in postgresql,6,0,938.0,246.0,2008-08-04 01:00:24,,1,216
 141,972,324,89396,"
  I've read that it is possible to add a method to an existing object (e.g. not in the class definition) in
  
@@ -709,85 +2229,932 @@ Any suggestions?
   Duck Punching
  
  ). I understand that it's not always a good decision to do so. But, how might one do this?
-",Adding a Method to an Existing Object Instance,16,3,2982.0,145.0,2008-08-04 02:17:51,,1,300
+
+
+ 
+  UPDATE 8/04/2008 00:21:01 EST:
+ 
+
+
+ 
+  That
+ 
+ looks like a good answer John Downey, I tried it but it appears that it ends up being not a
+ 
+  true
+ 
+ method.
+
+
+ Your example defines the new patch function with an argument of
+ 
+  
+   has_codeblock
+  
+ 
+ , but if you write actual code that way, the now patched class method asks for an argument named
+ 
+  has_codeblock
+ 
+ (it doesn't automagically recognize it as the object to which it is supposed to bind, which is what would happen if defined within the class definition), meaning you have to call
+ 
+  
+   has_codeblock
+  
+ 
+ instead of just
+ 
+  
+   has_codeblock
+  
+ 
+ if you want the same functionality as a
+ 
+  true
+ 
+ method.
+
+
+ 
+  It looks like Python isn't really treating it as a method, but more just as a variable which happens to be a function
+ 
+ (and as such is callable).  Is there any way to attach an actual method to a class?
+
+
+ Oh, and Ryan,
+ 
+  that
+ 
+ isn't exactly what I was looking for (it isn't a builtin functionality), but it is quite cool nonetheless.
+
+",Adding a Method to an Existing Object Instance,16,3,2982.0,145.0,2008-08-04 02:17:51,,1,1337
 142,1005,190,41843,"
  Often while editing config files, I'll open one with vi and then when I go to save it realize that I didn't type
-",Getting root permissions on a file inside of vi?,11,1,37042.0,85.0,2008-08-04 03:34:02,,1,115
+
+has_codeblock
+
+ Is there any way to give vi sudo privileges to save the file? I seem to recall seeing something about this while looking up some stuff about vi a while ago, but now I can't find it.
+",Getting root permissions on a file inside of vi?,11,1,37042.0,85.0,2008-08-04 03:34:02,,1,314
 143,1108,932,349578,"
  Given that indexing is so important as your dataset increases in size, can someone explain how indexing works at a database agnostic level?
-",How does database indexing work?,5,0,1130.0,264.0,2008-08-04 10:07:12,,1,142
+
+
+ For information on queries to index a field, check out
+ 
+  http://stackoverflow.com/questions/1156/how-do-i-index-a-database-field
+ 
+",How does database indexing work?,5,0,1130.0,264.0,2008-08-04 10:07:12,,1,278
 144,1276,182,93715,"
  At what point does a MySQL database start to lose performance?
-",How big can a MySQL database get before performance starts to degrade,10,0,1338.0,30.0,2008-08-04 14:31:11,,1,65
+
+
+ 
+  Does physical database size matter?
+ 
+ 
+  Do number of records matter?
+ 
+ 
+  Is any performance degradation linear or exponential?
+ 
+
+
+ I have what I believe to be a large database, with roughly 15M records which take up almost 2GB. Based on these numbers, is there any incentive for me to clean the data out, or am I safe to allow it to continue scaling for a few more years?
+
+",How big can a MySQL database get before performance starts to degrade,10,0,1338.0,30.0,2008-08-04 14:31:11,,1,449
 145,1304,189,130240,"
  Is there any way to check whether a file is locked without using a try/catch block?
-",How to check for file lock?,12,3,1309.0,121.0,2008-08-04 14:56:57,,1,86
+
+
+ Right now, the only way I know of is to just open the file and catch any
+ 
+  has_codeblock
+ 
+ .
+
+",How to check for file lock?,12,3,1309.0,121.0,2008-08-04 14:56:57,,1,186
 146,1383,156,21889,"
  I saw many questions asking 'how' to unit test in a specific language, but no question asking 'what', 'why', and 'when'.
-",What is unit testing?,19,4,1393.0,314.0,2008-08-04 16:27:39,,1,123
+
+
+ 
+  What is it?
+ 
+ 
+  What does it do for me?
+ 
+ 
+  Why should I use it?
+ 
+ 
+  When should I use it (also when not)?
+ 
+ 
+  What are some common pitfalls and misconceptions
+ 
+
+",What is unit testing?,19,4,1393.0,314.0,2008-08-04 16:27:39,,1,300
 147,1384,67,14285,"
  What is the concensus on when to use one of these tools adversed to the other? I find Subsonic very useful in terms of getting things done quickly, but on large projects it tends not to scale, and its ties your domain model to your database model. That is where Nhibernate comes in as it gives you lightweight POCOs that are unrelated to your database model, but the setup time is much longer.
-",Subsonic Vs NHibernate,15,0,,230.0,2008-08-04 16:29:23,,1,396
+
+",Subsonic Vs NHibernate,15,0,,230.0,2008-08-04 16:29:23,,1,397
 148,1408,182,147030,"
  Is it possible to configure
  
   xampp
  
  to serve up a file outside of the
- has_code
+ 
+  has_codeblock
+ 
  directory?
-",Make XAMPP/Apache serve file outside of htdocs,6,3,1421.0,58.0,2008-08-04 16:54:49,2013-07-18 15:23:17,1,99
+
+
+ For instance, say I have a file located as follows:
+
+
+ 
+  has_codeblock
+ 
+
+
+ and my
+ 
+  xampp
+ 
+ files are normally served out from:
+
+
+ 
+  has_codeblock
+ 
+
+
+ (because that's the default configuration) Is there some way to make Apache recognize and serve up my
+ 
+  has_codeblock
+ 
+ file without moving it under
+ 
+  has_codeblock
+ 
+ ? Preferably I'd like Apache to serve up/have access to the entire contents of the projects directory, and I don't want to move the projects directory under
+ 
+  has_codeblock
+ 
+ .
+
+
+ edit: edited to add Apache to the question title to make Q/A more ""searchable""
+
+",Make XAMPP/Apache serve file outside of htdocs,6,3,1421.0,58.0,2008-08-04 16:54:49,2013-07-18 15:23:17,1,706
 149,1457,143,66369,"
  I'm writing an AJAX app, but as the user moves through the app, I'd like the URL in the address bar to update despite the lack of page reloads. Basically, I'd like for them to be able to bookmark at any point and thereby return to the current state.
-",Modify Address Bar URL in AJAX App to Match Current State,8,4,1468.0,331.0,2008-08-04 17:53:32,,1,252
+
+
+ How are people handling maintaining RESTfulness in AJAX apps?
+
+",Modify Address Bar URL in AJAX App to Match Current State,8,4,1468.0,331.0,2008-08-04 17:53:32,,1,318
 150,1476,228,103230,"
  How do you express an integer as a binary number with Python literals?
-",How do you express binary literals in Python?,4,4,13107.0,92.0,2008-08-04 18:20:36,,1,73
+
+
+ I was easily able to find the answer for hex:
+
+has_codeblock
+
+ and, octal:
+
+has_codeblock
+
+ 
+  How do you use literals to express binary in Python?
+ 
+
+
+ 
+
+
+ 
+  
+   Summary of Answers
+  
+ 
+
+
+ 
+  Python 2.5 and earlier: can express binary using
+  
+   has_codeblock
+  
+  but not with a literal.
+ 
+ 
+  Python 2.5 and earlier: there is
+  
+   no way
+  
+  to express binary literals.
+ 
+ 
+  Python 2.6 beta: You can do like so:
+  
+   has_codeblock
+  
+  or
+  
+   has_codeblock
+  
+  .
+ 
+ 
+  Python 2.6 beta: will also allow
+  
+   has_codeblock
+  
+  or
+  
+   has_codeblock
+  
+  (second character is the letter O) to represent an octal.
+ 
+ 
+  Python 3.0 beta: Same as 2.6, but will no longer allow the older
+  
+   has_codeblock
+  
+  syntax for octals.
+ 
+
+",How do you express binary literals in Python?,4,4,13107.0,92.0,2008-08-04 18:20:36,,1,819
 151,1576,107,6277,"
  We've finally moved our websites to a decent
  
   host
  
  , and for the first time we have shell access.
-",What should a longtime Windows user know when starting to use Linux?,35,0,1577.0,117.0,2008-08-04 20:54:29,2014-07-06 15:07:31,1,106
+
+
+ I know very little about using Linux. I can navigate through the file system, read files with
+ 
+  Vim
+ 
+ and I'm aware of the man command, and I have been able to work out solutions to problems as they show up (eventually), but I know I'm unaware of a lot.
+
+
+ We currently only use the host to hold our live sites, I'm sure that we use it more effectively, but I'm not sure where to start.
+
+
+ So with web development in mind:
+
+
+ 
+  What are the essential commands that every Linux user should know about?
+ 
+ 
+  What are the most useful commands that I should look into?
+ 
+
+",What should a longtime Windows user know when starting to use Linux?,35,0,1577.0,117.0,2008-08-04 20:54:29,2014-07-06 15:07:31,1,682
 152,1598,61,44852,"
  I'm not sure what the correct size should be.
-",What are the correct pixel dimensions for an apple-touch-icon?,11,3,3490980.0,83.0,2008-08-04 21:17:51,,1,48
+
+
+ Many sites seem to repeat that the apple-touch-icon should be 57x57 pixels but cite a broken link as their source.
+
+
+ 
+  Hanselman
+ 
+ 's and
+ 
+  playgroundblues
+ 
+ 's comments suggest different sizes including 163x163 and 60x60.
+
+
+ Apple's own
+ 
+  apple.com icon
+ 
+ is 129x129!
+
+
+ See my related question:
+ 
+  How do I give my web sites an icon for iPhone?
+ 
+
+",What are the correct pixel dimensions for an apple-touch-icon?,11,3,3490980.0,83.0,2008-08-04 21:17:51,,1,411
 153,1607,101,27810,"
  What are the best methods for tracking and/or automating DB schema changes?  Our team uses Subversion for version control and we've been able to automate some of our tasks this way (pushing builds up to a staging server, deploying tested code to a production server) but we're still doing database updates manually.  I would like to find or create a solution that allows us to work efficiently across servers with different environments while continuing to use Subversion as a backend through which code and DB updates are pushed around to various servers.
-",Mechanisms for tracking DB schema changes,20,0,1666.0,72.0,2008-08-04 21:31:40,2012-05-03 12:25:33,1,559
+
+
+ Many popular software packages include auto-update scripts which detect DB version and apply the necessary changes.  Is this the best way to do this even on a larger scale (across multiple projects and sometimes multiple environments and languages)?  If so, is there any existing code out there that simplifies the process or is it best just to roll our own solution?  Has anyone implemented something similar before and integrated it into Subversion post-commit hooks, or is this a bad idea?
+
+
+ While a solution that supports multiple platforms would be preferable, we definitely need to support the Linux/Apache/MySQL/PHP stack as the majority of our work is on that platform.
+",Mechanisms for tracking DB schema changes,20,0,1666.0,72.0,2008-08-04 21:31:40,2012-05-03 12:25:33,1,1241
 154,1610,53,40044,"
  If I'm adding a column to a table in Microsoft SQL Server, can I control where the column is displayed logically in queries?
-",Can I logically reorder columns in a table?,6,5,1621.0,328.0,2008-08-04 21:37:31,,1,127
+
+
+ I don't want to mess with the physical layout of columns on disk, but I would like to logically group columns together when possible so that tools like SQL Server Management Studio list the contents of the table in a convenient way.
+
+
+ I know that I can do this through SQL Management Studio by going into their ""design"" mode for tables and dragging the order of columns around, but I'd like to be able to do it in raw SQL so that I can perform the ordering scripted from the command line.
+
+",Can I logically reorder columns in a table?,6,5,1621.0,328.0,2008-08-04 21:37:31,,1,621
 155,1644,529,105798,"
  Yes, Podcasts, those nice little Audiobooks I can listen to on the way to work. With the current amount of Podcasts, it's like searching a needle in a haystack, except that the haystack happens to be the Internet and is filled with too many of these ""Hot new Gadgets"" stuff :(
-",What good technology podcasts are out there?,97,12,,91.0,2008-08-04 22:17:08,,1,279
+
+
+ Now, even though
+ 
+  I
+ 
+ am mainly a .NET developer nowadays, maybe anyone knows some good Podcasts from people regarding the whole software lifecycle? Unit Testing, Continous Integration, Documentation, Deployment...
+
+
+ So - what are you guys and gals listening to?
+
+
+ 
+  Please note that the categorizations are somewhat subjective and may not be 100% accurate as many podcasts cover several areas. Categorization is made against what is considered the ""main"" area.
+ 
+ 
+  General Software Engineering / Productivity
+ 
+ 
+  
+   
+    Stack Overflow
+   
+   (inactive, but still a good listen)
+  
+  
+   
+    TekPub (Requires Paid Subscription)
+   
+  
+  
+   
+    Software Engineering Radio
+   
+  
+  
+   
+    43 Folders
+   
+  
+  
+   
+    Perspectives
+   
+  
+  
+   
+    Dr. Dobb's
+   
+   (now a video feed)
+  
+  
+   
+    The Pragmatic Podcast
+   
+   (Inactive)
+  
+  
+   
+    IT Matters
+   
+  
+  
+   
+    Agile Toolkit Podcast
+   
+  
+  
+   
+    The Stack Trace
+   
+   (Inactive)
+  
+  
+   
+    Parleys
+   
+  
+  
+   
+    Techzing
+   
+  
+  
+   
+    The Startup Success Podcast
+   
+  
+  
+   
+    Berkeley CS class lectures
+   
+  
+  
+   
+    FLOSS Weekly
+   
+  
+  
+   
+    This Developer's Life
+   
+  
+ 
+ 
+  .NET / Visual Studio / Microsoft
+ 
+ 
+  
+   
+    Herding Code
+   
+  
+  
+   
+    Hanselminutes
+   
+  
+  
+   
+    .NET Rocks!
+   
+  
+  
+   
+    Deep Fried Bytes
+   
+  
+  
+   
+    Alt.Net Podcast
+   
+   (inactive)
+  
+  
+   
+    Polymorphic Podcast
+   
+   (inconsistent)
+  
+  
+   
+    Sparkling Client (The Silverlight Podcast)
+   
+  
+  
+   
+    dnrTV!
+   
+  
+  
+   
+    Spaghetti Code
+   
+  
+  
+   
+    ASP.NET Podcast
+   
+  
+  
+   
+    Channel 9
+   
+  
+  
+   
+    Radio TFS
+   
+  
+  
+   
+    PowerScripting Podcast
+   
+  
+  
+   
+    The Thirsty Developer
+   
+  
+  
+   
+    Elegant Code
+   
+   (inactive)
+  
+  
+   
+    ConnectedShow
+   
+  
+  
+   
+    Crafty Coders
+   
+  
+  
+   
+    Coding QA
+   
+  
+ 
+ 
+  jQuery
+ 
+ 
+  
+   
+    yayQuery
+   
+  
+  
+   
+    The official jQuery podcast
+   
+  
+ 
+ 
+  Java / Groovy
+ 
+ 
+  
+   
+    The Java Posse
+   
+  
+  
+   
+    Grails Podcast
+   
+  
+  
+   
+    Java Technology Insider
+   
+  
+  
+   
+    Basement Coders
+   
+  
+ 
+ 
+  Ruby / Rails
+ 
+ 
+  
+   
+    Railscasts
+   
+  
+  
+   
+    Rails Envy
+   
+  
+  
+   
+    The Ruby on Rails Podcast
+   
+  
+  
+   
+    Rubiverse
+   
+  
+  
+   
+    Ruby5
+   
+  
+ 
+ 
+  Web Design / JavaScript / Ajax
+ 
+ 
+  
+   
+    WebDevRadio
+   
+  
+  
+   
+    Boagworld
+   
+  
+  
+   
+    The Rissington podcast
+   
+  
+  
+   
+    Ajaxian
+   
+  
+  
+   
+    YUI Theater
+   
+  
+ 
+ 
+  Unix / Linux / Mac / iPhone
+ 
+ 
+  
+   
+    Mac Developer Network
+   
+  
+  
+   
+    Hacker Public Radio
+   
+  
+  
+   
+    Linux Outlaws
+   
+  
+  
+   
+    Mac OS Ken
+   
+  
+  
+   
+    LugRadio Linux radio show
+   
+   (Inactive)
+  
+  
+   
+    The Linux Action Show!
+   
+  
+  
+   
+    Linux Kernel Mailing List (LKML) Summary Podcast
+   
+  
+  
+   
+    Stanford's iPhone programming class
+   
+  
+  
+   
+    Advanced iPhone Development Course - Madison Area Technical College
+   
+  
+  
+   
+    WWDC 2010 Session Videos (requires Apple Developer registration)
+   
+  
+ 
+ 
+  System Administration, Security or Infrastructure
+ 
+ 
+  
+   
+    RunAs Radio
+   
+  
+  
+   
+    Security Now!
+   
+  
+  
+   
+    Crypto-Gram Security Podcast
+   
+  
+  
+   
+    Hak5
+   
+  
+  
+   
+    VMWare VMTN
+   
+  
+  
+   
+    Windows Weekly
+   
+  
+  
+   
+    PaulDotCom Security
+   
+  
+  
+   
+    The Register - Semi-Coherent Computing
+   
+  
+  
+   
+    FeatherCast
+   
+  
+ 
+ 
+  General Tech / Business
+ 
+ 
+  
+   
+    Tekzilla
+   
+  
+  
+   
+    This Week in Tech
+   
+  
+  
+   
+    The Guardian Tech Weekly
+   
+  
+  
+   
+    PCMag Radio Podcast
+   
+   (Inactive)
+  
+  
+   
+    Entrepreneurship Corner
+   
+  
+  
+   
+    Manager Tools
+   
+  
+ 
+ 
+  Other / Misc. / Podcast Networks
+ 
+ 
+  
+   
+    IT Conversations
+   
+  
+  
+   
+    Retrobits Podcast
+   
+  
+  
+   
+    No Agenda Netcast
+   
+  
+  
+   
+    Cranky Geeks
+   
+  
+  
+   
+    The Command Line
+   
+  
+  
+   
+    Freelance Radio
+   
+  
+  
+   
+    IBM developerWorks
+   
+  
+  
+   
+    The Register - Open Season
+   
+  
+  
+   
+    Drunk and Retired
+   
+  
+  
+   
+    Technometria
+   
+  
+  
+   
+    Sod This
+   
+  
+  
+   
+    Radio4Nerds
+   
+  
+  
+   
+    Hacker Medley
+   
+  
+ 
+",What good technology podcasts are out there?,97,12,,91.0,2008-08-04 22:17:08,,1,4506
 156,1669,703,222772,"
  
   Preferred languages
  
  : C/C++, Java, and Ruby.
-",Learning to write a compiler,40,4,1672.0,340.0,2008-08-04 22:46:36,2014-06-26 12:41:32,1,53
+
+
+ I am looking for some helpful books/tutorials on how to write your own compiler simply for educational purposes. I am most familiar with C/C++, Java, and Ruby, so I prefer resources that involve one of those three, but any good resource is acceptable.
+
+",Learning to write a compiler,40,4,1672.0,340.0,2008-08-04 22:46:36,2014-06-26 12:41:32,1,309
 157,1711,1440,802915,"
  If you could go back in time and tell yourself to read a specific book at the beginning of your career as a developer, which book would it be?
-",What is the single most influential book every programmer should read?,214,33,,303.0,2008-08-04 23:50:22,2012-01-11 13:32:24,1,145
+
+
+ I expect this list to be varied and to cover a wide range of things.
+
+
+ 
+  To search:
+ 
+ Use the search box in the upper-right corner. To search the answers of the current question, use
+ 
+  has_codeblock
+ 
+ .  For example:
+
+has_codeblock
+",What is the single most influential book every programmer should read?,214,33,,303.0,2008-08-04 23:50:22,2012-01-11 13:32:24,1,386
 158,1854,221,69568,"
  What do I need to look at to see if I'm on Windows, Unix, etc?
-",Python: What OS am I running on?,18,2,1857.0,116.0,2008-08-05 03:23:18,,1,65
+
+",Python: What OS am I running on?,18,2,1857.0,116.0,2008-08-05 03:23:18,,1,66
 159,1898,77,52656,"
  I realize this is a newbie question, but I'm looking for a simple solution - it seems like there should be one.
-",CSV File Imports in .Net,12,4,1901.0,81.0,2008-08-05 04:43:22,2012-09-27 12:30:14,1,114
+
+
+ What's the best way to import a CSV file into a strongly-typed data structure?  Again simple = better.
+
+",CSV File Imports in .Net,12,4,1901.0,81.0,2008-08-05 04:43:22,2012-09-27 12:30:14,1,221
 160,1936,98,71976,"
  Using ASP.NET MVC there are situations (such as form submission) that may require a
- has_code
+ 
+  has_codeblock
+ 
  .
-",How to RedirectToAction in ASP.NET MVC without losing request data,5,1,1940.0,364.0,2008-08-05 05:33:41,,1,99
+
+
+ One such situation is when you encounter validation errors after a form submission and need to redirect back to the form, but would like the URL to reflect the URL of the form, not the action page it submits to.
+
+
+ As I require the form to contain the originally
+ 
+  has_codeblock
+ 
+ ed data, for user convenience, as well as validation purposes, how can I pass the data through the RedirectToAction()?  If I use the viewData parameter, my
+ 
+  has_codeblock
+ 
+ parameters will be changed to
+ 
+  has_codeblock
+ 
+ parameters.
+
+",How to RedirectToAction in ASP.NET MVC without losing request data,5,1,1940.0,364.0,2008-08-05 05:33:41,,1,637
 161,1973,80,22479,"
  I've provided a solution for Python... please flesh this out with examples for other languages.
-",What is the best way to avoid SQL injection attacks?,27,0,2700.0,116.0,2008-08-05 06:48:38,2012-08-06 14:28:27,1,98
+
+",What is the best way to avoid SQL injection attacks?,27,0,2700.0,116.0,2008-08-05 06:48:38,2012-08-06 14:28:27,1,99
 162,2034,204,98693,"
  What do the result codes in SVN mean? I need a quick reference.
-",What do the result codes in SVN mean?,8,0,2036.0,137.0,2008-08-05 09:11:54,,1,66
+
+",What do the result codes in SVN mean?,8,0,2036.0,137.0,2008-08-05 09:11:54,,1,67
 163,2041,437,403007,"
  How do I create a branch in SVN?
 ",How do I create a branch in SVN?,9,0,2310.0,269.0,2008-08-05 09:25:29,,1,35
@@ -809,22 +3176,82 @@ Any suggestions?
   Model-View-ViewModel
  
  . My question has three parts to it:
-",What are MVP and MVC and what is the difference?,18,1,101561.0,358.0,2008-08-05 10:06:33,,1,308
+
+
+ 
+  What issues do these patterns address?
+ 
+ 
+  How are they similar?
+ 
+ 
+  How are they different?
+ 
+
+",What are MVP and MVC and what is the difference?,18,1,101561.0,358.0,2008-08-05 10:06:33,,1,414
 165,2120,66,64989,"
  I want to get the MD5 Hash of a string value in SQL Server 2005. I do this with the following command:
-",Convert HashBytes to VarChar,8,0,2382.0,383.0,2008-08-05 11:49:11,,1,105
+
+has_codeblock
+
+ However, this returns a VarBinary instead of a VarChar value. If I attempt to convert
+ 
+  has_codeblock
+ 
+ into a VarChar I get
+ 
+  has_codeblock
+ 
+ instead of
+ 
+  has_codeblock
+ 
+ .
+
+
+ Is there any SQL-based solution?
+
+
+ 
+  
+   Yes
+  
+ 
+
+",Convert HashBytes to VarChar,8,0,2382.0,383.0,2008-08-05 11:49:11,,1,361
 166,2134,86,17218,"
  I have come across a lot of optimization tips which say that you should mark your classes as sealed to get extra performance benefits.
-",Do sealed classes really offer performance Benefits?,11,8,2183.0,380.0,2008-08-05 12:00:28,,1,137
+
+
+ I ran some tests to check the performance differential and found none. Am I doing something wrong? Am I missing the case where sealed classes will give better results?
+
+
+ Has anyone run tests and seen a difference?
+
+
+ Help me learn :)
+",Do sealed classes really offer performance Benefits?,11,8,2183.0,380.0,2008-08-05 12:00:28,,1,375
 167,2158,60,72765,"
  Is there a way to create a JButton with your own button graphic and not just with an image inside the button?
-",Creating a custom button in Java,5,0,2245.0,340.0,2008-08-05 12:15:08,,1,112
+
+
+ If not, is there another way to create a custom button in java?
+
+",Creating a custom button in Java,5,0,2245.0,340.0,2008-08-05 12:15:08,,1,180
 168,2232,567,260975,"
  How do I call shell commands from inside of a Ruby program? How do I then get output from these commands back into Ruby?
-",Calling shell commands from Ruby,14,0,2400.0,25.0,2008-08-05 12:56:52,,1,123
+
+",Calling shell commands from Ruby,14,0,2400.0,25.0,2008-08-05 12:56:52,,1,124
 169,2250,75,64233,"
  I currently use a DataTable to get results from a database which I can use in my code.
-",Datatable vs Dataset,5,1,2258.0,383.0,2008-08-05 13:07:40,,1,89
+
+
+ However, many example on the web show using a DataSet instead and accessing the table(s) through the collections method.
+
+
+ Is there any advantage, performance wise or otherwise, of using DataSets or DataTables as a storage method for SQL results?
+
+",Datatable vs Dataset,5,1,2258.0,383.0,2008-08-05 13:07:40,,1,341
 170,2366,79,10751,"
  
   
@@ -836,10 +3263,11 @@ Any suggestions?
    
   
  
- 
-  I think I understand what 'Maybe Monads' are, but I'm not sure about the other types.
- 
-",Can anyone explain Monads?,0,0,,402.0,2008-08-05 14:16:02,2011-11-08 10:05:31,1,161
+
+
+ I think I understand what 'Maybe Monads' are, but I'm not sure about the other types.
+
+",Can anyone explain Monads?,0,0,,402.0,2008-08-05 14:16:02,2011-11-08 10:05:31,1,159
 171,2483,69,5107,"
  
   
@@ -851,133 +3279,706 @@ Any suggestions?
    
   
  
- 
-  What is actually the difference between these two casts?
- 
- 
-  has_code
- 
- 
-  Normally, they should both be explicit casts to the specified type?
- 
-",Casting: (NewType) vs. Object as NewType,13,3,2487.0,91.0,2008-08-05 15:42:30,2011-12-02 23:43:57,1,249
+
+
+ What is actually the difference between these two casts?
+
+has_codeblock
+
+ Normally, they should both be explicit casts to the specified type?
+
+",Casting: (NewType) vs. Object as NewType,13,3,2487.0,91.0,2008-08-05 15:42:30,2011-12-02 23:43:57,1,243
 172,2488,197,205648,"
  I'm tired of opening Dia and creating a database diagram at the beginning of every project. Is there a tool out there that will let me select specific tables and then create a database diagram for me based on a MySQL database? Preferably it would allow me to edit the diagram afterward since none of the foreign keys are set...
-",Auto Generate Database Diagram MySQL,14,1,2495.0,58.0,2008-08-05 15:45:02,2014-09-15 00:56:04,1,330
+
+
+ Here is what I am picturing diagram-wise (please excuse the horrible data design, I didn't design it. Let's focus on the diagram concept and not on the actual data it represents for this example ;) ):
+
+
+ 
+  
+   see full size diagram
+  
+ 
+
+",Auto Generate Database Diagram MySQL,14,1,2495.0,58.0,2008-08-05 15:45:02,2014-09-15 00:56:04,1,572
 173,2509,94,28722,"
  Test Driven Development has been the rage in the .NET community for the last few years. Recently, I have heard grumblings in the ALT.NET community about BDD. What is it? What makes it different from TDD?
 ",What are the primary differences between TDD and BDD?,12,1,2548.0,303.0,2008-08-05 15:58:08,,1,206
 174,2525,128,87575,"
  My product has several components: ASP.NET, Windows Forms App and Windows Service. 95% or so of the code is written in VB.NET.
-",.NET obfuscation tools/strategy,31,3,8739.0,350.0,2008-08-05 16:20:37,2014-03-06 03:08:35,1,129
+
+
+ For Intellectual Property reasons, I need to obfuscate the code, and until now I have been using a version of dotfuscator which is now over 5 years old. I'm thinking it is time to move to a new generation tool. What I'm looking for is a list of requirements which I should consider when searching for a new obfuscator.
+
+
+ What I know I should look for so far:
+
+
+ 
+  
+   
+    Serialization/De-serialization
+   
+  
+  . In my current solution, I simply tell the tool
+  
+   not
+  
+  to obfuscate any class data members because the pain of not being able to load data which was previously serialized is simply too big.
+ 
+ 
+  
+   
+    Integration with Build Process
+   
+  
+ 
+ 
+  
+   
+    Working with ASP.NET
+   
+  
+  . In the past, I have found this problematic due to changing .dll names (you often have one per page) - which not all tools handle well.
+ 
+
+",.NET obfuscation tools/strategy,31,3,8739.0,350.0,2008-08-05 16:20:37,2014-03-06 03:08:35,1,984
 175,2530,1382,469570,"
  How do you disable
- has_code
+ 
+  has_codeblock
+ 
  in the major browsers for a specific
- has_code
+ 
+  has_codeblock
+ 
  (or
- has_code
+ 
+  has_codeblock
+ 
  )?
-",How do you disable browser Autocomplete on web form field / input tag?,29,9,2531.0,307.0,2008-08-05 16:22:32,,1,98
+
+",How do you disable browser Autocomplete on web form field / input tag?,29,9,2531.0,307.0,2008-08-05 16:22:32,,1,129
 176,2556,81,20336,"
  Should be available to non-U.S. companies, easy to setup, reliable, cheap, customizable, etc. What are your experiences?
 ",What's the best online payment processing solution?,13,1,100758.0,136.0,2008-08-05 16:41:50,2011-09-24 23:44:03,1,123
 177,2647,328,535876,"
  Using
- has_code
+ 
+  has_codeblock
+ 
  , how do I
- has_code
+ 
+  has_codeblock
+ 
  a string so I can access item x?
-",How do I split a string so I can access item x?,32,1,2657.0,383.0,2008-08-05 18:15:47,,1,74
+
+
+ 
+  For example
+ 
+
+
+ Take the string
+ 
+  has_codeblock
+ 
+ . How can I split the string by a space and access the item at Index 1 which should return
+ 
+  has_codeblock
+ 
+ ?
+
+",How do I split a string so I can access item x?,32,1,2657.0,383.0,2008-08-05 18:15:47,,1,269
 178,2658,63,6467,"
  I need to implement version control, even for just the developing I do at home.  I have read about how great Subversion is for the past couple years and was about to dedicate myself to learning this on the side until I heard about Git being the up and coming version control system.
-",Getting started with Version Control,34,1,2668.0,406.0,2008-08-05 18:29:14,,1,285
+
+
+ Given the situation, should I hold off and see which one comes out on top?  What are their relative advantages?
+
+
+ One issue I noticed with Git is there are not many full featured GUIs, which is important to many users on my team.
+
+
+ Also, wouldn't mind suggestions on how to get started with one or the other. (tutorials, etc.)
+
+",Getting started with Version Control,34,1,2668.0,406.0,2008-08-05 18:29:14,,1,618
 179,2767,167,77132,"
  Can anyone recommend any good add-ons/plugins for Microsoft Visual Studio? Freebies are preferred, but if it is worth the cost then that's fine.
-",Recommended add-ons/plugins for Microsoft Visual Studio,77,0,75338.0,396.0,2008-08-05 20:02:33,2012-05-05 13:39:51,1,147
+
+",Recommended add-ons/plugins for Microsoft Visual Studio,77,0,75338.0,396.0,2008-08-05 20:02:33,2012-05-05 13:39:51,1,148
 180,2775,62,37946,"
  Here's what I use:
-",How to remove the time portion of a datetime value (SQL Server)?,6,0,3696991.0,434.0,2008-08-05 20:08:38,,1,21
+
+has_codeblock
+
+ I'm thinking there may be a better and more elegant way.
+
+
+ Requirements:
+
+
+ 
+  It has to be as fast as possible (the less casting, the better).
+ 
+ 
+  The final result has to be a
+  
+   has_codeblock
+  
+  type, not a string.
+ 
+
+",How to remove the time portion of a datetime value (SQL Server)?,6,0,3696991.0,434.0,2008-08-05 20:08:38,,1,266
 181,2785,130,43269,"
  Should you set all the objects to
- has_code
+ 
+  has_codeblock
+ 
  (
- has_code
+ 
+  has_codeblock
+ 
  in VB.NET) once you have finished with them?
-",Setting Objects to Null/Nothing after use in .NET,13,1,2839.0,33.0,2008-08-05 20:14:10,,1,105
+
+
+ I understand that in .NET it is essential to dispose of any instances of objects that implement the
+ 
+  has_codeblock
+ 
+ interface to release some resources although the object can still be something after it is disposed (hence the
+ 
+  has_codeblock
+ 
+ property in forms), so I assume it can still reside in memory or at least in part?
+
+
+ I also know that when an object goes out of scope it is then marked for collection ready for the next pass of the garbage collector (although this may take time).
+
+
+ So with this in mind will setting it to
+ 
+  has_codeblock
+ 
+ speed up the system releasing the memory as it does not have to work out that it is no longer in scope and are they any bad side effects?
+
+
+ MSDN articles never do this in examples and currently I do this as I cannot 
+see the harm. However I have come across a mixture of opinions so any comments are useful.
+
+",Setting Objects to Null/Nothing after use in .NET,13,1,2839.0,33.0,2008-08-05 20:14:10,,1,1004
 182,2826,132,38563,"
  Are there any great plugins out there for Eclipse, either free or otherwise?
-",Do you have any recommended plugins for Eclipse?,51,1,13373.0,396.0,2008-08-05 20:51:11,2013-06-09 12:36:14,1,79
-183,2844,197,380894,"
- has_code
-   int main() {
-    unsigned long long int num = 285212672; //FYI: fits in 29 bits
-    int normalInt = 5;
-    printf(""My number is %d bytes wide and its value is %ul. A normal number is %d.\n"", sizeof(num), num, normalInt);
-    return 0;
-}
-  
- 
 
- 
-  Output:
- 
+",Do you have any recommended plugins for Eclipse?,51,1,13373.0,396.0,2008-08-05 20:51:11,2013-06-09 12:36:14,1,80
+183,2844,197,380894,"has_codeblock
 
- 
-  has_code
- 
+ Output:
 
+has_codeblock
+
+ I assume this unexpected result is from printing the
  
-  I assume this unexpected result is from printing the
-  has_code
-  . How do you
-  has_code
-  an
-  has_code
-  ?
+  has_codeblock
  
-",How do you printf an unsigned long long int(the format specifier for unsigned long long int)?,11,4,2850.0,432.0,2008-08-05 20:59:29,,1,404
+ . How do you
+ 
+  has_codeblock
+ 
+ an
+ 
+  has_codeblock
+ 
+ ?
+
+",How do you printf an unsigned long long int(the format specifier for unsigned long long int)?,11,4,2850.0,432.0,2008-08-05 20:59:29,,1,176
 184,2861,333,132558,"
  I'm thinking of trying
  
   Beautiful Soup
  
  , a Python package for HTML scraping. Are there any other HTML scraping packages I should be looking at? Python is not a requirement, I'm actually interested in hearing about other languages as well.
-",Options for HTML scraping?,40,12,2866.0,116.0,2008-08-05 21:09:11,2013-09-01 08:02:51,1,247
+
+
+ The story so far:
+
+
+ 
+  Python
+  
+   
+    
+     Beautiful Soup
+    
+   
+   
+    
+     lxml
+    
+   
+   
+    
+     HTQL
+    
+   
+   
+    
+     Scrapy
+    
+   
+   
+    
+     Mechanize
+    
+   
+  
+ 
+ 
+  Ruby
+  
+   
+    
+     Nokogiri
+    
+   
+   
+    
+     Hpricot
+    
+   
+   
+    
+     Mechanize
+    
+   
+   
+    
+     scrAPI
+    
+   
+   
+    
+     scRUBYt!
+    
+   
+   
+    
+     wombat
+    
+   
+   
+    
+     Watir
+    
+   
+  
+ 
+ 
+  .NET
+  
+   
+    
+     Html Agility Pack
+    
+   
+   
+    
+     WatiN
+    
+   
+  
+ 
+ 
+  Perl
+  
+   
+    
+     WWW::Mechanize
+    
+   
+   
+    
+     Web-Scraper
+    
+   
+  
+ 
+ 
+  Java
+  
+   
+    
+     Tag Soup
+    
+   
+   
+    
+     HtmlUnit
+    
+   
+   
+    
+     Web-Harvest
+    
+   
+   
+    
+     jARVEST
+    
+   
+   
+    
+     jsoup
+    
+   
+   
+    
+     Jericho HTML Parser
+    
+   
+  
+ 
+ 
+  JavaScript
+  
+   
+    
+     request
+    
+   
+   
+    
+     cheerio
+    
+   
+   
+    
+     artoo
+    
+   
+   
+    
+     node-horseman
+    
+   
+   
+    
+     phantomjs
+    
+   
+  
+ 
+ 
+  PHP
+  
+   
+    
+     htmlSQL
+    
+   
+   
+    
+     PHP Simple HTML DOM Parser
+    
+   
+  
+ 
+ 
+  Most of them
+  
+   
+    
+     Screen-Scraper
+    
+   
+  
+ 
+
+",Options for HTML scraping?,40,12,2866.0,116.0,2008-08-05 21:09:11,2013-09-01 08:02:51,1,1421
 185,2933,151,75218,"
  Python works on multiple platforms and can be used for desktop and web applications, thus I conclude that there is some way to compile it into an executable for Mac, Windows and Linux.
-",How can I create a directly-executable cross-platform GUI app using Python?,8,0,2937.0,1384652.0,2008-08-05 22:26:00,,1,187
+
+
+ The problem being I have no idea where to start or how to write a GUI with it, can anybody shed some light on this and point me in the right direction please?
+",How can I create a directly-executable cross-platform GUI app using Python?,8,0,2937.0,1384652.0,2008-08-05 22:26:00,,1,349
 186,3017,119,209137,"
  By ""generate"", I mean auto-generation of the code necessary for a particuliar selected (set of) variable(s).
-",How to generate getters and setters in Visual Studio?,11,0,3029.0,391.0,2008-08-06 02:15:14,,1,111
+
+
+ But any more explicit explication or comment on good practice is welcome.
+
+",How to generate getters and setters in Visual Studio?,11,0,3029.0,391.0,2008-08-06 02:15:14,,1,189
 187,3021,91,85115,"
  One of the topics that seems to come up regularly on mailing lists and online discussions is the merits (or lack thereof) of doing a Computer Science Degree. An argument that seems to come up time and again for the negative party is that they have been coding for some number of years and they have never used recursion.
-",What is recursion and when should I use it?,40,2,,358.0,2008-08-06 02:29:51,,1,323
+
+
+ So the question is:
+
+
+ 
+  What is recursion?
+ 
+ 
+  When would I use recursion?
+ 
+ 
+  Why don't people use recursion?
+ 
+",What is recursion and when should I use it?,40,2,,358.0,2008-08-06 02:29:51,,1,445
 188,3033,52,49060,"
  If I have a Perl hash with a bunch of (key, value) pairs, what is the preferred method of iterating through all the keys?  I have heard that using
- has_code
+ 
+  has_codeblock
+ 
  may in some way have unintended side effects.  So, is that true, and is one of the two following methods best, or is there a better way?
-",What's the safest way to iterate through the keys of a Perl hash?,9,0,3360.0,219.0,2008-08-06 02:53:13,,1,297
+
+has_codeblock
+",What's the safest way to iterate through the keys of a Perl hash?,9,0,3360.0,219.0,2008-08-06 02:53:13,,1,322
 189,3058,851,204273,"
  Inversion of Control (or IoC) can be quite confusing when it is first encountered.
-",What is Inversion of Control?,25,3,3140.0,358.0,2008-08-06 03:35:27,,1,85
+
+
+ 
+  What is it?
+ 
+ 
+  What problems does it solve?
+ 
+ 
+  When is it appropriate and when not?
+ 
+",What is Inversion of Control?,25,3,3140.0,358.0,2008-08-06 03:35:27,,1,183
 190,3061,618,232084,"
  What is the best way to go about calling a function given a string with the function's name in a Python program.  For example, let's say that I have a module
- has_code
+ 
+  has_codeblock
+ 
  , and I have a string whose contents are
- has_code
+ 
+  has_codeblock
+ 
  . What is the best way to go about calling
- has_code
+ 
+  has_codeblock
+ 
  ?
-",Calling a function of a module from a string with the function's name in Python,8,0,3071.0,121.0,2008-08-06 03:36:08,,1,279
+
+
+ I need to get the return value of the function, which is why I don't just use
+ 
+  has_codeblock
+ 
+ . I figured out how to do it by using
+ 
+  has_codeblock
+ 
+ to define a temp function that returns the result of that function call, but I'm hoping that there is a more elegant way to do this.
+
+",Calling a function of a module from a string with the function's name in Python,8,0,3071.0,121.0,2008-08-06 03:36:08,,1,604
 191,3088,327,100921,"
  
   Original Question
  
-",Best ways to teach a beginner to program?,87,3,,92.0,2008-08-06 05:01:16,2011-09-14 17:54:00,1,25
+
+
+ I am currently engaged in teaching my brother to program.  He is a total beginner, but very smart. (And he actually wants to learn).  I've noticed that some of our sessions have gotten bogged down in minor details, and I don't feel I've been very organized. (
+ 
+  But the answers to this post have helped a lot.
+ 
+ )
+
+
+ What can I do better to teach him effectively?  Is there a logical order that I can use to run through concept by concept?  Are there complexities I should avoid till later?
+
+
+ The language we are working with is
+ 
+  Python
+ 
+ , but advice in any language is welcome.
+
+
+ 
+  
+   How to Help
+  
+ 
+ 
+  If you have good ones please add the following in your answer:
+ 
+ 
+  
+   Beginner Exercises and Project Ideas
+  
+  
+   Resources for teaching beginners
+  
+  
+   Screencasts / blog posts / free e-books
+  
+  
+   Print books that are good for beginners
+  
+ 
+ 
+  Please describe the resource
+  
+   with a link to it
+  
+  so I can take a look.  I want everyone to know that I have definitely been using some of these ideas.  Your submissions will be aggregated in this post.
+ 
+ 
+  
+   
+    Online Resources
+   
+   for teaching beginners:
+  
+  
+   
+    
+     A Gentle Introduction to Programming Using Python
+    
+   
+   
+    
+     How to Think Like a Computer Scientist
+    
+   
+   
+    
+     Alice: a 3d program for beginners
+    
+   
+   
+    
+     Scratch (A system to develop programming skills)
+    
+   
+   
+    
+     How To Design Programs
+    
+   
+   
+    
+     Structure and Interpretation of Computer Programs
+    
+   
+   
+    
+     Learn To Program
+    
+   
+   
+    
+     Robert Read's How To Be a Programmer
+    
+   
+   
+    
+     Microsoft XNA
+    
+   
+   
+    
+     Spawning the Next Generation of Hackers
+    
+   
+   
+    
+     
+      COMP1917 Higher Computing
+     
+     lectures by Richard Buckland
+    
+    (requires iTunes)
+   
+   
+    
+     Dive into Python
+    
+   
+   
+    
+     Python Wikibook
+    
+   
+   
+    
+     Project Euler
+    
+    - sample problems (mostly mathematical)
+   
+   
+    
+     pygame
+    
+    - an easy python library for creating games
+   
+   
+    
+     Invent Your Own Computer Games With Python
+    
+   
+   
+    
+     Foundations of Programming
+    
+    for a next step beyond basics.
+   
+   
+    
+     Squeak by Example
+    
+   
+   
+    
+     Snake Wrangling For Kids
+    
+    (It's not just for kids!)
+   
+  
+  
+   
+    
+     Recommended Print Books
+    
+    for teaching beginners
+   
+   
+    
+     
+      Accelerated C++
+     
+    
+    
+     
+      Python Programming for the Absolute Beginner
+     
+    
+    
+     
+      Code by Charles Petzold
+     
+    
+    
+     
+      Python Programming: An Introduction to Computer Science 2nd Edition
+     
+    
+   
+  
+ 
+",Best ways to teach a beginner to program?,87,3,,92.0,2008-08-06 05:01:16,2011-09-14 17:54:00,1,2753
 192,3150,67,49748,"
  I'm having trouble figuring out how to get the testing framework set up and usable in Visual Studio 2008 for C++ presumably with the built-in unit testing suite.
-",How to set up unit testing for Visual Studio C++,12,3,35963.0,370.0,2008-08-06 07:57:50,,1,164
+
+
+ Any links or tutorials would be appreciated.
+
+",How to set up unit testing for Visual Studio C++,12,3,35963.0,370.0,2008-08-06 07:57:50,,1,213
 193,3255,552,234674,"
  Most people with a degree in CS will certainly know what
  
@@ -992,30 +3993,95 @@ It helps us to measure how (in)efficient an algorithm really is and if you know 
  
   1
  
-","Big O, how do you calculate/approximate it?",22,6,4852666.0,46.0,2008-08-06 10:18:16,,1,330
+
+
+ But I'm curious, how do
+ 
+  you
+ 
+ calculate or approximate the complexity of your algorithms?
+
+
+ 
+  1
+ 
+ 
+  but as they say, don't overdo it,
+  
+   premature optimization is the root of all evil
+  
+  , and optimization without a justified cause should deserve that name as well.
+ 
+
+","Big O, how do you calculate/approximate it?",22,6,4852666.0,46.0,2008-08-06 10:18:16,,1,616
 194,3284,117,58003,"
  I've been working with
  
   providers
  
  a fair bit lately, and I came across an interesting situation where I wanted to have an abstract class that had an abstract static method. I read a few posts on the topic, and it sort of made sense, but is there a nice clear explanation?
-",Why can't I have abstract static methods in C#?,8,4,3294.0,493.0,2008-08-06 11:04:33,,1,280
+
+",Why can't I have abstract static methods in C#?,8,4,3294.0,493.0,2008-08-06 11:04:33,,1,281
 195,3319,58,99194,"
  How can I set the CSS background color of an HTML element using JavaScript?
-",CSS background color in JavaScript,13,0,3321.0,383.0,2008-08-06 12:23:22,,1,78
+
+",CSS background color in JavaScript,13,0,3321.0,383.0,2008-08-06 12:23:22,,1,79
 196,3362,52,95576,"
  Here on Stack Overflow, I would like to be able to use the
  
   Tab
  
  key within the WMD editor text box to tab over four spaces. The way it is now, the Tab key jumps my cursor down to the Tags.
-",Capturing TAB key in text box,6,2,13130.0,357.0,2008-08-06 13:27:05,2011-02-10 20:27:58,1,197
+
+
+ Vote for this feature at UserVoice:
+ 
+  http://stackoverflow.uservoice.com/pages/general/suggestions/15889
+ 
+
+
+ Is there some JavaScript that will capture the Tab key in the text box before it bubbles up to the UI?
+
+
+ I understand some browsers (i.e. FireFox) may not allow this. How about a custom key-combo like
+ 
+  Shift
+ 
+ +
+ 
+  Tab
+ 
+ , or
+ 
+  Ctrl
+ 
+ +
+ 
+  Q
+ 
+ ?
+
+",Capturing TAB key in text box,6,2,13130.0,357.0,2008-08-06 13:27:05,2011-02-10 20:27:58,1,571
 197,3432,193,161100,"
  I know that you can insert multiple rows at once, is there a way to update multiple rows at once (as in, in one query) in MySQL?
-",Multiple Updates in MySQL,15,0,3466.0,1384652.0,2008-08-06 14:12:09,,1,131
+
+
+ Edit:
+For example I have the following
+
+has_codeblock
+
+ I want to combine all the following Updates into one query
+
+has_codeblock",Multiple Updates in MySQL,15,0,3466.0,1384652.0,2008-08-06 14:12:09,,1,264
 198,3452,247,307521,"
  How can I connect to a remote SQL server using Mac OS X? I don't really need a GUI, but it would be nice to have for the color coding and resultset grid. I'd rather not have to use a VM.
-",SQL Client for Mac OS X that works with MS SQL Server,25,8,34153.0,437.0,2008-08-06 14:25:17,2012-07-03 13:47:17,1,189
+
+
+ Is there a SQL client for Mac OS X that works with MS SQL Server?
+
+",SQL Client for Mac OS X that works with MS SQL Server,25,8,34153.0,437.0,2008-08-06 14:25:17,2012-07-03 13:47:17,1,259
 199,3585,79,96870,"
  I want to create my Rails application with MySQL, because I like it so much. How can I do that in the latest version of Rails instead of the default SQLite?
-",Create a new Ruby on Rails application using MySQL instead of SQLite,13,0,3601.0,124.0,2008-08-06 15:50:49,,1,159
+
+",Create a new Ruby on Rails application using MySQL instead of SQLite,13,0,3601.0,124.0,2008-08-06 15:50:49,,1,160

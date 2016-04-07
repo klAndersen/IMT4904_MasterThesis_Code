@@ -1,7 +1,7 @@
 import abc
 import html
 import html.parser
-from lxml import etree
+
 from bs4 import BeautifulSoup
 from html.parser import HTMLParser
 
@@ -63,7 +63,7 @@ def strip_tags(html_data):
         stripper.feed(html_data)
         return stripper.get_data()
     except TypeError as error:
-        # print html
+        # print html_data
         print("Error occurred in htmlstripper.strip_tags", error)
     return None
 
@@ -72,38 +72,28 @@ def set_has_codeblock(html_data=str, encoding='utf-8'):
     """
     Replaces the content of the <code> tag (if exists) with the value 'has_codeblock'
 
-    Since Questions can contain varying size of code examples, the content can create
-    a lot of bad features. To account for this, the code examples are replaced with a
-    single value indicating that this question contains one or more code examples.
-    This is done by converting the HTML into XML and looking for the <code> tag.
-
-    If the question contains the <code> tag, the value (the text) is replaced by
-    a 'has_codeblock' value. To account for bad HTML/invalid HTML tags, BeatifulSoup
-    is used to add end tags for those missing it.
+    Questions can be of both different length and contain more than one question. In
+    addition, the question can have one or more code examples added to it ```<code>```.
+    In this function, BeautifulSoup and ```BeautifulSoup.find_all()``` is used to replace
+    the content of all <code> elements. This way, instead of having a large code sample,
+    you only get one word/term; ```has_codeblock```.
 
     Arguments:
         html_data (str): The HTML text to search and replace <code> text
         encoding (str, default='utf-8'): Encoding for the HTML string
 
     Returns:
-        str: HTML string where the <code> tag contains a 'has_codeblock' value
+        str: html_data with where <code> value has been replaced by 'has_codeblock'
 
     See:
     ```constants.QUESTION_HAS_CODE_KEY```
     """
     try:
         find = "code"
-        # account for bad html tags
-        bsoup = BeautifulSoup(html_data, 'lxml-xml')
-        html_data = bsoup.prettify(encoding)
-        root = etree.fromstring(html_data)
-        for child in root.iter(find):
-            child.text = QUESTION_HAS_CODE_KEY
-        return etree.tostring(root, encoding="unicode")
+        bsoup = BeautifulSoup(html_data, "html.parser")
+        for child in bsoup.find_all(find):
+            child.string = QUESTION_HAS_CODE_KEY
+        return bsoup.prettify()
     except TypeError as error:
         print("TypeError in htmlstripper.set_has_codeblock", error)
-    except etree.XMLSyntaxError as error:
-        # print html
-        print("XMLSyntaxError in htmlstripper.set_has_codeblock", error)
     return None
-

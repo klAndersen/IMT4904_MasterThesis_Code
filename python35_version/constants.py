@@ -36,7 +36,7 @@ Column identifier/key: length
 The length of the questions text
 '''
 
-QUESTION_HAS_CODE_KEY = "has_code"
+QUESTION_HAS_CODE_KEY = "has_codeblock"
 '''
 Value used to replace the code sample found in the <code> tags.
 '''

@@ -43,7 +43,7 @@ def load_training_data(file_location=str, load_from_database=False, limit=1000):
     svm_file = file_location + ".dat"
     csv_file = file_location + ".csv"
     if load_from_database:
-        comment = u"label: (-1: Bad question, +1: Good question); features: (term_id, length)"
+        comment = u"label: (-1: Bad question, +1: Good question); features: (term_id, frequency)"
         MySQLDatabase().set_vote_value_params()
         data = MySQLDatabase().retrieve_training_data(limit)
         # create a term-document matrix
@@ -53,7 +53,7 @@ def load_training_data(file_location=str, load_from_database=False, limit=1000):
         dump_svmlight_file(td_matrix, data[CLASS_LABEL_KEY], f=svm_file, comment=comment)
     return DataFrame.from_csv(csv_file), load_svmlight_file(svm_file)
 
-db_limit = 100  # 10 # 100  # 1000  # 10000
+db_limit = 10000  # 10 # 100  # 1000  # 10000
 file_path = "./training_data/"
 filename = file_path + "training_data_" + str(db_limit)
 
@@ -62,7 +62,7 @@ so_dataframe, (training_data, class_labels) = load_training_data(filename, False
 # term weighting and normalization
 tfidf_transformer = TfidfTransformer().fit_transform(training_data)
 
-# exit(0)
+exit(0)
 
 # TODO: Remove all code below; Update to match current scikit-learn and base on my dataset
 
