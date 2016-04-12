@@ -8,6 +8,11 @@
             <set />
           </value>
         </entry>
+        <entry key="/Python Console">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="/a.dummy">
           <value>
             <set />
@@ -128,6 +133,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/python35_version/text_processor.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/python35_version/training_data.dat">
           <value>
             <set />
@@ -163,12 +173,47 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/Feature extraction/common_vectorizer.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/Feature extraction/customizing_vectorizer_classes.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/Feature extraction/decoding_text_files.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/Feature extraction/dictvectorizer.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../scikit-learn tutorials/Feature extraction/limits_bow_representations.py">
           <value>
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/Feature extraction/load_from_dict.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../scikit-learn tutorials/Feature extraction/tfidf_term_weighting.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/Feature extraction/vector_large_corpus_hashing.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/data_science_python/data_science_python.py">
           <value>
             <set />
           </value>
@@ -198,12 +243,87 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/statistical_learning.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../testP3_mysql/htmlstripper.py">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/../testP3_mysql/test.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/files/ham">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/files/sample.1.txt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/files/sample.txt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/files/so.t">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/files/spam">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/files/train.dat">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/files/train.train">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/files/training_data_1000.dat">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/files/training_data_10000.dat">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/jamescpoole.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/libsvm/svmutil.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/test_libsvm.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/test_sklearn.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../test_libsvm/test_so_data.py">
           <value>
             <set />
           </value>
