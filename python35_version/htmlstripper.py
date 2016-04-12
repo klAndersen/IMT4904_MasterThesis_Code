@@ -45,7 +45,7 @@ class HTMLStripper(HTMLParser):
 
 def strip_tags(html_data):
     """
-    Returns a string without HTML elements
+    Returns a string without HTML elements and newlines
 
     Arguments:
         html_data (str): HTML text to convert to string
@@ -56,19 +56,22 @@ def strip_tags(html_data):
     """
     try:
         html_data = html.unescape(html_data)
-        stripper = HTMLStripper()
         html_data = set_has_codeblock(html_data)
         if html_data is None:
             return None
+        stripper = HTMLStripper()
         stripper.feed(html_data)
-        return stripper.get_data()
+        stripped_html = stripper.get_data()
+        # remove newlines from string (since all posts starts/ends with <p>)
+        stripped_html = ' '.join(stripped_html.split())
+        return stripped_html
     except TypeError as error:
         # print html_data
         print("Error occurred in htmlstripper.strip_tags", error)
     return None
 
 
-def set_has_codeblock(html_data=str, encoding='utf-8'):
+def set_has_codeblock(html_data=str):
     """
     Replaces the content of the <code> tag (if exists) with the value 'has_codeblock'
 
@@ -80,10 +83,9 @@ def set_has_codeblock(html_data=str, encoding='utf-8'):
 
     Arguments:
         html_data (str): The HTML text to search and replace <code> text
-        encoding (str, default='utf-8'): Encoding for the HTML string
 
     Returns:
-        str: html_data with where <code> value has been replaced by 'has_codeblock'
+        str: Returns the processed ```html_data```
 
     See:
     ```constants.QUESTION_HAS_CODE_KEY```
