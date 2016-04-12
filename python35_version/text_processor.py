@@ -1,11 +1,10 @@
 import abc
 import html
+import constants
 import html.parser
 
 from bs4 import BeautifulSoup
 from html.parser import HTMLParser
-
-from constants import QUESTION_HAS_CODE_KEY
 
 
 class HTMLStripper(HTMLParser):
@@ -64,6 +63,8 @@ def strip_tags(html_data):
         stripped_html = stripper.get_data()
         # remove newlines from string (since all posts starts/ends with <p>)
         stripped_html = ' '.join(stripped_html.split())
+        stripped_html = set_has_hexadecimal(stripped_html)
+        stripped_html = set_has_numeric(stripped_html)
         return stripped_html
     except TypeError as error:
         # print html_data
@@ -94,8 +95,65 @@ def set_has_codeblock(html_data=str):
         find = "code"
         bsoup = BeautifulSoup(html_data, "html.parser")
         for child in bsoup.find_all(find):
-            child.string = QUESTION_HAS_CODE_KEY
+            child.string = constants.QUESTION_HAS_CODEBLOCK_KEY
         return bsoup.prettify()
     except TypeError as error:
         print("TypeError in htmlstripper.set_has_codeblock", error)
     return None
+
+
+def set_has_numeric(text=str):
+    """
+    Checks the passed text to see if it contains numeric values
+
+    Arguments:
+        text (str): Text to remove numeric values from
+
+    Returns:
+        str: Processed string (if numeric values), else passed value
+
+    """
+    reg_ex = constants.NUMERIC_REG_EX_PATTERN
+    if reg_ex.search(text) is None:
+        return text
+    return reg_ex.sub(constants.QUESTION_HAS_NUMERIC_KEY, text)
+
+
+def set_has_hexadecimal(text=str):
+    """
+    Checks the passed text to see if it contains numeric values
+
+    Arguments:
+        text (str): Text to remove hexadecimal values from
+
+    Returns:
+        str: Processed string (if hexadecimal values), else passed value
+
+    """
+    reg_ex = constants.HEXADECIMAL_REG_EX_PATTERN
+    if reg_ex.search(text) is None:
+        return text
+    return reg_ex.sub(constants.QUESTION_HAS_HEXADECIMAL_KEY, text)
+
+
+test_text = ('I want to extract hexadecimal number from a string. For example, the string is: '
+             'OxDB52 Message 1 of orderid 1504505254 for number +447123456789 rejected by Operator. '
+             'I want to extract hexadecimal OxDB52 part. I know it can be done checking for 0x in string. '
+             'But is there any cool pythonic way to extract hexadecimal number from string?')
+
+test_text1 = 'For example, the string is 0xDB52 Message 0x124A orderid 1504505254 ' \
+             'for number 0xae45 rejected by Operator.'.lower()
+
+test_text2 = '0xDB52 Message 0x124A orderid 1504505254 for number 0xae45'
+
+test_text3 = 'For example, the string is OxDB52 Message 1 of orderid 1504505254 ' \
+             'for number +447123456789 rejected by Operator. 100x0aef'
+
+set_has_numeric(set_has_hexadecimal(test_text))
+set_has_numeric(test_text1)
+set_has_numeric(test_text2)
+print(set_has_numeric("00000000000000000000000000001010"))
+
+# p = re.compile(r'\d+')
+# print(set_has_hexadecimal(p.sub(hexrepl, test_text)))
+

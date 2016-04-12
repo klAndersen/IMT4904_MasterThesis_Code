@@ -3,7 +3,7 @@ import pandas
 import mysql.connector as mysql
 from mysql.connector import errorcode
 
-import htmlstripper
+import text_processor
 import dbconfig as config
 from constants import QUESTION_TEXT_KEY, CLASS_LABEL_KEY, QUESTION_LENGTH_KEY
 
@@ -179,7 +179,7 @@ class MySQLDatabase:
         invalid_question_list = list()
         for index in range(len(text_data)):
             temp_value = text_data.get_value(index=index, col=column_name)
-            new_value = htmlstripper.strip_tags(temp_value)
+            new_value = text_processor.strip_tags(temp_value)
             if new_value is None:
                 new_value = temp_value
                 invalid_question_list.append(index)
