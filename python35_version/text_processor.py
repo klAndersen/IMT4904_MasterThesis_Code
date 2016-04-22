@@ -135,25 +135,13 @@ def set_has_hexadecimal(text=str):
         return text
     return reg_ex.sub(constants.QUESTION_HAS_HEXADECIMAL_KEY, text)
 
+# TODO: Remove this comment
+'''
+ issues with a lot of trash data
+ added regex to remove it from string
+ had problems with it removing...
+  numeric data inside text (non-integer/decimals
+  data before/after x
+  ignoring hex even though its a clear hex
 
-test_text = ('I want to extract hexadecimal number from a string. For example, the string is: '
-             'OxDB52 Message 1 of orderid 1504505254 for number +447123456789 rejected by Operator. '
-             'I want to extract hexadecimal OxDB52 part. I know it can be done checking for 0x in string. '
-             'But is there any cool pythonic way to extract hexadecimal number from string?')
-
-test_text1 = 'For example, the string is 0xDB52 Message 0x124A orderid 1504505254 ' \
-             'for number 0xae45 rejected by Operator.'.lower()
-
-test_text2 = '0xDB52 Message 0x124A orderid 1504505254 for number 0xae45'
-
-test_text3 = 'For example, the string is OxDB52 Message 1 of orderid 1504505254 ' \
-             'for number +447123456789 rejected by Operator. 100x0aef'
-
-set_has_numeric(set_has_hexadecimal(test_text))
-set_has_numeric(test_text1)
-set_has_numeric(test_text2)
-print(set_has_numeric("00000000000000000000000000001010"))
-
-# p = re.compile(r'\d+')
-# print(set_has_hexadecimal(p.sub(hexrepl, test_text)))
-
+'''

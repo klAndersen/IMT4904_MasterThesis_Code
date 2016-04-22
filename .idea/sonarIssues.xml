@@ -133,6 +133,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/python35_version/non_eng_words_only.txt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/python35_version/text_processor.py">
           <value>
             <set />
@@ -218,7 +223,17 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/example_files/grid_search_text_feature_extraction.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../scikit-learn tutorials/example_files/plot_out_of_core_classification.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/example_files/test">
           <value>
             <set />
           </value>
@@ -244,6 +259,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/../scikit-learn tutorials/statistical_learning.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../scikit-learn tutorials/test_data.py">
           <value>
             <set />
           </value>
@@ -324,6 +344,16 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/../test_libsvm/test_so_data.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../untitled1/test_data.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../venv/lib/python3.5/site-packages/nltk/corpus/__init__.py">
           <value>
             <set />
           </value>
