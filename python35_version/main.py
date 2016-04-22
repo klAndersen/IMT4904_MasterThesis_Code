@@ -62,7 +62,7 @@ def create_default_grid_parameters():
     Creates a dictionary containing parameters to use in GridSearch, where all values are set
     """
     grid_parameters = {
-        'vect__min_df': (0.01, 0.025, 0.05, 0.075, 0.1),
+        'vect__min_df': (0.01, 0.025, 0.05, 0.075, 1),
         'vect__max_df': (0.25, 0.5, 0.75, 1.0),
         # 'vect__max_features': (None, 5000, 10000, 50000),
         # 'vect__ngram_range': ((1, 1), (1, 2)),  # unigrams or bigrams
@@ -160,8 +160,8 @@ for question in so_dataframe[QUESTION_TEXT_KEY]:
 
 corpus = so_dataframe.loc[:, QUESTION_TEXT_KEY]
 
-pickle_exists = False
-create_model_from_all_data = False
+pickle_exists = True
+create_model_from_all_data = True
 # set paths for model retrieval
 mod_all_data_path = FILEPATH_MODELS + "svm_detector_all_" + str(db_limit) + ".pkl"
 mod_split_data_path = FILEPATH_MODELS + "svm_detector_split_" + str(db_limit) + ".pkl"
