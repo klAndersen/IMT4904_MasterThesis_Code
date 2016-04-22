@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/MasterThesis.iml" filepath="$PROJECT_DIR$/.idea/MasterThesis.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../scikit-learn tutorials/.idea/scikit-learn tutorials.iml" filepath="$PROJECT_DIR$/../scikit-learn tutorials/.idea/scikit-learn tutorials.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../test_libsvm/.idea/test_libsvm.iml" filepath="$PROJECT_DIR$/../test_libsvm/.idea/test_libsvm.iml" />
     </modules>
   </component>
 </project>
