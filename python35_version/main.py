@@ -151,7 +151,7 @@ current_time(time_start, "Program started")
 
 db_limit = DATABASE_LIMIT.get('10000')
 filename = FILEPATH_TRAINING_DATA + str(db_limit)
-so_dataframe, (training_data, class_labels) = load_training_data(filename, True, db_limit)
+so_dataframe, (training_data, class_labels) = load_training_data(filename, False, db_limit)
 
 counter = 0
 for question in so_dataframe[QUESTION_TEXT_KEY]:
@@ -161,7 +161,7 @@ for question in so_dataframe[QUESTION_TEXT_KEY]:
 corpus = so_dataframe.loc[:, QUESTION_TEXT_KEY]
 
 pickle_exists = False
-create_model_from_all_data = True
+create_model_from_all_data = False
 # set paths for model retrieval
 mod_all_data_path = FILEPATH_MODELS + "svm_detector_all_" + str(db_limit) + ".pkl"
 mod_split_data_path = FILEPATH_MODELS + "svm_detector_split_" + str(db_limit) + ".pkl"
