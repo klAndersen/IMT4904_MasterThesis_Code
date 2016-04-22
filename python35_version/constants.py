@@ -1,8 +1,26 @@
-from re import compile, IGNORECASE, VERBOSE
-
 """
 File containing constants used in more than one place
 """
+
+from re import compile, IGNORECASE, VERBOSE
+
+DATABASE_LIMIT = {
+    '10': 10,
+    '100': 100,
+    '1000': 1000,
+    '10000': 10000
+}
+
+FILEPATH_TRAINING_DATA = "./training_data/training_data_"
+"""
+The path to where the training data can be found
+"""
+
+FILEPATH_MODELS = "./pickle_models/"
+"""
+The path to were the produced models can be found
+"""
+
 QUESTION_VOTES_KEY = "Score"
 '''
 Column identifier/key: Score
