@@ -2,21 +2,22 @@
 Main entry file, all user interaction is handled through this class
 """
 
+# python imports
 import nltk
 import pickle
 from time import time, ctime
 from pandas import DataFrame
-
-from python35_version.mysqldatabase import MySQLDatabase
-from constants import CLASS_LABEL_KEY, QUESTION_TEXT_KEY, FILEPATH_TRAINING_DATA, FILEPATH_MODELS, DATABASE_LIMIT
-
+# scikit-learn imports
 from sklearn.pipeline import Pipeline
 from sklearn.externals.joblib import Memory
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.datasets import dump_svmlight_file, load_svmlight_file
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, TfidfTransformer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+# project imports
+from python35_version.mysqldatabase import MySQLDatabase
+from constants import CLASS_LABEL_KEY, QUESTION_TEXT_KEY, FILEPATH_TRAINING_DATA, FILEPATH_MODELS, DATABASE_LIMIT
 
 
 label_test = None
@@ -150,7 +151,7 @@ current_time(time_start, "Program started")
 
 db_limit = DATABASE_LIMIT.get('10000')
 filename = FILEPATH_TRAINING_DATA + str(db_limit)
-so_dataframe, (training_data, class_labels) = load_training_data(filename, False, db_limit)
+so_dataframe, (training_data, class_labels) = load_training_data(filename, True, db_limit)
 
 counter = 0
 for question in so_dataframe[QUESTION_TEXT_KEY]:
@@ -161,12 +162,12 @@ corpus = so_dataframe.loc[:, QUESTION_TEXT_KEY]
 
 pickle_exists = False
 create_model_from_all_data = True
+# set paths for model retrieval
+mod_all_data_path = FILEPATH_MODELS + "svm_detector_all_" + str(db_limit) + ".pkl"
+mod_split_data_path = FILEPATH_MODELS + "svm_detector_split_" + str(db_limit) + ".pkl"
 
 if __name__ == "__main__":
     if pickle_exists:
-        # set paths and load model(s)
-        mod_all_data_path = FILEPATH_MODELS + 'svm_detector_all.pkl'
-        mod_split_data_path = FILEPATH_MODELS + 'svm_detector_split.pkl'
         svm_detector_all = load_pickle_model(mod_all_data_path)
         svm_detector_split = load_pickle_model(mod_split_data_path)
     else:
@@ -180,6 +181,7 @@ if __name__ == "__main__":
         # what data should the model be based on?
         if create_model_from_all_data:
             svm_detector_all = grid_svm.fit(corpus, class_labels)
+            dump_pickle_model(svm_detector_all, mod_all_data_path)
         else:
             # split all the training data into both training and test data (test data = 20%)
             question_train, question_test, label_train, label_test = train_test_split(corpus,
@@ -187,6 +189,7 @@ if __name__ == "__main__":
                                                                                       test_size=0.2,
                                                                                       random_state=0)
             svm_detector_split = grid_svm.fit(question_train, label_train)
+            dump_pickle_model(svm_detector_split, mod_split_data_path)
         # set end time
         time_start = time()
         current_time(time_start, "Finished")
