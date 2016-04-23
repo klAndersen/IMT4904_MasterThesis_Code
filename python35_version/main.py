@@ -20,8 +20,6 @@ from python35_version.mysqldatabase import MySQLDatabase
 from constants import CLASS_LABEL_KEY, QUESTION_TEXT_KEY, FILEPATH_TRAINING_DATA, FILEPATH_MODELS, DATABASE_LIMIT
 
 
-label_test = None
-question_test = None
 svm_detector_all = None
 svm_detector_split = None
 mem = Memory("./mem_cache")
@@ -148,11 +146,11 @@ def load_training_data(file_location=str, load_from_database=False, limit=1000):
 
 time_start = time()
 current_time(time_start, "Program started")
-
+# retrieve data to use
 db_limit = DATABASE_LIMIT.get('10000')
 filename = FILEPATH_TRAINING_DATA + str(db_limit)
 so_dataframe, (training_data, class_labels) = load_training_data(filename, False, db_limit)
-
+# stem and update the data in the pandas.dataframe
 counter = 0
 for question in so_dataframe[QUESTION_TEXT_KEY]:
     so_dataframe.loc[counter, QUESTION_TEXT_KEY] = stem_training_data(question)
@@ -161,10 +159,15 @@ for question in so_dataframe[QUESTION_TEXT_KEY]:
 corpus = so_dataframe.loc[:, QUESTION_TEXT_KEY]
 
 pickle_exists = True
-create_model_from_all_data = True
+create_model_from_all_data = False
 # set paths for model retrieval
 mod_all_data_path = FILEPATH_MODELS + "svm_detector_all_" + str(db_limit) + ".pkl"
 mod_split_data_path = FILEPATH_MODELS + "svm_detector_split_" + str(db_limit) + ".pkl"
+# split all the training data into both training and test data (test data = 20%)
+question_train, question_test, label_train, label_test = train_test_split(corpus,
+                                                                          class_labels,
+                                                                          test_size=0.2,
+                                                                          random_state=0)
 
 if __name__ == "__main__":
     if pickle_exists:
@@ -183,11 +186,6 @@ if __name__ == "__main__":
             svm_detector_all = grid_svm.fit(corpus, class_labels)
             dump_pickle_model(svm_detector_all, mod_all_data_path)
         else:
-            # split all the training data into both training and test data (test data = 20%)
-            question_train, question_test, label_train, label_test = train_test_split(corpus,
-                                                                                      class_labels,
-                                                                                      test_size=0.2,
-                                                                                      random_state=0)
             svm_detector_split = grid_svm.fit(question_train, label_train)
             dump_pickle_model(svm_detector_split, mod_split_data_path)
         # set end time
@@ -206,3 +204,7 @@ if __name__ == "__main__":
         print(svm_detector_split.best_params_)
         print(svm_detector_split.best_estimator_)
         print('\n')
+        predict_split = svm_detector_split.predict(question_test)
+        print(confusion_matrix(label_test, predict_split))
+        print(accuracy_score(label_test, predict_split))
+        print(classification_report(label_test, predict_split))
