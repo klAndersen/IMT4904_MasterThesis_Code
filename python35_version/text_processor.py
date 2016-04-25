@@ -42,12 +42,13 @@ class HTMLStripper(HTMLParser):
         pass
 
 
-def strip_tags(html_data):
+def strip_tags(html_data, clean_dataset=True):
     """
     Returns a string without HTML elements and newlines
 
     Arguments:
         html_data (str): HTML text to convert to string
+        clean_dataset (bool): Should questions be cleaned (e.g. remove code samples, hexadecimals, numbers, etc)?
 
     Returns:
         str: String without HTML elements || None (if error)
@@ -55,7 +56,8 @@ def strip_tags(html_data):
     """
     try:
         html_data = html.unescape(html_data)
-        html_data = set_has_codeblock(html_data)
+        if clean_dataset:
+            html_data = set_has_codeblock(html_data)
         if html_data is None:
             return None
         stripper = HTMLStripper()
@@ -63,8 +65,9 @@ def strip_tags(html_data):
         stripped_html = stripper.get_data()
         # remove newlines from string (since all posts starts/ends with <p>)
         stripped_html = ' '.join(stripped_html.split())
-        stripped_html = set_has_hexadecimal(stripped_html)
-        stripped_html = set_has_numeric(stripped_html)
+        if clean_dataset:
+            stripped_html = set_has_hexadecimal(stripped_html)
+            stripped_html = set_has_numeric(stripped_html)
         return stripped_html
     except TypeError as error:
         # print html_data

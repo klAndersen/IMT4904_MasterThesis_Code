@@ -109,7 +109,7 @@ def stem_training_data(stemming_data=str):
 
 
 @mem.cache
-def load_training_data(file_location=str, load_from_database=False, limit=1000):
+def load_training_data(file_location=str, load_from_database=False, limit=int(1000), clean_dataset=True):
     """
     If ```load_from_database``` is True, retrieves and stores data from database to file.
 
@@ -117,6 +117,7 @@ def load_training_data(file_location=str, load_from_database=False, limit=1000):
         file_location (str): Path + filename of libsvm file to save/load (e.g. 'training_data')
         load_from_database (bool): Should data be retrieved from database?
         limit (int): Amount of records to retrieve from database (default=1000)
+        clean_dataset (bool): Should questions be cleaned (e.g. remove code samples, hexadecimals, numbers, etc)?
 
     Returns:
          (pandas.DataFrame.from_csv, sklearn.datasets.load_svmlight_file):
@@ -135,7 +136,7 @@ def load_training_data(file_location=str, load_from_database=False, limit=1000):
     if load_from_database:
         comment = u"label: (-1: Bad question, +1: Good question); features: (term_id, frequency)"
         MySQLDatabase().set_vote_value_params()
-        data = MySQLDatabase().retrieve_training_data(limit)
+        data = MySQLDatabase().retrieve_training_data(limit, clean_dataset)
         # create a term-document matrix
         vectorizer = CountVectorizer(analyzer='word', min_df=0.01, stop_words="english")
         td_matrix = vectorizer.fit_transform(data.get(QUESTION_TEXT_KEY))
@@ -149,7 +150,8 @@ current_time(time_start, "Program started")
 # retrieve data to use
 db_limit = DATABASE_LIMIT.get('10000')
 filename = FILEPATH_TRAINING_DATA + str(db_limit)
-so_dataframe, (training_data, class_labels) = load_training_data(filename, False, db_limit)
+so_dataframe, (training_data, class_labels) = load_training_data(filename, True, db_limit, True)
+
 # stem and update the data in the pandas.dataframe
 counter = 0
 for question in so_dataframe[QUESTION_TEXT_KEY]:
