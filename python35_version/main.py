@@ -16,7 +16,7 @@ from sklearn.datasets import dump_svmlight_file, load_svmlight_file
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 # project imports
-from python35_version.mysqldatabase import MySQLDatabase
+from mysqldatabase import MySQLDatabase
 from constants import CLASS_LABEL_KEY, QUESTION_TEXT_KEY, FILEPATH_TRAINING_DATA, FILEPATH_MODELS, DATABASE_LIMIT
 
 
@@ -150,7 +150,7 @@ current_time(time_start, "Program started")
 # retrieve data to use
 db_limit = DATABASE_LIMIT.get('10000')
 filename = FILEPATH_TRAINING_DATA + str(db_limit)
-so_dataframe, (training_data, class_labels) = load_training_data(filename, True, db_limit, True)
+so_dataframe, (training_data, class_labels) = load_training_data(filename, False, db_limit, True)
 
 # stem and update the data in the pandas.dataframe
 counter = 0
