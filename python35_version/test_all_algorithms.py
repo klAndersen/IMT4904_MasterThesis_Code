@@ -172,8 +172,6 @@ def load_training_data(file_location=str, load_from_database=False, limit=int(10
     return DataFrame.from_csv(csv_file), load_svmlight_file(svm_file)
 
 
-
-
 def split_training_data(dataset, labels, test_size=float(0.2), random_state=int(0)):
     # split all the training data into both training and test data (test data = 20%)
     return train_test_split(dataset,
@@ -182,71 +180,12 @@ def split_training_data(dataset, labels, test_size=float(0.2), random_state=int(
                             random_state=random_state)
 
 
-path = "./test_all_alg_pickle/"
-
-# good question, ID: 927358
-good_question = "I committed the wrong files to Git. How can I undo this commit?"
-# bad question, ID: 27391628
-bad_question = "You like C++ a lot. Now you have a compiled binary file of a library, " \
-               "a header that provides the link and a manual containing instructions on how to use the library. " \
-               "How can you access the private data member of the class? Note this is only specific to C++. " \
-               "Normally there's no way you can access a private data member other than making " \
-               "friends or writing a getter function, both of which require changing the interface of the " \
-               "said class. C++ is a bit different in that you can think of it as a wrapper of C. " \
-               "This is not a problem from a textbook or class assignment."
-
-time_start = time()
-current_time(time_start, "Program started")
-# retrieve data to use
-db_limit = DATABASE_LIMIT.get('10000')
-filename = FILEPATH_TRAINING_DATA + str(db_limit)
-so_dataframe, (training_data, class_labels) = load_training_data(filename, False, db_limit, True)
-
-_unprocessed_filename = FILEPATH_TRAINING_DATA + str(db_limit) + "_unprocessed"
-_unprocessed_so_dataframe, (training_data, class_labels) = load_training_data(filename, True, db_limit, False)
-
-
-corpus = so_dataframe.loc[:, QUESTION_TEXT_KEY]
-
-# stem and update the data in the pandas.dataframe
-counter = 0
-for question in corpus:
-    corpus[counter] = stem_training_data(question)
-    counter += 1
-
-
-s_question_train, s_question_test, s_label_train, s_label_test = split_training_data(corpus,
-                                                                             so_dataframe[CLASS_LABEL_KEY])
-
-stem_good_question = stem_training_data(good_question)
-stem_bad_question = stem_training_data(bad_question)
-
-
-u_question_train, u_question_test, u_label_train, u_label_test = split_training_data(_unprocessed_so_dataframe[QUESTION_TEXT_KEY],
-                                                                                     _unprocessed_so_dataframe[CLASS_LABEL_KEY])
-
-question_train, question_test, label_train, label_test = split_training_data(so_dataframe[QUESTION_TEXT_KEY],
-                                                                             so_dataframe[CLASS_LABEL_KEY])
-
-
 def create_pipeline(vectorizer, classifier):
     return Pipeline([
         ('bow', vectorizer),
         ('tfidf', TfidfTransformer()),
         ('classifier', classifier),
     ])
-
-# , 10000, 100000; 10^4 & 10^5
-
-# pipeline parameters to automatically explore and tune
-param_svm = [
-    # Values for the classifier (C & LINEAR kernel)
-    {'classifier__C': [1, 10, 100, 1000], 'classifier__kernel': ['linear']},
-    # Values for the classifier (C, Gamma & RBF kernel)
-    {'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['rbf']},
-    # Values for the classifier (C, SIGMOID kernel)
-    {'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['sigmoid']},
-]
 
 
 def create_gridsearch(pipeline, parameters, cv):
@@ -270,6 +209,64 @@ def print_accuracy_scores(svm_detector, test_l, test_q, good_q, bad_q):
     print(svm_detector.best_score_)
     print(svm_detector.best_params_)
     print(svm_detector.best_estimator_)
+
+
+path = "./test_all_alg_pickle/"
+
+# good question, ID: 927358
+good_question = "I committed the wrong files to Git. How can I undo this commit?"
+# bad question, ID: 27391628
+bad_question = "You like C++ a lot. Now you have a compiled binary file of a library, " \
+               "a header that provides the link and a manual containing instructions on how to use the library. " \
+               "How can you access the private data member of the class? Note this is only specific to C++. " \
+               "Normally there's no way you can access a private data member other than making " \
+               "friends or writing a getter function, both of which require changing the interface of the " \
+               "said class. C++ is a bit different in that you can think of it as a wrapper of C. " \
+               "This is not a problem from a textbook or class assignment."
+
+time_start = time()
+current_time(time_start, "Program started")
+# retrieve data to use
+db_limit = DATABASE_LIMIT.get('10000')
+filename = FILEPATH_TRAINING_DATA + str(db_limit)
+so_dataframe, (training_data, class_labels) = load_training_data(filename, True, db_limit, True)
+
+# TODO: RERUN ALL! This is because it has been trained constantly on the processed, and not the unprocessed dataset
+
+_unprocessed_filename = FILEPATH_TRAINING_DATA + str(db_limit) + "_unprocessed"
+_unprocessed_so_dataframe, (training_data, class_labels) = load_training_data(_unprocessed_filename, True, db_limit, False)
+
+
+corpus = so_dataframe.loc[:, QUESTION_TEXT_KEY]
+# stem and update the data in the pandas.dataframe
+counter = 0
+for question in corpus:
+    corpus[counter] = stem_training_data(question)
+    counter += 1
+
+
+s_question_train, s_question_test, s_label_train, s_label_test = split_training_data(corpus,
+                                                                             so_dataframe[CLASS_LABEL_KEY])
+
+stem_good_question = stem_training_data(good_question)
+stem_bad_question = stem_training_data(bad_question)
+
+
+u_question_train, u_question_test, u_label_train, u_label_test = split_training_data(_unprocessed_so_dataframe[QUESTION_TEXT_KEY],
+                                                                                     _unprocessed_so_dataframe[CLASS_LABEL_KEY])
+
+question_train, question_test, label_train, label_test = split_training_data(so_dataframe[QUESTION_TEXT_KEY],
+                                                                             so_dataframe[CLASS_LABEL_KEY])
+
+# pipeline parameters to automatically explore and tune
+param_svm = [
+    # Values for the classifier (C & LINEAR kernel)
+    {'classifier__C': [1, 10, 100, 1000], 'classifier__kernel': ['linear']},
+    # Values for the classifier (C, Gamma & RBF kernel)
+    {'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['rbf']},
+    # Values for the classifier (C, SIGMOID kernel)
+    {'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['sigmoid']},
+]
 
 cv = StratifiedKFold(n_folds=5)
 cv_pipeline = create_pipeline(CountVectorizer(analyzer='word', min_df=1), SVC())
