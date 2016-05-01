@@ -231,8 +231,6 @@ db_limit = DATABASE_LIMIT.get('10000')
 filename = FILEPATH_TRAINING_DATA + str(db_limit)
 so_dataframe, (training_data, class_labels) = load_training_data(filename, True, db_limit, True)
 
-# TODO: RERUN ALL! This is because it has been trained constantly on the processed, and not the unprocessed dataset
-
 _unprocessed_filename = FILEPATH_TRAINING_DATA + str(db_limit) + "_unprocessed"
 _unprocessed_so_dataframe, (training_data, class_labels) = load_training_data(_unprocessed_filename, True, db_limit, False)
 
@@ -325,6 +323,7 @@ except Exception as ex:
 
 
 try:
+    time_start = time()
     current_time(time_start, "Normal SVC")
     grid_svm = create_gridsearch(cv_pipeline, param_svm, cv)
     cv_svm_detector = grid_svm.fit(question_train, label_train)
@@ -349,6 +348,7 @@ except Exception as ex:
 
 
 try:
+    time_start = time()
     current_time(time_start, "Normal SGD")
     # get setup and create grid
     pipeline_svm = create_default_sgd_pipeline()
@@ -374,6 +374,7 @@ except Exception as ex:
     print(ex)
 
 try:
+    time_start = time()
     current_time(time_start, "Stemmed SVC")
     grid_svm = create_gridsearch(cv_pipeline, param_svm, cv)
     cv_svm_detector = grid_svm.fit(s_question_train, s_label_train)
@@ -398,6 +399,7 @@ except Exception as ex:
 
 
 try:
+    time_start = time()
     current_time(time_start, "Stemmed SGD")
     # get setup and create grid
     pipeline_svm = create_default_sgd_pipeline()
@@ -417,6 +419,7 @@ except Exception as ex:
     print(ex)
 
 try:
+    time_start = time()
     current_time(time_start, "LinearSVC")
     # get setup and create grid
     pipeline_svm = create_default_lsvc_pipeline()
