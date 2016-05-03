@@ -53,6 +53,16 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/file_processing.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/handle_user_input.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/htmlstrip_backup">
           <value>
             <set />
@@ -194,6 +204,16 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/test_all_algorithms.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/text_processor.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/train_classifier.py">
           <value>
             <set />
           </value>

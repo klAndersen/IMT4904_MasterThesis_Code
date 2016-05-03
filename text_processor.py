@@ -1,4 +1,8 @@
+"""
+Handles text processing, removal and beautifying of HTML and other relevant text operations
+"""
 import abc
+import nltk
 import html
 import html.parser
 from html.parser import HTMLParser
@@ -139,13 +143,20 @@ def set_has_hexadecimal(text=str):
         return text
     return reg_ex.sub(constants.QUESTION_HAS_HEXADECIMAL_KEY, text)
 
-# TODO: Remove this comment
-'''
- issues with a lot of trash data
- added regex to remove it from string
- had problems with it removing...
-  numeric data inside text (non-integer/decimals
-  data before/after x
-  ignoring hex even though its a clear hex
 
-'''
+def stem_training_data(stemming_data=str):
+    """
+    Removes affixes and returns the stem
+
+    Arguments:
+        stemming_data (str): Data to stem
+
+    Returns:
+        str: String containing the stemmed data.
+        E.g. the words 'cry, 'crying', 'cried' would all return 'cry'.
+
+    """
+    porter = nltk.PorterStemmer()
+    stemming_data = stemming_data.lower().split()
+    stemming_data = map(lambda x: porter.stem(x), stemming_data)
+    return ' '.join(stemming_data)
