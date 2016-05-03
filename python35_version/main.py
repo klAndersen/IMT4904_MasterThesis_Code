@@ -7,6 +7,8 @@ import nltk
 import pickle
 from time import time, ctime
 from pandas import DataFrame
+from os import listdir
+from os.path import isfile, join
 # scikit-learn imports
 from sklearn.pipeline import Pipeline
 from sklearn.externals.joblib import Memory
@@ -16,8 +18,8 @@ from sklearn.datasets import dump_svmlight_file, load_svmlight_file
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 # project imports
+from constants import *
 from mysqldatabase import MySQLDatabase
-from constants import CLASS_LABEL_KEY, QUESTION_TEXT_KEY, FILEPATH_TRAINING_DATA, FILEPATH_MODELS, DATABASE_LIMIT
 
 
 svm_detector_all = None
@@ -34,6 +36,161 @@ def load_pickle_model(file_name=str):
 def dump_pickle_model(data, file_name=str):
     with open(file_name, 'wb') as file:
         pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
+
+
+def get_training_model(path=str, model_name=str, suffix=".pkl"):
+    """
+    Returns the model with the given name at the given path if it exists
+
+    Arguments:
+        path (str): The directory path containing the training model(s)
+        model_name (str): The filename of the model to retrieve
+        suffix (str): The models file type (expects pickle type)
+
+    Returns:
+        model: The loaded pickle model || None if error occurred
+
+    """
+    try:
+        # retrieve only the files with given suffix
+        selected_files_only = [
+            file for file in listdir(path)
+            if (isfile(join(path, file)) and file.endswith(suffix))
+            ]
+        # was there any files in the given path, and does the model exists?
+        if len(selected_files_only) > 0:
+            file = model_name + suffix
+            files_found = '\n'.join(map(lambda f: f, selected_files_only))
+            if file in selected_files_only:
+                file = path + file
+                model = load_pickle_model(file)
+                if model is not None:
+                    feedback = "Model '" + model_name + suffix + "' loaded."
+                    print(feedback)
+                    return model
+                else:
+                    feedback = "Could not load the model '" + model_name + suffix + "'."
+            else:
+                feedback = "No classifier model named '" + model_name + suffix + "' found in '" + path + "."
+            if feedback is not None:
+                feedback += "\nThe following models were found: \n" + files_found
+                print(feedback)
+        else:
+            feedback = "No classifier models found in '" + path + "."
+            print(feedback)
+    except Exception as ex:
+        print("Failed at loading training model: ", ex)
+    return None
+
+
+def print_startup_menu():
+    """
+    Prints the startup menu displayed to the user on first run
+
+    Arguments:
+        options (dict): The value used to exit the program
+
+    """
+    menu = "Choose option to execute: \n"
+    for key in sorted(USER_MENU_OPTIONS):
+        temp_dict = USER_MENU_OPTIONS.get(key)
+        menu += key + ": " + temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY) + "\n"
+    print(menu)
+
+
+import sys
+import argparse
+from argparse import RawTextHelpFormatter, ArgumentError
+
+
+def test1():
+    limit = DATABASE_LIMIT.get('10000')
+    mod_split_data = "svm_detector_split_" + str(limit)
+    print(mod_split_data)
+    return get_training_model(FILEPATH_MODELS, mod_split_data)
+
+
+def end_program():
+    print("Exiting program...")
+    exit(0)
+
+FUNCTION_MAP = {
+    USER_MENU_OPTION_LOAD_DEFAULT_KEY: test1,
+    USER_MENU_OPTION_NEW_PREDICTION: test1,
+    USER_MENU_OPTION_LOAD_USER_MODEL_KEY: get_training_model,
+    USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY: test1,
+    USER_MENU_OPTION_HELP_KEY: print_startup_menu,
+    USER_MENU_OPTION_EXIT_KEY: end_program
+}
+
+
+def create_option_parser():
+    """
+
+    Returns:
+        argparse.ArgumentParser: Constructed argument parser
+
+    """
+    description = ""
+    parser = argparse.ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)
+    # group = parser.add_mutually_exclusive_group(required=True)
+    for key in sorted(USER_MENU_OPTIONS):
+        temp_dict = USER_MENU_OPTIONS.get(key)
+        help_text = temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY)
+        long_opts = temp_dict.get(USER_MENU_OPTION_ARG_KEY)
+        metavar = temp_dict.get(USER_MENU_OPTION_METAVAR_KEY)
+        nargs = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
+        if nargs > 0:
+            parser.add_argument(key,
+                                long_opts,
+                                nargs=nargs,
+                                # dest='action',
+                                # action='store_const',
+                                # const=FUNCTION_MAP.get(key),
+                                metavar=metavar,
+                                help=help_text)
+        else:
+            parser.add_argument(key,
+                                long_opts,
+                                dest='action',
+                                action='store_const',
+                                const=FUNCTION_MAP.get(key),
+                                help=help_text)
+    return parser
+
+
+if __name__ == "__main__":
+    model = None
+    user_input = ""
+    parser = create_option_parser()
+    while (model is None) and (user_input != USER_MENU_OPTION_EXIT_KEY):
+        try:
+            # print_startup_menu()
+            # user_input = sys.argv[1:]
+            user_input = input("Enter command (use -m or --menu to show options): ")
+            # print(user_input)
+            args = parser.parse_args(sys.argv[1:])
+            print(user_input, args, sys.argv[1:])
+
+            # model = get_training_model(FILEPATH_MODELS, mod_split_data)
+            # if model is None:
+            #     if len(user_input) == 1:
+            #         user_input = user_input.lower()
+
+            if user_input != "-h" and user_input != "--help"\
+                    and user_input != USER_MENU_OPTION_EXIT_KEY:
+                exec_func = FUNCTION_MAP[user_input]
+                exec_func()
+        except KeyError as ex:
+            print("Invalid commmand: ", ex)
+        except ArgumentError as ex:
+            print("Error: ", ex)
+
+
+# exit(0)
+
+if user_input == USER_MENU_OPTION_EXIT_KEY:
+    exit(0)
 
 
 def create_default_sgd_pipeline(random_state=int(0)):
@@ -104,8 +261,8 @@ def stem_training_data(stemming_data=str):
     """
     porter = nltk.PorterStemmer()
     stemming_data = stemming_data.lower().split()
-    m2 = map(lambda x: porter.stem(x), stemming_data)
-    return ' '.join(m2)
+    stemming_data = map(lambda x: porter.stem(x), stemming_data)
+    return ' '.join(stemming_data)
 
 
 @mem.cache
