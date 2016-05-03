@@ -86,24 +86,21 @@ def get_training_model(path=str, model_name=str, suffix=".pkl"):
 def print_startup_menu():
     """
     Prints the startup menu displayed to the user on first run
-
-    Arguments:
-        options (dict): The value used to exit the program
-
     """
-    menu = "Choose option to execute: \n"
+    menu = "Menu:"
     for key in sorted(USER_MENU_OPTIONS):
         temp_dict = USER_MENU_OPTIONS.get(key)
         menu += key + ": " + temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY) + "\n"
     print(menu)
 
 
-import sys
-import argparse
-from argparse import RawTextHelpFormatter, ArgumentError
+def load_default_model():
+    """
+    Loads an existing model that has been previously created
 
-
-def test1():
+    Returns:
+        model: The loaded pickle model || None if error occurred
+    """
     limit = DATABASE_LIMIT.get('10000')
     mod_split_data = "svm_detector_split_" + str(limit)
     print(mod_split_data)
@@ -114,83 +111,68 @@ def end_program():
     print("Exiting program...")
     exit(0)
 
-FUNCTION_MAP = {
-    USER_MENU_OPTION_LOAD_DEFAULT_KEY: test1,
-    USER_MENU_OPTION_NEW_PREDICTION: test1,
-    USER_MENU_OPTION_LOAD_USER_MODEL_KEY: get_training_model,
-    USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY: test1,
-    USER_MENU_OPTION_HELP_KEY: print_startup_menu,
-    USER_MENU_OPTION_EXIT_KEY: end_program
-}
+
+def create_new_training_model():
+    # TODO: Create a new model based on passed parameters
+    # path, name, limit, classifier_data
+    pass
 
 
-def create_option_parser():
+def predict_question_quality(model, question):
+    # TODO: Make a prediction based on loaded model and entered question
+    # model, question (needs to be reconstructed to a string)
+    # question would then need to be processed and then controlled against model
+    pass
+
+
+def handle_user_input(model, u_input=str):
     """
+    Takes the user input and checks what operation to execute
+
+    Arguments:
+        model: Classifier model loaded from pickle || None
+        u_input (str):
 
     Returns:
-        argparse.ArgumentParser: Constructed argument parser
+        model: Classifier model loaded from pickle || None
 
     """
-    description = ""
-    parser = argparse.ArgumentParser(description=description, formatter_class=RawTextHelpFormatter)
-    # group = parser.add_mutually_exclusive_group(required=True)
-    for key in sorted(USER_MENU_OPTIONS):
-        temp_dict = USER_MENU_OPTIONS.get(key)
-        help_text = temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY)
-        long_opts = temp_dict.get(USER_MENU_OPTION_ARG_KEY)
-        metavar = temp_dict.get(USER_MENU_OPTION_METAVAR_KEY)
-        nargs = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
-        if nargs > 0:
-            parser.add_argument(key,
-                                long_opts,
-                                nargs=nargs,
-                                # dest='action',
-                                # action='store_const',
-                                # const=FUNCTION_MAP.get(key),
-                                metavar=metavar,
-                                help=help_text)
+    args = None
+    if len(u_input) > 1:
+        command, *args = u_input.split()
+    else:
+        command = u_input
+    if command == USER_MENU_OPTION_HELP_KEY:
+        print_startup_menu()
+    elif command == USER_MENU_OPTION_NEW_PREDICTION:
+        if model is None:
+            print("No model is loaded. Load default model by entering 'd' or 'l path filename suffix'.")
         else:
-            parser.add_argument(key,
-                                long_opts,
-                                dest='action',
-                                action='store_const',
-                                const=FUNCTION_MAP.get(key),
-                                help=help_text)
-    return parser
+            predict_question_quality(model, question)
+    elif command == USER_MENU_OPTION_LOAD_DEFAULT_KEY:
+        return load_default_model()
+    elif command == USER_MENU_OPTION_LOAD_USER_MODEL_KEY:
+        print(len(args))
+    elif command == USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY:
+        return create_new_training_model()
+    elif command != USER_MENU_OPTION_EXIT_KEY:
+        print("Invalid command: ", command)
+    return model
 
 
 if __name__ == "__main__":
-    model = None
     user_input = ""
-    parser = create_option_parser()
-    while (model is None) and (user_input != USER_MENU_OPTION_EXIT_KEY):
+    classifier_model = None
+    print_startup_menu()
+    while user_input != USER_MENU_OPTION_EXIT_KEY:
         try:
-            # print_startup_menu()
-            # user_input = sys.argv[1:]
-            user_input = input("Enter command (use -m or --menu to show options): ")
-            # print(user_input)
-            args = parser.parse_args(sys.argv[1:])
-            print(user_input, args, sys.argv[1:])
+            user_input = input("Enter option followed by arguments (if any) Enter h to show options: ")
+            classifier_model = handle_user_input(user_input)
+        except ValueError as ex:
+            print("ValueError: ", ex)
 
-            # model = get_training_model(FILEPATH_MODELS, mod_split_data)
-            # if model is None:
-            #     if len(user_input) == 1:
-            #         user_input = user_input.lower()
-
-            if user_input != "-h" and user_input != "--help"\
-                    and user_input != USER_MENU_OPTION_EXIT_KEY:
-                exec_func = FUNCTION_MAP[user_input]
-                exec_func()
-        except KeyError as ex:
-            print("Invalid commmand: ", ex)
-        except ArgumentError as ex:
-            print("Error: ", ex)
-
-
-# exit(0)
-
-if user_input == USER_MENU_OPTION_EXIT_KEY:
-    exit(0)
+    if user_input == USER_MENU_OPTION_EXIT_KEY:
+        end_program()
 
 
 def create_default_sgd_pipeline(random_state=int(0)):

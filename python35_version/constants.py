@@ -12,23 +12,23 @@ DATABASE_LIMIT = {
 }
 
 # dict keys used; set as separate constants for easy access, and not having to rely on dict order
-USER_MENU_OPTION_EXIT_KEY = "-e"
-USER_MENU_OPTION_HELP_KEY = "-m"
+USER_MENU_OPTION_EXIT_KEY = "e"
+USER_MENU_OPTION_HELP_KEY = "h"
 USER_MENU_OPTION_ARG_KEY = "arg"
 USER_MENU_OPTION_TYPE_KEY = "type"
-USER_MENU_OPTION_NEW_PREDICTION = "-p"
+USER_MENU_OPTION_NEW_PREDICTION = "p"
 USER_MENU_OPTION_HELP_TEXT_KEY = "help"
 USER_MENU_OPTION_ARGC_KEY = "arg_count"
-USER_MENU_OPTION_LOAD_DEFAULT_KEY = "-d"
+USER_MENU_OPTION_LOAD_DEFAULT_KEY = "d"
 USER_MENU_OPTION_METAVAR_KEY = "metavar"
-USER_MENU_OPTION_LOAD_USER_MODEL_KEY = "-l"
-USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY = "-t"
+USER_MENU_OPTION_LOAD_USER_MODEL_KEY = "l"
+USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY = "t"
 
 USER_MENU_OPTIONS = {
     # load a model that was created by the user
     USER_MENU_OPTION_LOAD_USER_MODEL_KEY: {
         # help menu displayed when using -h or --help
-        USER_MENU_OPTION_HELP_TEXT_KEY: "Load user created model \n"
+        USER_MENU_OPTION_HELP_TEXT_KEY: "Load user created model. Arguments: \n"
                                         "\tpath: Path to directory with model(s) \n"
                                         "\tfilename: The models filename \n"
                                         "\tsuffix: File type (e.g. '.pkl')",
@@ -41,7 +41,7 @@ USER_MENU_OPTIONS = {
     },
     # train a new model
     USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY: {
-        USER_MENU_OPTION_HELP_TEXT_KEY: "Train a new model \n"
+        USER_MENU_OPTION_HELP_TEXT_KEY: "Train a new model. Arguments: \n"
                                         "\tpath: Path to directory with model(s) \n"
                                         "\tfilename: The models filename \n"
                                         "\tdb_load: Load from database (y/n) \n"
