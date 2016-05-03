@@ -1,5 +1,5 @@
 """
-Main entry file, all user interaction is handled through this class
+Main entry file, this is the file to use when starting the program
 """
 
 # python imports
@@ -167,7 +167,7 @@ if __name__ == "__main__":
     while user_input != USER_MENU_OPTION_EXIT_KEY:
         try:
             user_input = input("Enter option followed by arguments (if any) Enter h to show options: ")
-            classifier_model = handle_user_input(user_input)
+            classifier_model = handle_user_input(classifier_model, user_input)
         except ValueError as ex:
             print("ValueError: ", ex)
 

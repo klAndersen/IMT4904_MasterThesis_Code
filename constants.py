@@ -1,5 +1,5 @@
 """
-File containing constants used in more than one place
+File containing various constants used in this project
 """
 
 from re import compile, IGNORECASE, VERBOSE

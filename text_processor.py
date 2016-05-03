@@ -1,10 +1,11 @@
 import abc
 import html
-import constants
 import html.parser
+from html.parser import HTMLParser
 
 from bs4 import BeautifulSoup
-from html.parser import HTMLParser
+
+import constants
 
 
 class HTMLStripper(HTMLParser):

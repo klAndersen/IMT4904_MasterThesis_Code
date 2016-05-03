@@ -1,12 +1,15 @@
 """
-Main entry file, all user interaction is handled through this class
+Quick and dirty file for running comparison of algorithms.
+Note! It will take between 24-36 hours to run all these with currently set parameters.
 """
 
 # python imports
-import nltk
 import pickle
 from time import time, ctime
+
+import nltk
 from pandas import DataFrame
+
 # scikit-learn imports
 from sklearn.svm import SVC, LinearSVC
 from sklearn.pipeline import Pipeline
@@ -14,11 +17,11 @@ from sklearn.externals.joblib import Memory
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
 from sklearn.datasets import dump_svmlight_file, load_svmlight_file
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, TfidfVectorizer
 # project imports
-from python35_version.mysqldatabase import MySQLDatabase
-from constants import CLASS_LABEL_KEY, QUESTION_TEXT_KEY, FILEPATH_TRAINING_DATA, FILEPATH_MODELS, DATABASE_LIMIT
+from mysqldatabase import MySQLDatabase
+from constants import CLASS_LABEL_KEY, QUESTION_TEXT_KEY, FILEPATH_TRAINING_DATA, DATABASE_LIMIT
 
 mem = Memory("./mem_cache")
 
