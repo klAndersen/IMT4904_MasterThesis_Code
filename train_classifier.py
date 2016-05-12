@@ -2,14 +2,13 @@
 File for handling training of the classifiers
 """
 
-import text_processor
-from file_processing import load_classifier_model_and_dataframe, dump_pickle_model
+from file_processing import dump_pickle_model
+
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-from constants import DATABASE_LIMIT, FILEPATH_TRAINING_DATA, FILEPATH_MODELS, QUESTION_TEXT_KEY, CLASS_LABEL_KEY
 
 
 def create_default_sgd_pipeline(random_state=int(0)):
@@ -59,7 +58,7 @@ def print_classifier_results(svm_detector):
 def create_and_save_model(train_data, labels, model_path=str, test_size=float(0.2), random_state=0,
                           print_results=True, use_default_settings=True):
     """
-    Creates a classifier model by using ```train_test_split``` to split data and gridsearch to select best fit
+    Creates a classifier model by using ```train_test_split``` to split data and ```GridSearchCV``` to select best fit
     
     Arguments:
         train_data: The training data for the classifier
@@ -92,25 +91,3 @@ def create_and_save_model(train_data, labels, model_path=str, test_size=float(0.
             print(confusion_matrix(label_test, predict_split))
             print(accuracy_score(label_test, predict_split))
             print(classification_report(label_test, predict_split))
-
-
-# TODO: Potentially remove this in the next commit
-
-# # retrieve data to use
-# model_name = ""
-# limit = DATABASE_LIMIT.get('10000')
-# dataset_file = FILEPATH_TRAINING_DATA + str(limit)
-# so_dataframe, pickle_model = load_classifier_model_and_dataframe(model_name, dataset_file, limit)
-#
-# # stem and update the data in the pandas.dataframe
-# counter = 0
-# corpus = so_dataframe.loc[:, QUESTION_TEXT_KEY]
-# class_labels = so_dataframe.loc[:, CLASS_LABEL_KEY]
-#
-# for question in corpus:
-#     corpus[counter] = text_processor.stem_training_data(question)
-#     counter += 1
-#
-# # --- END: Potentially remove this in the next commit --- #
-
-

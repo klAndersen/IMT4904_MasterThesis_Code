@@ -53,6 +53,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/df_dump.txt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/file_processing.py">
           <value>
             <set />
@@ -394,6 +399,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/../untitled1/test_data.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../untitled2/retrieve_questions_from_db.py">
           <value>
             <set />
           </value>
