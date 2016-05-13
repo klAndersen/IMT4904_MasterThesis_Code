@@ -163,29 +163,29 @@ def __set_has_hexadecimal(text=str):
     return reg_ex.sub(constants.QUESTION_HAS_HEXADECIMAL_KEY, text)
 
 
-def __set_has_homework(text=str):
+def __set_has_homework_or_assignment(text=str, replacement_text=str, word_list=list):
     """
     Checks if the text contains synonyms to homework, and replaces words with 'has_homework'
 
     Arguments:
         text (str): Text to check for "homework words"
+        replacement_text (str): Text to replace "homework" words with
+        word_list (list): List of words to use as comparison against the text
 
     Returns:
         str: Text with replaced "homework words", or the original text
 
     """
     word_set = set()
-    has_homework_key = constants.QUESTION_HAS_HOMEWORK_KEY
-    homework_words = constants.HOMEWORK_SYNONMS_LIST
     tokenized_text = nltk.word_tokenize(text)
     # loop through all the words to see if it contains homework or its synonyms
     for word in tokenized_text:
         word_lem = wordnet.morphy(word, wordnet.NOUN)
-        if (word_lem is not None) and (word_lem in homework_words):
+        if (word_lem is not None) and (word_lem in word_list):
             word_set.add(word)
-    # replace those words, if any, with 'has_homework'
+    # replace those words, if any, with the replacement text
     for word in word_set:
-        text = text.replace(word, has_homework_key)
+        text = text.replace(word, replacement_text)
     return text
 
 

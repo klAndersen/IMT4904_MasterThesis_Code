@@ -5,7 +5,7 @@ from mysql.connector import errorcode
 
 import text_processor
 import dbconfig as config
-from constants import QUESTION_TEXT_KEY, CLASS_LABEL_KEY, QUESTION_LENGTH_KEY
+from constants import QUESTION_TEXT_KEY, CLASS_LABEL_KEY, QUESTION_LENGTH_KEY, TAG_NAME_COLUMN
 
 _author_ = "Knut Lucas Andersen"
 
@@ -79,19 +79,16 @@ class MySQLDatabase:
         Retrieves all the tags in the database from 'Tags' and returns it in a list
 
         Returns:
-            list: List containing all the tags found in the database
+            pandas.DataFrame: DataFrame containing all the tags found in the database
 
         """
-        tag_list = None
+        tag_data = None
         try:
-            tag_name = "TagName"
-            query = ("SELECT " + tag_name + " FROM " + self.__TBL_TAGS + ";")
-            tag_list = pandas.read_sql(query, con=self.__db)
-            # convert DataFrame to list
-            tag_list = tag_list[tag_name].tolist()
+            query = ("SELECT " + TAG_NAME_COLUMN + " FROM " + self.__TBL_TAGS + ";")
+            tag_data = pandas.read_sql(query, con=self.__db)
         except mysql.Error as err:
             print("mysql.Error (retrieve_all_tags): %s", err)
-        return tag_list
+        return tag_data
 
     def retrieve_training_data(self, limit=1000, clean_dataset=True):
         """

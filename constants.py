@@ -21,6 +21,13 @@ FILEPATH_MODELS = "./pickle_models/"
 The path to were the produced models can be found
 """
 
+TAG_NAME_COLUMN = "TagName"
+"""
+The column name of the Tags in the database (from the table Tags).
+Also the column name used in pandas.DataFrame for these Tags.
+DO NOT CHANGE THIS VALUE!
+"""
+
 QUESTION_VOTES_KEY = "Score"
 '''
 Column identifier/key: Score
@@ -71,9 +78,16 @@ Some questions can come with tags which aren't attached to the given question.
 If that's the case, these values are replaced with the ```has_external_tag```.
 To avoid issues when concatenating strings, space is added before and after.
 '''
+
 QUESTION_HAS_HOMEWORK_KEY = " has_homework "
 '''
-If the text contains any words that are synonyms to homework, replace them with this value
+If the text contains any words that are synonyms to homework, replace them with this value.
+To avoid issues when concatenating strings, space is added before and after.
+'''
+
+QUESTION_HAS_ASSIGNMENT_KEY = " has_assignment "
+'''
+If the text contains the word 'assignment', replace it.
 To avoid issues when concatenating strings, space is added before and after.
 '''
 
@@ -125,7 +139,6 @@ Regular expression to check for hexadecimal values
 
 HOMEWORK_SYNONMS_LIST = [
     "homework",
-    "assignment",
     "education",
     "lecture",
     "teach",
@@ -133,6 +146,7 @@ HOMEWORK_SYNONMS_LIST = [
     "exercise",
     "schoolwork",
     "textbook",
+    "exam",
     "college"
 ]
 """
@@ -140,6 +154,16 @@ Array containing synonyms for the word 'homework'.
 Source: http://www.thesaurus.com/browse/homework
 """
 
+ASSIGNMENT_LIST = [
+    "assignment",
+]
+"""
+Array containing only the word assignment.
+Originally this was included in HOMEWORK_SYNONMS_LIST,
+but removed and added here to avoid collision.
+
+Example: http://stackoverflow.com/questions/1741820/assignment-operators-in-r-and
+"""
 # dict keys used; set as separate constants for easy access, and not having to rely on dict order
 USER_MENU_OPTION_EXIT_KEY = "e"
 USER_MENU_OPTION_HELP_KEY = "h"

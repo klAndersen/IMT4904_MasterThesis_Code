@@ -10,7 +10,7 @@ from mysqldatabase import MySQLDatabase
 from pandas import DataFrame
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.datasets import dump_svmlight_file, load_svmlight_file
-from constants import QUESTION_TEXT_KEY, CLASS_LABEL_KEY, FILEPATH_TRAINING_DATA, FILEPATH_MODELS
+from constants import QUESTION_TEXT_KEY, CLASS_LABEL_KEY, FILEPATH_TRAINING_DATA, FILEPATH_MODELS, TAG_NAME_COLUMN
 
 mem = Memory("./mem_cache")
 
@@ -132,3 +132,24 @@ def load_classifier_model_and_dataframe(model_name=str, dataset_file=str, limit=
     model = __get_training_model(FILEPATH_MODELS, model_name)
     so_dataframe = __load_training_data(dataset_file, load_from_database, limit, True, return_svmlight)
     return so_dataframe, model
+
+
+def load_tags(load_from_database=False):
+    """
+    Loads tags either from database (if ```load_from_database``` is True), else loads from file (presuming it exists)
+
+    Arguments:
+        load_from_database (bool): Should tags be loaded from the database?
+
+    Returns:
+         list: List containing the tags retrieved from the database
+    """
+    csv_file = FILEPATH_TRAINING_DATA + "Tags.csv"
+    if load_from_database:
+        tag_data = MySQLDatabase().retrieve_all_tags()
+        tag_data.to_csv(csv_file)
+    else:
+        tag_data = DataFrame.from_csv(csv_file)
+    # convert DataFrame to list
+    tag_list = tag_data[TAG_NAME_COLUMN].tolist()
+    return tag_list
