@@ -26,7 +26,7 @@ def dump_pickle_model(data, file_name=str):
         pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
 
 
-def get_training_model(path=str, model_name=str, suffix=".pkl"):
+def __get_training_model(path=str, model_name=str, suffix=".pkl"):
     """
     Returns the model with the given name at the given path if it exists
 
@@ -72,8 +72,8 @@ def get_training_model(path=str, model_name=str, suffix=".pkl"):
 
 
 @mem.cache
-def load_training_data(file_location=str, load_from_database=False, limit=int(1000),
-                       clean_dataset=True, return_svmlight=False):
+def __load_training_data(file_location=str, load_from_database=False, limit=int(1000),
+                         clean_dataset=True, return_svmlight=False):
     """
     If ```load_from_database``` is True, retrieves and stores data from database to file.
 
@@ -129,6 +129,6 @@ def load_classifier_model_and_dataframe(model_name=str, dataset_file=str, limit=
         tuple: pandas.DataFrame and loaded pickle model || None
 
     """
-    model = get_training_model(FILEPATH_MODELS, model_name)
-    so_dataframe = load_training_data(dataset_file, load_from_database, limit, True, return_svmlight)
+    model = __get_training_model(FILEPATH_MODELS, model_name)
+    so_dataframe = __load_training_data(dataset_file, load_from_database, limit, True, return_svmlight)
     return so_dataframe, model

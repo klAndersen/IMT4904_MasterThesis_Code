@@ -74,6 +74,25 @@ class MySQLDatabase:
             else:
                 print(err)
 
+    def retrieve_all_tags(self):
+        """
+        Retrieves all the tags in the database from 'Tags' and returns it in a list
+
+        Returns:
+            list: List containing all the tags found in the database
+
+        """
+        tag_list = None
+        try:
+            tag_name = "TagName"
+            query = ("SELECT " + tag_name + " FROM " + self.__TBL_TAGS + ";")
+            tag_list = pandas.read_sql(query, con=self.__db)
+            # convert DataFrame to list
+            tag_list = tag_list[tag_name].tolist()
+        except mysql.Error as err:
+            print("mysql.Error (retrieve_all_tags): %s", err)
+        return tag_list
+
     def retrieve_training_data(self, limit=1000, clean_dataset=True):
         """
         Retrieves Question Posts, where the questions are labeled based on if

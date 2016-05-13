@@ -5,6 +5,7 @@ import abc
 import nltk
 import html
 import html.parser
+from nltk.corpus import wordnet
 from html.parser import HTMLParser
 
 from bs4 import BeautifulSoup
@@ -47,6 +48,24 @@ class HTMLStripper(HTMLParser):
         pass
 
 
+def stem_training_data(stemming_data=str):
+    """
+    Removes affixes and returns the stem
+
+    Arguments:
+        stemming_data (str): Data to stem
+
+    Returns:
+        str: String containing the stemmed data.
+        E.g. the words 'cry, 'crying', 'cried' would all return 'cry'.
+
+    """
+    porter = nltk.PorterStemmer()
+    stemming_data = stemming_data.lower().split()
+    stemming_data = map(lambda x: porter.stem(x), stemming_data)
+    return ' '.join(stemming_data)
+
+
 def strip_tags(html_data, clean_dataset=True):
     """
     Returns a string without HTML elements and newlines
@@ -62,7 +81,7 @@ def strip_tags(html_data, clean_dataset=True):
     try:
         html_data = html.unescape(html_data)
         if clean_dataset:
-            html_data = set_has_codeblock(html_data)
+            html_data = __set_has_codeblock(html_data)
         if html_data is None:
             return None
         stripper = HTMLStripper()
@@ -71,16 +90,16 @@ def strip_tags(html_data, clean_dataset=True):
         # remove newlines from string (since all posts starts/ends with <p>)
         stripped_html = ' '.join(stripped_html.split())
         if clean_dataset:
-            stripped_html = set_has_hexadecimal(stripped_html)
-            stripped_html = set_has_numeric(stripped_html)
+            stripped_html = __set_has_hexadecimal(stripped_html)
+            stripped_html = __set_has_numeric(stripped_html)
         return stripped_html
     except TypeError as error:
         # print html_data
-        print("Error occurred in htmlstripper.strip_tags", error)
+        print("Error occurred in text_processor.strip_tags", error)
     return None
 
 
-def set_has_codeblock(html_data=str):
+def __set_has_codeblock(html_data=str):
     """
     Replaces the content of the <code> tag (if exists) with the value 'has_codeblock'
 
@@ -106,19 +125,19 @@ def set_has_codeblock(html_data=str):
             child.string = constants.QUESTION_HAS_CODEBLOCK_KEY
         return bsoup.prettify()
     except TypeError as error:
-        print("TypeError in htmlstripper.set_has_codeblock", error)
+        print("TypeError in text_processor.__set_has_codeblock", error)
     return None
 
 
-def set_has_numeric(text=str):
+def __set_has_numeric(text=str):
     """
     Checks the passed text to see if it contains numeric values
 
     Arguments:
-        text (str): Text to remove numeric values from
+        text (str): Text to check for numeric values
 
     Returns:
-        str: Processed string (if numeric values), else passed value
+        str: Processed string (if numeric values), or the original text
 
     """
     reg_ex = constants.NUMERIC_REG_EX_PATTERN
@@ -127,15 +146,15 @@ def set_has_numeric(text=str):
     return reg_ex.sub(constants.QUESTION_HAS_NUMERIC_KEY, text)
 
 
-def set_has_hexadecimal(text=str):
+def __set_has_hexadecimal(text=str):
     """
     Checks the passed text to see if it contains hexadecimal values
 
     Arguments:
-        text (str): Text to remove hexadecimal values from
+        text (str): Text to check for hexadecimal values
 
     Returns:
-        str: Processed string (if hexadecimal values), else passed value
+        str: Processed string (if hexadecimal values), or the original text
 
     """
     reg_ex = constants.HEXADECIMAL_REG_EX_PATTERN
@@ -144,147 +163,111 @@ def set_has_hexadecimal(text=str):
     return reg_ex.sub(constants.QUESTION_HAS_HEXADECIMAL_KEY, text)
 
 
-def stem_training_data(stemming_data=str):
-    """
-    Removes affixes and returns the stem
-
-    Arguments:
-        stemming_data (str): Data to stem
-
-    Returns:
-        str: String containing the stemmed data.
-        E.g. the words 'cry, 'crying', 'cried' would all return 'cry'.
-
-    """
-    porter = nltk.PorterStemmer()
-    stemming_data = stemming_data.lower().split()
-    stemming_data = map(lambda x: porter.stem(x), stemming_data)
-    return ' '.join(stemming_data)
-
-
-def set_has_homework():
+def __set_has_homework(text=str):
     """
     Checks if the text contains synonyms to homework, and replaces words with 'has_homework'
 
     Arguments:
-
+        text (str): Text to check for "homework words"
 
     Returns:
-
+        str: Text with replaced "homework words", or the original text
 
     """
+    word_set = set()
+    has_homework_key = constants.QUESTION_HAS_HOMEWORK_KEY
+    homework_words = constants.HOMEWORK_SYNONMS_LIST
+    tokenized_text = nltk.word_tokenize(text)
+    # loop through all the words to see if it contains homework or its synonyms
+    for word in tokenized_text:
+        word_lem = wordnet.morphy(word, wordnet.NOUN)
+        if (word_lem is not None) and (word_lem in homework_words):
+            word_set.add(word)
+    # replace those words, if any, with 'has_homework'
+    for word in word_set:
+        text = text.replace(word, has_homework_key)
+    return text
 
-    return
 
-
-def set_has_tag():
+def __find_and_replace_words(text=str, word_list=list, replacement_text=str):
     """
-    Checks the text to see if it contains synonyms to homework, and replaces words with 'has_homework'
+    Checks if the passed text contains any of the words in the passed list
 
     Arguments:
-
+        text (str): Text to match against words in list
+        word_list (list): List to use as comparison against the words in the text
+        replacement_text (str): Text to use for word replacement
 
     Returns:
-
+        str: Text with replaced words, or the original text
 
     """
-    return
+    word_set = set()
+    tokenized_text = nltk.word_tokenize(text)
+    # loop through all the words to see if it contains any of the words in the list
+    for word in tokenized_text:
+        if word in word_list:
+            word_set.add(word)
+    # replace those words, if any, with the replacement words
+    for word in word_set:
+        text = text.replace(word, replacement_text)
+    return text
 
 
-def set_has_version_number():
+def __set_has_tag(text=str, text_tags=list, site_tags=list):
     """
+    Checks the text to see if it contains any of the tags found on StackOverflow, and replaces them
 
     Arguments:
-
+        text (str): Text to check for (and replace) tag values
+        text_tags (list): Tags attached to the question
+        site_tags (list): Tags found on the site (here: StackOverflow)
 
     Returns:
-
+        str: Text without tags (where all tags have been replaced with 'has_*_tag), or the original text
 
     """
-    return
+    has_attached_tag_key = constants.QUESTION_HAS_ATTACHED_TAG_KEY
+    has_external_tag_key = constants.QUESTION_HAS_EXTERNAL_TAG_KEY
+    updated_text = __find_and_replace_words(text, text_tags, has_attached_tag_key)
+    updated_text = __find_and_replace_words(updated_text, site_tags, has_external_tag_key)
+    return updated_text
 
 
-def set_has_external_link():
+def __set_has_version_number(text=str):
     """
+    Checks if the text contains any forms of version numbering.
+    If it does, these are replaced with 'has_version_number'
 
     Arguments:
-
+        text (str): Text to check for (and replace) version number
 
     Returns:
-
+        str: Text without version numbering, or the original text
 
     """
-    return
+    has_version_number = constants.QUESTION_HAS_VERSION_NUMBER_KEY
+
+    return text
 
 
+def __set_has_link(html_text=str):
+    """
+    Checks if the text contains any links. If so, these are replaced by 'has_links'
 
-import re
-from nltk.corpus import wordnet
+    Arguments:
+        html_text (str): Text to check for (and replace) links
 
+    Returns:
+        str: Text without links, or the original text
 
-test = "this is a long sentence to test if something works as intended. if it doesnt, then there is no point, is there? homeworks homeworks"
-
-t_arr = nltk.word_tokenize(test)
-
-t_dict = {
-    "len": int,
-    "lem_len": int
-}
-
-counter = 0
-len_list = list()
-word_set = set()
-word_len = 0
-has_homework = False
-
-hw_list = HOMEWORK_SYNONMS_LIST = [
-    "homework",
-    "assignment",
-    "education",
-    "lecture",
-    "teach",
-    "school",
-    "exercise",
-    "schoolwork",
-    "textbook",
-    "college"
-    ]
-
-for w in t_arr:
-    word_len += len(w)
-    w_lem = wordnet.morphy(w, wordnet.NOUN)
-    if w_lem is not None and w_lem in hw_list:
-        print(w_lem)
-        t_dict = {
-            "w_len": len(w),
-            "w_index": word_len,
-            "word": w
-        }
-        # len_list.append(t_dict)
-        len_list.append(w)
-        word_set.add(w)
-        has_homework = True
-    counter += 1
-
-print(t_arr)
-print(len_list)
-print(list(set(len_list)))
-print(word_set)
-
-for value in word_set:  # len_list:
-    # w_len = value.get("w_len")
-    # w_index = value.get("w_index")
-    # word = value.get("word")
-    print(test.replace(value, "TEST"))
-#
-# for word in t_arr:
-#     if (wordnet.morphy(word, wordnet.NOUN)) is not None:
-#         print(wordnet.morphy(word, wordnet.NOUN))
-#     # print(word+"-->"+WordNetLemmatizer().lemmatize(word,'v'))
-#
-# # print(test.replace()[6])
-#
-# print(wordnet.morphy(test, wordnet.NOUN))
-#
-# print([(m.start(), m.span()) for m in re.finditer('if', test)])
-
+    """
+    try:
+        find = "a"
+        bsoup = BeautifulSoup(html_text, "html.parser")
+        for child in bsoup.find_all(find):
+            child.string = constants.QUESTION_HAS_LINKS_KEY
+        return bsoup.prettify()
+    except TypeError as error:
+        print("TypeError in text_processor.__set_has_link", error)
+    return None

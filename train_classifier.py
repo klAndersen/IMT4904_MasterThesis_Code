@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 
-def create_default_sgd_pipeline(random_state=int(0)):
+def __create_default_sgd_pipeline(random_state=int(0)):
     """
     Creates a pipeline with a CountVectorizer, TfidfTransformer and SGDClassifier where all values are set
 
@@ -30,7 +30,7 @@ def create_default_sgd_pipeline(random_state=int(0)):
     return pipeline
 
 
-def create_default_grid_parameters():
+def __create_default_grid_parameters():
     """
     Creates a dictionary containing parameters to use in GridSearch, where all values are set
     """
@@ -79,8 +79,8 @@ def create_and_save_model(train_data, labels, model_path=str, test_size=float(0.
     pipeline_svm = None
     # get setup and create grid
     if use_default_settings:
-        pipeline_svm = create_default_sgd_pipeline()
-        param_svm = create_default_grid_parameters()
+        pipeline_svm = __create_default_sgd_pipeline()
+        param_svm = __create_default_grid_parameters()
     grid_svm = GridSearchCV(pipeline_svm, param_grid=param_svm, n_jobs=-1, verbose=1)
     svm_detector = grid_svm.fit(question_train, label_train)
     dump_pickle_model(svm_detector, model_path)
