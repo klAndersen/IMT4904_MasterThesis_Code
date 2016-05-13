@@ -3,14 +3,15 @@ Handles all operations related to reading and writing to file (including databas
 """
 
 import pickle
-from sklearn.externals.joblib import Memory
+import constants
 from os import listdir
+from pandas import DataFrame
 from os.path import isfile, join
 from mysqldatabase import MySQLDatabase
-from pandas import DataFrame
+from sklearn.externals.joblib import Memory
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.datasets import dump_svmlight_file, load_svmlight_file
-from constants import QUESTION_TEXT_KEY, CLASS_LABEL_KEY, FILEPATH_TRAINING_DATA, FILEPATH_MODELS, TAG_NAME_COLUMN
+
 
 mem = Memory("./mem_cache")
 
@@ -72,17 +73,28 @@ def __get_training_model(path=str, model_name=str, suffix=".pkl"):
 
 
 @mem.cache
-def __load_training_data(file_location=str, load_from_database=False, limit=int(1000),
-                         clean_dataset=True, return_svmlight=False):
+def __load_training_data(file_location=str, load_from_database=False, limit=int(1000), return_svmlight=False,
+                         create_feature_detectors=False, create_unprocessed=False):
     """
-    If ```load_from_database``` is True, retrieves and stores data from database to file.
+    Loads training data either from database (if ```load_from_database``` is True) or from file
+
+    This function loads training data from file (file must exist) or from database (requires database to exist).
+    Depending on what sort of data you are after, there are three different calls you can make through this function.
+
+    1.  Create an unprocessed training set, without any feature detectors or HTML cleaning (data as-is in database).
+        To achieve this, set  ```create_unprocessed``` to True.
+    2.  Create feature detectors. This creates separate files, where each file contains the named feature detector.
+        To achieve this, set ```create_feature_detectors``` to True.
+    3.  Create a training data set, where all HTML has been removed, and all current feature detectors have been added.
+        To achieve this, set both ```create_feature_detectors``` and ```create_unprocessed``` to False.
 
     Arguments:
-        file_location (str): Path + filename of libsvm file to save/load (e.g. 'training_data')
+        file_location (str): Path + filename of files to save/load (e.g. 'path/training_data')
         load_from_database (bool): Should data be retrieved from database?
         limit (int): Amount of records to retrieve from database (default=1000)
-        clean_dataset (bool): Should questions be cleaned (e.g. remove code samples, hexadecimals, numbers, etc)?
         return_svmlight (bool): Should ```sklearn.datasets.load_svmlight_file``` be returned?
+        create_feature_detectors (bool): Is this function being called to create feature detectors?
+        create_unprocessed (bool): Is this function being called to create a clean, unprocessed dataset?
 
     Returns:
          (pandas.DataFrame.from_csv, sklearn.datasets.load_svmlight_file):
@@ -102,19 +114,20 @@ def __load_training_data(file_location=str, load_from_database=False, limit=int(
     if load_from_database:
         comment = u"label: (-1: Bad question, +1: Good question); features: (term_id, frequency)"
         MySQLDatabase().set_vote_value_params()
-        data = MySQLDatabase().retrieve_training_data(limit, clean_dataset)
+        data = MySQLDatabase().retrieve_training_data(limit, create_feature_detectors, create_unprocessed)
         # create a term-document matrix
         vectorizer = CountVectorizer(analyzer='word', min_df=0.01, stop_words="english")
-        td_matrix = vectorizer.fit_transform(data.get(QUESTION_TEXT_KEY))
+        td_matrix = vectorizer.fit_transform(data.get(constants.QUESTION_TEXT_KEY))
         data.to_csv(csv_file)
-        dump_svmlight_file(td_matrix, data[CLASS_LABEL_KEY], f=svm_file, comment=comment)
+        dump_svmlight_file(td_matrix, data[constants.CLASS_LABEL_KEY], f=svm_file, comment=comment)
     if not return_svmlight:
         return DataFrame.from_csv(csv_file)
     return DataFrame.from_csv(csv_file), load_svmlight_file(svm_file)
 
 
 def load_classifier_model_and_dataframe(model_name=str, dataset_file=str, limit=int(1000),
-                                        load_from_database=False, return_svmlight=False):
+                                        load_from_database=False, return_svmlight=False,
+                                        create_feature_detectors=False, create_unprocessed=False):
     """
     Loads classifier model and pandas.DataFrame from file
 
@@ -124,13 +137,16 @@ def load_classifier_model_and_dataframe(model_name=str, dataset_file=str, limit=
         limit (int): Amount of records to retrieve from database (default=1000)
         load_from_database (bool): Should data be retrieved from database?
         return_svmlight (bool): Should ```sklearn.datasets.load_svmlight_file``` be returned?
+        create_feature_detectors (bool): Is this function being called to create feature detectors?
+        create_unprocessed (bool): Is this function being called to create a clean, unprocessed dataset?
 
     Returns:
         tuple: pandas.DataFrame and loaded pickle model || None
 
     """
-    model = __get_training_model(FILEPATH_MODELS, model_name)
-    so_dataframe = __load_training_data(dataset_file, load_from_database, limit, True, return_svmlight)
+    model = __get_training_model(constants.FILEPATH_MODELS, model_name)
+    so_dataframe = __load_training_data(dataset_file, load_from_database, limit, return_svmlight,
+                                        create_feature_detectors, create_unprocessed)
     return so_dataframe, model
 
 
@@ -144,12 +160,51 @@ def load_tags(load_from_database=False):
     Returns:
          list: List containing the tags retrieved from the database
     """
-    csv_file = FILEPATH_TRAINING_DATA + "Tags.csv"
+    csv_file = constants.FILEPATH_TRAINING_DATA + "Tags.csv"
     if load_from_database:
         tag_data = MySQLDatabase().retrieve_all_tags()
         tag_data.to_csv(csv_file)
     else:
         tag_data = DataFrame.from_csv(csv_file)
     # convert DataFrame to list
-    tag_list = tag_data[TAG_NAME_COLUMN].tolist()
+    tag_list = tag_data[constants.TAG_NAME_COLUMN].tolist()
     return tag_list
+
+
+def __create_and_save_feature_detectors(limit=int(1000)):
+    """
+    Creates feature detectors at the file location.
+
+    The following feature detectors are created:
+    - has_codeblock: Replaces code blocks with this text
+    - has_link: Replaces links with this text
+    - has_homework: Replaces "homework words" with this text
+    - has_assignment: Replaces "assignment" with this text (homework scenario)
+    - has_numeric: Replaces numerical values with this text
+    - has_hexadecimal: Replaces hexadecimal values with this text
+
+    Arguments:
+        limit (int): Amount of rows to retrieve from database
+
+    """
+    file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
+    __load_training_data(file_location, True, limit, False, True, False)
+
+
+def __create_unprocessed_dataset_dump(limit=int(1000)):
+    """
+    Creates a clean dataset without any form of processing.
+
+    What this means is that the content is -exactly- as it is in the database,
+    without HTML removal, feature detector replacement or labels. However,
+    it does not contain all the columns, only those columns which are used in
+    the processed training sets.
+
+    Arguments:
+        limit (int): Amount of rows to retrieve from database
+
+    """
+    file_location = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed"
+    __load_training_data(file_location, True, limit, False, False, True)
+
+__create_unprocessed_dataset_dump(10000)

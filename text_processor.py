@@ -66,13 +66,13 @@ def stem_training_data(stemming_data=str):
     return ' '.join(stemming_data)
 
 
-def strip_tags(html_data, clean_dataset=True):
+def strip_tags(html_data, create_all_detectors=True):
     """
     Returns a string without HTML elements and newlines
 
     Arguments:
         html_data (str): HTML text to convert to string
-        clean_dataset (bool): Should questions be cleaned (e.g. remove code samples, hexadecimals, numbers, etc)?
+        create_all_detectors (bool): Should relevant features in this text be converted?
 
     Returns:
         str: String without HTML elements || None (if error)
@@ -80,7 +80,7 @@ def strip_tags(html_data, clean_dataset=True):
     """
     try:
         html_data = html.unescape(html_data)
-        if clean_dataset:
+        if create_all_detectors:
             html_data = __set_has_codeblock(html_data)
         if html_data is None:
             return None
@@ -89,7 +89,7 @@ def strip_tags(html_data, clean_dataset=True):
         stripped_html = stripper.get_data()
         # remove newlines from string (since all posts starts/ends with <p>)
         stripped_html = ' '.join(stripped_html.split())
-        if clean_dataset:
+        if create_all_detectors:
             stripped_html = __set_has_hexadecimal(stripped_html)
             stripped_html = __set_has_numeric(stripped_html)
         return stripped_html

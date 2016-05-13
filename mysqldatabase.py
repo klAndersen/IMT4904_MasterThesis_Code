@@ -90,7 +90,7 @@ class MySQLDatabase:
             print("mysql.Error (retrieve_all_tags): %s", err)
         return tag_data
 
-    def retrieve_training_data(self, limit=1000, clean_dataset=True):
+    def retrieve_training_data(self, limit=1000, create_feature_detectors=False, create_unprocessed=False):
         """
         Retrieves Question Posts, where the questions are labeled based on if
         the question is bad (e.g. -1) or good (e.g. +1).
@@ -100,7 +100,8 @@ class MySQLDatabase:
 
         Arguments:
             limit (int): Amount of rows to retrieve for each label (default=1000)
-            clean_dataset (bool): Should questions be cleaned (e.g. remove code samples, hexadecimals, numbers, etc)?
+            create_feature_detectors (bool): Is this function being called to create feature detectors?
+            create_unprocessed (bool): Is this function being called to create a clean, unprocessed dataset?
 
         Returns:
              pandas.DataFrame: DataFrame containing the values from the database,
@@ -112,32 +113,41 @@ class MySQLDatabase:
         # retrieve the questions with negative votes (< 0)
         class_label = -1
         score_clause = "< " + str(self.__neg_vote_value)
-        negative_training_data = self.retrieve_question_posts(self.__TBL_NEGATIVE__VOTES_POSTS,
-                                                              class_label, score_clause, limit, clean_dataset)
+        negative_training_data = self.__retrieve_training_data_from_database(self.__TBL_NEGATIVE__VOTES_POSTS,
+                                                                             score_clause, class_label, limit)
+        # is the intention to create a fully processed dataset?
+        if not create_feature_detectors and not create_unprocessed:
+            negative_training_data = self.__remove_html_from_text(QUESTION_TEXT_KEY,
+                                                                  negative_training_data)
         # retrieve the questions with positive votes (> 0)
         class_label = 1
         score_clause = "> " + str(self.__pos_vote_value)
-        positive_training_data = self.retrieve_question_posts(self.__TBL_POSITIVE_VOTES_POSTS,
-                                                              class_label, score_clause, limit, clean_dataset)
+        positive_training_data = self.__retrieve_training_data_from_database(self.__TBL_POSITIVE_VOTES_POSTS,
+                                                                             score_clause, class_label, limit)
+        # is the intention to create a fully processed dataset?
+        if not create_feature_detectors and not create_unprocessed:
+            positive_training_data = self.__remove_html_from_text(QUESTION_TEXT_KEY,
+                                                                  positive_training_data)
         # add the retrieved data to the DataFrame
         training_data = training_data.append(negative_training_data, ignore_index=True)
         training_data = training_data.append(positive_training_data, ignore_index=True)
+        # get and set the length of each question text
+        training_data[QUESTION_LENGTH_KEY] = training_data[QUESTION_TEXT_KEY].map(lambda text: len(text))
         # close the database connection (closed here to avoid connection errors with pandas)
         self.__close_db_connection()
         return training_data
 
-    def retrieve_question_posts(self, table_name, class_label, score_clause=str, limit=1000, clean_dataset=True):
+    def __retrieve_training_data_from_database(self, table_name, score_clause=str, class_label=int, limit=1000):
         """
-        Retrieves all Posts data from the passed ```table_name```, removes the HTML from the
-        question body and adds a class label. The class label indicates whether this is a good
-        or bad question. The retrieved data is added to pandas.DataFrame.
+        Retrieves all Posts data from the passed ```table_name``` and adds a class label.
+        The class label indicates whether this is a good or bad question. The retrieved
+        data is added to pandas.DataFrame.
 
         Arguments:
             table_name (str): The table to retrieve data from
-            class_label (int): The class label for this data (e.g. -1, +1)
             score_clause (str): WHERE clause value for score to retrieve (e.g. '> 0', '< 0', etc.)
+            class_label (int): The class label for this data (e.g. -1, +1)
             limit (int): Amount of rows to retrieve (default=1000)
-            clean_dataset (bool): Should questions be cleaned (e.g. remove code samples, hexadecimals, numbers, etc)?
 
         Returns:
             pandas.DataFrame: DataFrame containing the retrieved data || None
@@ -163,17 +173,14 @@ class MySQLDatabase:
                      " FROM " + table_name + where_clause +
                      " LIMIT " + str(limit) + ";")
             posts_data = pandas.read_sql(query, con=self.__db)
-            posts_data = self.__remove_html_from_text(QUESTION_TEXT_KEY, posts_data, clean_dataset)
             # add a column containing the class label (e.g. good/bad question, +/- 1, etc.)
             posts_data[CLASS_LABEL_KEY] = posts_data[QUESTION_TEXT_KEY].map(lambda label: class_label)
-            # get and set the length of each question text
-            posts_data[QUESTION_LENGTH_KEY] = posts_data[QUESTION_TEXT_KEY].map(lambda text: len(text))
         except mysql.Error as err:
-            print("mysql.Error (retrieve_question_posts): %s", err)
+            print("mysql.Error (__retrieve_training_data_from_database): %s", err)
         return posts_data
 
     @staticmethod
-    def __remove_html_from_text(column_name, text_data=pandas.DataFrame, clean_dataset=True):
+    def __remove_html_from_text(column_name, text_data=pandas.DataFrame):
         """
         Removes HTML elements (if any) from the text.
 
@@ -184,7 +191,6 @@ class MySQLDatabase:
         Arguments:
             column_name (str): Key to the column
             text_data (pandas.DataFrame): DataFrame with HTML text data
-            clean_dataset (bool): Should questions be cleaned (e.g. remove code samples, hexadecimals, numbers, etc)?
 
         Returns:
             pandas.DataFrame: DataFrame with updated text data
@@ -196,7 +202,7 @@ class MySQLDatabase:
         invalid_question_list = list()
         for index in range(len(text_data)):
             temp_value = text_data.get_value(index=index, col=column_name)
-            new_value = text_processor.strip_tags(temp_value, clean_dataset)
+            new_value = text_processor.strip_tags(temp_value)
             if new_value is None:
                 new_value = temp_value
                 invalid_question_list.append(index)

@@ -48,6 +48,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/create_feature_detector_files.py">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/dbconfig.py">
           <value>
             <set />
@@ -59,6 +64,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/df_dump.txt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/feature_detectors/README.md">
           <value>
             <set />
           </value>
@@ -209,6 +219,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/python3_version/main.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/temp_file.py">
           <value>
             <set />
           </value>
