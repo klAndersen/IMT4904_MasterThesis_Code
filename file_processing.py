@@ -172,9 +172,11 @@ def load_tags(load_from_database=False):
     return tag_list
 
 
+@mem.cache
 def __create_and_save_feature_detectors(limit=int(1000)):
     """
-    Creates feature detectors at the file location.
+    Creates singular feature files where the amount of rows retrieved is equal to limit.
+    The files are stored in ./feature_detectors
 
     The following feature detectors are created:
     - has_codeblock: Replaces code blocks with this text
@@ -187,91 +189,112 @@ def __create_and_save_feature_detectors(limit=int(1000)):
         limit (int): Amount of rows to retrieve from database
 
     """
-    # # create feature detector for has_codeblock
-    file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
-    # fd_has_codeblock_file = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
-    # __load_training_data(fd_has_codeblock_file, True, limit, False, True, False)
-    #
-    # # create feature detector for has_link
-    # file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
-    # fd_has_link = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
-    # __load_training_data(fd_has_link, True, limit, False, True, False)
-    #
-    # # create feature detector for has_homework
-    # file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
-    # fd_has_has_homework = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
-    # __load_training_data(fd_has_has_homework, True, limit, False, True, False)
-    #
-    # # create feature detector for has_assignment
-    # file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
-    # fd_has_assignment = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
-    # __load_training_data(fd_has_assignment, True, limit, False, True, False)
-    #
-    # # create feature detector for has_numeric
-    # file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
-    # fd_has_numeric = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
-    # __load_training_data(fd_has_numeric, True, limit, False, True, False)
-    #
-    # # create feature detector for has_hexadecimal
-    # file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
-    # fd_has_hexadecimal = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
-    # __load_training_data(fd_has_hexadecimal, True, limit, False, True, False)
-
+    index = 0
     MySQLDatabase().set_vote_value_params()
+    file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
     training_data = MySQLDatabase().retrieve_training_data(limit, True, False)
-    index = 0
-    # to avoid altering the original data, make a copy. also need to keep HTML to retrieve the code blocks
-    data_copy = training_data
-    for question in data_copy[constants.QUESTION_TEXT_KEY]:
-        question = text_processor.__set_has_codeblock(question)
-        data_copy.loc[index, constants.QUESTION_TEXT_KEY] = question
+    # create feature detector for code blocks
+    data_copy = training_data[:]
+    filename = constants.QUESTION_HAS_CODEBLOCK_KEY
+    __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location, filename, data_copy)
+    # create feature detector for links
+    data_copy = training_data[:]
+    filename = constants.QUESTION_HAS_LINKS_KEY
+    __create_and_save_feature_detector_html(text_processor.__set_has_link, file_location, filename, data_copy)
+    # convert all the HTML to normal text
+    for question in training_data[constants.QUESTION_TEXT_KEY]:
+        question = text_processor.remove_html_tags_from_text(question, False)
+        training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
         index += 1
-
-    index = 0
-    for question in data_copy[constants.QUESTION_TEXT_KEY]:
-        question = text_processor.strip_tags(question, False)
-        data_copy.loc[index, constants.QUESTION_TEXT_KEY] = question
-        index += 1
-
-    fd_has_codeblock_file = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY + ".csv"
-    training_data.to_csv(fd_has_codeblock_file)
-
-    #
-    # # for the remaining, the HTML isn't needed
-    # for question in training_data[constants.QUESTION_TEXT_KEY]:
-    #     training_data.loc[index, constants.QUESTION_TEXT_KEY] = text_processor.strip_tags(question, False)
-    #     index += 1
-    #
-    # # to avoid altering the original data, make a copy.
-    # data_copy = training_data.loc[:, constants.QUESTION_TEXT_KEY]
-    #
-    # for question in data_copy:
-    #     question = text_processor.__set_has_numeric(question)
-    #     data_copy.loc[index, constants.QUESTION_TEXT_KEY] = question
-    #
-    #
-    # fd_has_codeblock_file = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY + ".csv"
-    # data_copy.to_csv(fd_has_codeblock_file)
+    # create feature detector for has_homework & has_assignment
+    data_copy = training_data[:]
+    filename = constants.QUESTION_HAS_HOMEWORK_KEY
+    __create_and_save_feature_detector_homework(file_location, filename, data_copy)
+    # create feature detector for has_numeric
+    data_copy = training_data[:]
+    filename = constants.QUESTION_HAS_NUMERIC_KEY
+    __create_and_save_feature_detector(text_processor.__set_has_numeric, file_location, filename, data_copy)
+    # create feature detector for has_hexadecimal
+    data_copy = training_data[:]
+    filename = constants.QUESTION_HAS_HEXADECIMAL_KEY
+    __create_and_save_feature_detector(text_processor.__set_has_hexadecimal, file_location, filename, data_copy)
 
 
 def __create_and_save_feature_detector(exec_function, file_location=str, filename=str, training_data=DataFrame):
     """
+    Creates feature detectors from text where only one parameter (question text) is needed.
+    Requires processed question text, without HTML. Saves to file afterwards.
 
     Arguments:
-        exec_function: Function to execute to create feature detectors
+        exec_function: Function to execute to create features
         file_location (str): The path to the file
         filename (str): Name of the file (e.g. "feature_detector")
-        training_data (pandas.DataFrame):
-         kwargs: Function parameters
+        training_data (pandas.DataFrame):DataFrame containing all related data, where Questions doesn't contain HTML
 
     """
     index = 0
-    # for the remaining, the HTML isn't needed
+    # loop through the questions and extract related features
     for question in training_data[constants.QUESTION_TEXT_KEY]:
-
         training_data.loc[index, constants.QUESTION_TEXT_KEY] = exec_function(question)
         index += 1
+    # save to file
+    filename = file_location + filename + ".csv"
+    training_data.to_csv(filename)
 
+
+def __create_and_save_feature_detector_homework(file_location=str, filename=str, training_data=DataFrame):
+    """
+    Since homework and assignment are separated (but still considered as homework), these are handled here
+    Requires processed, non-HTML text. Saves to file afterwards.
+
+    Arguments:
+        file_location (str): The path to the file
+        filename (str): Name of the file (e.g. "feature_detector")
+        training_data (pandas.DataFrame):DataFrame containing all related data, where Questions doesn't contain HTML
+
+    """
+    index = 0
+    assignment_list = constants.ASSIGNMENT_LIST
+    homework_list = constants.HOMEWORK_SYNONMS_LIST
+    has_homework = constants.QUESTION_HAS_HOMEWORK_KEY
+    has_assignment = constants.QUESTION_HAS_ASSIGNMENT_KEY
+    # loop through questions to find homework and its synonyms
+    for question in training_data[constants.QUESTION_TEXT_KEY]:
+        question = text_processor.__set_has_homework_or_assignment(question, has_homework, homework_list)
+        question = text_processor.__set_has_homework_or_assignment(question, has_assignment, assignment_list)
+        training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
+        index += 1
+    # save to file
+    filename = file_location + filename + ".csv"
+    training_data.to_csv(filename)
+
+
+def __create_and_save_feature_detector_html(exec_function, file_location=str, filename=str, training_data=DataFrame):
+    """
+    Creates feature detector for those that require HTML tags to be properly extracted,
+    afterwards it converted to normal text and saved to file
+
+    Arguments:
+        exec_function: Function to execute to create features
+        file_location (str): The path to the file
+        filename (str): Name of the file (e.g. "feature_detector")
+        training_data (pandas.DataFrame): DataFrame containing all related data, where the Questions are wrapped in HTML
+
+    """
+    index = 0
+    # loop through the questions and extract related features
+    for question in training_data[constants.QUESTION_TEXT_KEY]:
+        question = exec_function(question)
+        training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
+        index += 1
+
+    index = 0
+    # loop through the questions and convert HTML to normal text
+    for question in training_data[constants.QUESTION_TEXT_KEY]:
+        question = text_processor.remove_html_tags_from_text(question, False)
+        training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
+        index += 1
+    # save to file
     filename = file_location + filename + ".csv"
     training_data.to_csv(filename)
 
@@ -291,6 +314,3 @@ def __create_unprocessed_dataset_dump(limit=int(1000)):
     """
     file_location = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed"
     __load_training_data(file_location, True, limit, False, False, True)
-
-
-__create_and_save_feature_detectors(10000)

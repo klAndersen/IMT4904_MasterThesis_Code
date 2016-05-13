@@ -66,7 +66,7 @@ def stem_training_data(stemming_data=str):
     return ' '.join(stemming_data)
 
 
-def strip_tags(html_data, add_detectors=True):
+def remove_html_tags_from_text(html_data, add_detectors=True):
     """
     Returns a string without HTML elements and newlines
 
@@ -95,7 +95,7 @@ def strip_tags(html_data, add_detectors=True):
         return stripped_html
     except TypeError as error:
         # print html_data
-        print("Error occurred in text_processor.strip_tags", error)
+        print("Error occurred in text_processor.remove_html_tags_from_text", error)
     return None
 
 

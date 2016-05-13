@@ -196,13 +196,13 @@ class MySQLDatabase:
             pandas.DataFrame: DataFrame with updated text data
 
         See:
-            | ```htmlstripper.strip_tags()```
+            | ```text_processor.remove_html_tags_from_text()```
 
         """
         invalid_question_list = list()
         for index in range(len(text_data)):
             temp_value = text_data.get_value(index=index, col=column_name)
-            new_value = text_processor.strip_tags(temp_value)
+            new_value = text_processor.remove_html_tags_from_text(temp_value)
             if new_value is None:
                 new_value = temp_value
                 invalid_question_list.append(index)
