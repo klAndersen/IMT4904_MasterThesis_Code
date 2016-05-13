@@ -5,7 +5,6 @@ import abc
 import nltk
 import html
 import html.parser
-from nltk.corpus import wordnet
 from html.parser import HTMLParser
 
 from bs4 import BeautifulSoup
@@ -174,37 +173,6 @@ def set_has_homework():
 
 
     """
-    # wn = wordnet
-    # s = wn.synsets('pretty')[0]
-    # print(s)
-    # for value in s.lemma_names():
-    #     print(value)
-    #
-    # exit(0)
-    S = wordnet.synset
-
-    print('getting a synset for go')
-    move_synset = S('go.v.21')
-    print(move_synset.name(), move_synset.pos(), move_synset.lexname())
-    print(move_synset.lemma_names())
-    print(move_synset.definition())
-    print(move_synset.examples())
-
-    wn_synset = wordnet.synset
-    wn_synsets = wordnet.synsets
-    # get the synonym(s) for the word 'homework' (just using the first one here; synsets returns a list)
-    homework = wn_synsets("homework")
-    homework = homework[0].name()
-
-    print(homework)
-
-    # get the synonyms for homwork (e.g. assignment, work, etc)
-    homework_set = wn_synset(homework)
-
-    print(homework_set.name(), homework_set.pos(), homework_set.lexname())
-    print(homework_set.lemma_names())
-    print(homework_set.definition())
-    print(homework_set.examples())
 
     return
 
@@ -223,7 +191,7 @@ def set_has_tag():
     return
 
 
-def set_has_version_numbering():
+def set_has_version_number():
     """
 
     Arguments:
@@ -248,4 +216,75 @@ def set_has_external_link():
     """
     return
 
-set_has_homework()
+
+
+import re
+from nltk.corpus import wordnet
+
+
+test = "this is a long sentence to test if something works as intended. if it doesnt, then there is no point, is there? homeworks homeworks"
+
+t_arr = nltk.word_tokenize(test)
+
+t_dict = {
+    "len": int,
+    "lem_len": int
+}
+
+counter = 0
+len_list = list()
+word_set = set()
+word_len = 0
+has_homework = False
+
+hw_list = HOMEWORK_SYNONMS_LIST = [
+    "homework",
+    "assignment",
+    "education",
+    "lecture",
+    "teach",
+    "school",
+    "exercise",
+    "schoolwork",
+    "textbook",
+    "college"
+    ]
+
+for w in t_arr:
+    word_len += len(w)
+    w_lem = wordnet.morphy(w, wordnet.NOUN)
+    if w_lem is not None and w_lem in hw_list:
+        print(w_lem)
+        t_dict = {
+            "w_len": len(w),
+            "w_index": word_len,
+            "word": w
+        }
+        # len_list.append(t_dict)
+        len_list.append(w)
+        word_set.add(w)
+        has_homework = True
+    counter += 1
+
+print(t_arr)
+print(len_list)
+print(list(set(len_list)))
+print(word_set)
+
+for value in word_set:  # len_list:
+    # w_len = value.get("w_len")
+    # w_index = value.get("w_index")
+    # word = value.get("word")
+    print(test.replace(value, "TEST"))
+#
+# for word in t_arr:
+#     if (wordnet.morphy(word, wordnet.NOUN)) is not None:
+#         print(wordnet.morphy(word, wordnet.NOUN))
+#     # print(word+"-->"+WordNetLemmatizer().lemmatize(word,'v'))
+#
+# # print(test.replace()[6])
+#
+# print(wordnet.morphy(test, wordnet.NOUN))
+#
+# print([(m.start(), m.span()) for m in re.finditer('if', test)])
+

@@ -11,6 +11,135 @@ DATABASE_LIMIT = {
     '10000': 10000
 }
 
+FILEPATH_TRAINING_DATA = "./training_data/training_data_"
+"""
+The path to where the training data can be found
+"""
+
+FILEPATH_MODELS = "./pickle_models/"
+"""
+The path to were the produced models can be found
+"""
+
+QUESTION_VOTES_KEY = "Score"
+'''
+Column identifier/key: Score
+
+Amount of votes/scores on a given question
+'''
+
+QUESTION_TITLE_KEY = "Title"
+'''
+Column identifier/key: Title
+
+The title of the question as seen on StackOverflow
+'''
+
+QUESTION_TEXT_KEY = "Body"
+'''
+Column identifier/key: Body
+
+The question text
+'''
+
+CLASS_LABEL_KEY = "label"
+'''
+Column identifier/key: label
+
+Label for the retrieved training data.
+'''
+
+QUESTION_LENGTH_KEY = "length"
+'''
+Column identifier/key: length
+
+The length of the questions text
+'''
+
+QUESTION_HAS_ATTACHED_TAG_KEY = " has_attached_tag "
+'''
+Value used to replace the tag value, if found.
+Since questions come with attached tags, if these are mentioned in question,
+these are replaced with the ```has_attached_tag```.
+To avoid issues when concatenating strings, space is added before and after.
+'''
+
+QUESTION_HAS_EXTERNAL_TAG_KEY = " has_external_tag "
+'''
+Value used to replace the tag value, if found.
+Some questions can come with tags which aren't attached to the given question.
+If that's the case, these values are replaced with the ```has_external_tag```.
+To avoid issues when concatenating strings, space is added before and after.
+'''
+QUESTION_HAS_HOMEWORK_KEY = " has_homework "
+'''
+If the text contains any words that are synonyms to homework, replace them with this value
+To avoid issues when concatenating strings, space is added before and after.
+'''
+
+QUESTION_HAS_VERSION_NUMBER_KEY = " has_version_number "
+'''
+If the question contains version numbering, this value replaces it.
+The values to replace should be both the version text (e.g. 'v.', 'vno', 'version', etc),
+and the numeric value that follows.
+To avoid issues when concatenating strings, space is added before and after.
+'''
+
+QUESTION_HAS_LINKS_KEY = " has_links "
+'''
+Value used to replace links found in the text
+To avoid issues when concatenating strings, space is added before and after.
+'''
+
+QUESTION_HAS_CODEBLOCK_KEY = " has_codeblock "
+'''
+Value used to replace the code sample found in the <code> tags.
+To avoid issues when concatenating strings, space is added before and after.
+'''
+
+QUESTION_HAS_HEXADECIMAL_KEY = " has_hexadecimal "
+'''
+Value used to replace hexadecimal values in the question text.
+To avoid issues when concatenating strings, space is added before and after.
+'''
+
+QUESTION_HAS_NUMERIC_KEY = " has_numeric "
+'''
+Value used to replace numeric values in the question text.
+To avoid issues when concatenating strings, space is added before and after.
+'''
+
+NUMERIC_REG_EX_PATTERN = compile(r'[+-]?\b\d+\b')
+'''
+Regular expression to check for numeric values
+'''
+
+HEXADECIMAL_REG_EX_PATTERN = compile(r"""
+    (\b[^0-9a-f]0x\b)       # group 1: look only for the exact hex value '0x'
+    |
+    ([^0-9a-f]0x[0-9A-Z]+)  # group 2: look for hex values starting with '0x'
+    """, IGNORECASE + VERBOSE)
+'''
+Regular expression to check for hexadecimal values
+'''
+
+HOMEWORK_SYNONMS_LIST = [
+    "homework",
+    "assignment",
+    "education",
+    "lecture",
+    "teach",
+    "school",
+    "exercise",
+    "schoolwork",
+    "textbook",
+    "college"
+]
+"""
+Array containing synonyms for the word 'homework'.
+Source: http://www.thesaurus.com/browse/homework
+"""
+
 # dict keys used; set as separate constants for easy access, and not having to rely on dict order
 USER_MENU_OPTION_EXIT_KEY = "e"
 USER_MENU_OPTION_HELP_KEY = "h"
@@ -88,80 +217,3 @@ USER_MENU_OPTIONS = {
 """
 Dictionary containing the options available upon program start
 """
-
-FILEPATH_TRAINING_DATA = "./training_data/training_data_"
-"""
-The path to where the training data can be found
-"""
-
-FILEPATH_MODELS = "./pickle_models/"
-"""
-The path to were the produced models can be found
-"""
-
-QUESTION_VOTES_KEY = "Score"
-'''
-Column identifier/key: Score
-
-Amount of votes/scores on a given question
-'''
-
-QUESTION_TITLE_KEY = "Title"
-'''
-Column identifier/key: Title
-
-The title of the question as seen on StackOverflow
-'''
-
-QUESTION_TEXT_KEY = "Body"
-'''
-Column identifier/key: Body
-
-The question text
-'''
-
-CLASS_LABEL_KEY = "label"
-'''
-Column identifier/key: label
-
-Label for the retrieved training data.
-'''
-
-QUESTION_LENGTH_KEY = "length"
-'''
-Column identifier/key: length
-
-The length of the questions text
-'''
-
-QUESTION_HAS_CODEBLOCK_KEY = " has_codeblock "
-'''
-Value used to replace the code sample found in the <code> tags.
-To avoid issues when concatenating strings, space is added before and after.
-'''
-
-QUESTION_HAS_HEXADECIMAL_KEY = " has_hexadecimal "
-'''
-Value used to replace hexadecimal values in the question text.
-To avoid issues when concatenating strings, space is added before and after.
-'''
-
-QUESTION_HAS_NUMERIC_KEY = " has_numeric "
-'''
-Value used to replace numeric values in the question text.
-To avoid issues when concatenating strings, space is added before and after.
-'''
-
-NUMERIC_REG_EX_PATTERN = compile(r'[+-]?\b\d+\b')
-'''
-Regular expression to check for numeric values
-'''
-
-HEXADECIMAL_REG_EX_PATTERN = compile(r"""
-    (\b[^0-9a-f]0x\b)       # group 1: look only for the exact hex value '0x'
-    |
-    ([^0-9a-f]0x[0-9A-Z]+)  # group 2: look for hex values starting with '0x'
-    """, IGNORECASE + VERBOSE)
-'''
-Regular expression to check for hexadecimal values
-'''
