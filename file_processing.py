@@ -189,39 +189,48 @@ def __create_and_save_feature_detectors(limit=int(1000)):
         limit (int): Amount of rows to retrieve from database
 
     """
-    index = 0
-    MySQLDatabase().set_vote_value_params()
+    csv_file = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed.csv"
     file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
-    training_data = MySQLDatabase().retrieve_training_data(limit, True, False)
+    try:
+        training_data = DataFrame.from_csv(csv_file)
+    except Exception:
+        MySQLDatabase().set_vote_value_params()
+        __create_unprocessed_dataset_dump(limit)
+        training_data = MySQLDatabase().retrieve_training_data(limit, True, False)
     # create feature detector for code blocks
-    data_copy = training_data[:]
     filename = constants.QUESTION_HAS_CODEBLOCK_KEY
-    __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location, filename, data_copy)
+    __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location, filename, training_data)
     # create feature detector for links
-    data_copy = training_data[:]
+    data_copy = DataFrame.from_csv(csv_file)
     filename = constants.QUESTION_HAS_LINKS_KEY
     __create_and_save_feature_detector_html(text_processor.__set_has_link, file_location, filename, data_copy)
-    # convert all the HTML to normal text
-    for question in training_data[constants.QUESTION_TEXT_KEY]:
-        question = text_processor.remove_html_tags_from_text(question, False)
-        training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
-        index += 1
     # create feature detector for has_homework & has_assignment
-    data_copy = training_data[:]
+    data_copy = get_processed_dataset(csv_file)
     filename = constants.QUESTION_HAS_HOMEWORK_KEY
     __create_and_save_feature_detector_homework(file_location, filename, data_copy)
     # create feature detector for has_numeric
-    data_copy = training_data[:]
+    data_copy = get_processed_dataset(csv_file)
     filename = constants.QUESTION_HAS_NUMERIC_KEY
     __create_and_save_feature_detector(text_processor.__set_has_numeric, file_location, filename, data_copy)
     # create feature detector for has_hexadecimal
-    data_copy = training_data[:]
+    data_copy = get_processed_dataset(csv_file)
     filename = constants.QUESTION_HAS_HEXADECIMAL_KEY
     __create_and_save_feature_detector(text_processor.__set_has_hexadecimal, file_location, filename, data_copy)
     # create feature detector for tags
-    data_copy = training_data[:]
     filename = "has_tags"
+    data_copy = get_processed_dataset(csv_file)
     __create_and_save_feature_detectors_tags(file_location, filename, data_copy)
+
+
+def get_processed_dataset(csv_filename):
+    index = 0
+    dataset = DataFrame.from_csv(csv_filename)
+    # convert all the HTML to normal text
+    for question in dataset[constants.QUESTION_TEXT_KEY]:
+        question = text_processor.remove_html_tags_from_text(question, False)
+        dataset.loc[index, constants.QUESTION_TEXT_KEY] = question
+        index += 1
+    return dataset
 
 
 def __create_and_save_feature_detector(exec_function, file_location=str, filename=str, training_data=DataFrame):
@@ -265,8 +274,8 @@ def __create_and_save_feature_detector_homework(file_location=str, filename=str,
     # loop through questions to find homework and its synonyms
     for question in training_data[constants.QUESTION_TEXT_KEY]:
         question = text_processor.__set_has_homework_or_assignment(question, has_homework, homework_list)
-        question = text_processor.__set_has_homework_or_assignment(question, has_assignment, assignment_list)
-        training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
+        updated_question = text_processor.__set_has_homework_or_assignment(question, has_assignment, assignment_list)
+        training_data.loc[index, constants.QUESTION_TEXT_KEY] = updated_question
         index += 1
     # save to file
     filename = file_location + filename + ".csv"
