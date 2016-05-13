@@ -69,7 +69,7 @@ def handle_user_input(u_input=str):
         limit = DATABASE_LIMIT.get('10000')
         model_name = "svm_detector_split_" + str(limit)
         dataset_file = FILEPATH_TRAINING_DATA + str(limit)
-        __so_dataframe, __classifier_model = load_classifier_model_and_dataframe(model_name, dataset_file, limit, True)
+        __so_dataframe, __classifier_model = load_classifier_model_and_dataframe(model_name, dataset_file, limit, False)
         print_classifier_results(__classifier_model)
     elif command == USER_MENU_OPTION_LOAD_USER_MODEL_KEY:
         print(len(args))

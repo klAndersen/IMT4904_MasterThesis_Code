@@ -4,6 +4,7 @@ Handles all operations related to reading and writing to file (including databas
 
 import pickle
 import constants
+import text_processor
 from os import listdir
 from pandas import DataFrame
 from os.path import isfile, join
@@ -178,8 +179,7 @@ def __create_and_save_feature_detectors(limit=int(1000)):
     The following feature detectors are created:
     - has_codeblock: Replaces code blocks with this text
     - has_link: Replaces links with this text
-    - has_homework: Replaces "homework words" with this text
-    - has_assignment: Replaces "assignment" with this text (homework scenario)
+    - has_homework & has_assignment: Replaces "homework words" with this text
     - has_numeric: Replaces numerical values with this text
     - has_hexadecimal: Replaces hexadecimal values with this text
 
@@ -187,8 +187,93 @@ def __create_and_save_feature_detectors(limit=int(1000)):
         limit (int): Amount of rows to retrieve from database
 
     """
+    # # create feature detector for has_codeblock
     file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
-    __load_training_data(file_location, True, limit, False, True, False)
+    # fd_has_codeblock_file = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
+    # __load_training_data(fd_has_codeblock_file, True, limit, False, True, False)
+    #
+    # # create feature detector for has_link
+    # file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
+    # fd_has_link = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
+    # __load_training_data(fd_has_link, True, limit, False, True, False)
+    #
+    # # create feature detector for has_homework
+    # file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
+    # fd_has_has_homework = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
+    # __load_training_data(fd_has_has_homework, True, limit, False, True, False)
+    #
+    # # create feature detector for has_assignment
+    # file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
+    # fd_has_assignment = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
+    # __load_training_data(fd_has_assignment, True, limit, False, True, False)
+    #
+    # # create feature detector for has_numeric
+    # file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
+    # fd_has_numeric = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
+    # __load_training_data(fd_has_numeric, True, limit, False, True, False)
+    #
+    # # create feature detector for has_hexadecimal
+    # file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
+    # fd_has_hexadecimal = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY
+    # __load_training_data(fd_has_hexadecimal, True, limit, False, True, False)
+
+    MySQLDatabase().set_vote_value_params()
+    training_data = MySQLDatabase().retrieve_training_data(limit, True, False)
+    index = 0
+    # to avoid altering the original data, make a copy. also need to keep HTML to retrieve the code blocks
+    data_copy = training_data
+    for question in data_copy[constants.QUESTION_TEXT_KEY]:
+        question = text_processor.__set_has_codeblock(question)
+        data_copy.loc[index, constants.QUESTION_TEXT_KEY] = question
+        index += 1
+
+    index = 0
+    for question in data_copy[constants.QUESTION_TEXT_KEY]:
+        question = text_processor.strip_tags(question, False)
+        data_copy.loc[index, constants.QUESTION_TEXT_KEY] = question
+        index += 1
+
+    fd_has_codeblock_file = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY + ".csv"
+    training_data.to_csv(fd_has_codeblock_file)
+
+    #
+    # # for the remaining, the HTML isn't needed
+    # for question in training_data[constants.QUESTION_TEXT_KEY]:
+    #     training_data.loc[index, constants.QUESTION_TEXT_KEY] = text_processor.strip_tags(question, False)
+    #     index += 1
+    #
+    # # to avoid altering the original data, make a copy.
+    # data_copy = training_data.loc[:, constants.QUESTION_TEXT_KEY]
+    #
+    # for question in data_copy:
+    #     question = text_processor.__set_has_numeric(question)
+    #     data_copy.loc[index, constants.QUESTION_TEXT_KEY] = question
+    #
+    #
+    # fd_has_codeblock_file = file_location + constants.QUESTION_HAS_CODEBLOCK_KEY + ".csv"
+    # data_copy.to_csv(fd_has_codeblock_file)
+
+
+def __create_and_save_feature_detector(exec_function, file_location=str, filename=str, training_data=DataFrame):
+    """
+
+    Arguments:
+        exec_function: Function to execute to create feature detectors
+        file_location (str): The path to the file
+        filename (str): Name of the file (e.g. "feature_detector")
+        training_data (pandas.DataFrame):
+         kwargs: Function parameters
+
+    """
+    index = 0
+    # for the remaining, the HTML isn't needed
+    for question in training_data[constants.QUESTION_TEXT_KEY]:
+
+        training_data.loc[index, constants.QUESTION_TEXT_KEY] = exec_function(question)
+        index += 1
+
+    filename = file_location + filename + ".csv"
+    training_data.to_csv(filename)
 
 
 def __create_unprocessed_dataset_dump(limit=int(1000)):
@@ -207,4 +292,5 @@ def __create_unprocessed_dataset_dump(limit=int(1000)):
     file_location = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed"
     __load_training_data(file_location, True, limit, False, False, True)
 
-__create_unprocessed_dataset_dump(10000)
+
+__create_and_save_feature_detectors(10000)

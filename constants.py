@@ -11,7 +11,7 @@ DATABASE_LIMIT = {
     '10000': 10000
 }
 
-FILEPATH_FEATURE_DETECTOR = "./training_data/feature_detector_"
+FILEPATH_FEATURE_DETECTOR = "./feature_detectors/feature_detector_"
 """
 The path to where the different feature detectors can be found
 """
