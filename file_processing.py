@@ -218,6 +218,10 @@ def __create_and_save_feature_detectors(limit=int(1000)):
     data_copy = training_data[:]
     filename = constants.QUESTION_HAS_HEXADECIMAL_KEY
     __create_and_save_feature_detector(text_processor.__set_has_hexadecimal, file_location, filename, data_copy)
+    # create feature detector for tags
+    data_copy = training_data[:]
+    filename = "has_tags"
+    __create_and_save_feature_detectors_tags(file_location, filename, data_copy)
 
 
 def __create_and_save_feature_detector(exec_function, file_location=str, filename=str, training_data=DataFrame):
@@ -299,6 +303,49 @@ def __create_and_save_feature_detector_html(exec_function, file_location=str, fi
     training_data.to_csv(filename)
 
 
+def __create_and_save_feature_detectors_tags(file_location=str, filename=str, training_data=DataFrame):
+    """
+    Retrieves tags from the question and the database, and uses this to extract and replace tags in the question.
+    Requires Questions without HTML. Saves data to file.
+
+    Arguments:
+        file_location (str): The path to the file
+        filename (str): Name of the file (e.g. "feature_detector")
+        training_data (pandas.DataFrame): DataFrame containing all related data, where Questions doesn't contain HTML
+
+    """
+    index = 0
+    tag_data = None
+    try:
+        suffix = ".csv"
+        path = "./training_data"
+        # retrieve only the files with given suffix
+        selected_files_only = [
+            file for file in listdir(path)
+            if (isfile(join(path, file)) and file.endswith(suffix))
+            ]
+        # was there any files in the given path, and does the file exists?
+        if len(selected_files_only) > 0:
+            file = "Tags" + suffix
+            if file in selected_files_only:
+                file = constants.FILEPATH_TRAINING_DATA + file
+                tag_data = DataFrame.from_csv(file)
+    except Exception as ex:
+        print("Failed at loading Tags file: ", ex)
+    # was the Tags data successfully loaded from file?
+    if tag_data is None:
+        tag_data = MySQLDatabase().retrieve_all_tags()
+    text_tags = training_data["Tags"].tolist()
+    site_tags = tag_data[constants.TAG_NAME_COLUMN].tolist()
+    for question in training_data[constants.QUESTION_TEXT_KEY]:
+        question = text_processor.__set_has_tag(question, text_tags, site_tags)
+        training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
+        index += 1
+    # save to file
+    filename = file_location + filename + ".csv"
+    training_data.to_csv(filename)
+
+
 def __create_unprocessed_dataset_dump(limit=int(1000)):
     """
     Creates a clean dataset without any form of processing.
@@ -314,3 +361,5 @@ def __create_unprocessed_dataset_dump(limit=int(1000)):
     """
     file_location = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed"
     __load_training_data(file_location, True, limit, False, False, True)
+
+__create_and_save_feature_detectors(10000)

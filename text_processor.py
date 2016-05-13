@@ -82,6 +82,7 @@ def remove_html_tags_from_text(html_data, add_detectors=True):
         html_data = html.unescape(html_data)
         if add_detectors:
             html_data = __set_has_codeblock(html_data)
+            html_data = __set_has_link(html_data)
         if html_data is None:
             return None
         stripper = HTMLStripper()
@@ -92,6 +93,8 @@ def remove_html_tags_from_text(html_data, add_detectors=True):
         if add_detectors:
             stripped_html = __set_has_hexadecimal(stripped_html)
             stripped_html = __set_has_numeric(stripped_html)
+            stripped_html = __set_has_tag(stripped_html)
+            stripped_html = __set_has_homework_or_assignment(stripped_html)
         return stripped_html
     except TypeError as error:
         # print html_data
