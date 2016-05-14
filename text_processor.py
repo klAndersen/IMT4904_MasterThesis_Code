@@ -102,9 +102,9 @@ def remove_html_tags_from_text(html_data, add_detectors=True, attached_tags=list
             stripped_html = __set_has_numeric(stripped_html)
             # due to external tags also overwriting others, this has been omitted
             # stripped_html = __set_has_tag(stripped_html, attached_tags, site_tags, exclude_site_tags)
-            homework_list = constants.HOMEWORK_SYNONMS_LIST
-            replacement_text = constants.QUESTION_HAS_HOMEWORK_KEY
-            stripped_html = __set_has_homework_or_assignment(stripped_html, replacement_text, homework_list)
+            # homework_list = constants.HOMEWORK_SYNONMS_LIST
+            # replacement_text = constants.QUESTION_HAS_HOMEWORK_KEY
+            # stripped_html = __set_has_homework_or_assignment(stripped_html, replacement_text, homework_list)
             if not exclude_assignment:
                 assignment_list = constants.ASSIGNMENT_LIST
                 replacement_text = constants.QUESTION_HAS_ASSIGNMENT_KEY
