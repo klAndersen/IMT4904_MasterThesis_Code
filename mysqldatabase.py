@@ -90,7 +90,8 @@ class MySQLDatabase:
             print("mysql.Error (retrieve_all_tags): %s", err)
         return tag_data
 
-    def retrieve_training_data(self, limit=1000, create_feature_detectors=False, create_unprocessed=False):
+    def retrieve_training_data(self, limit=1000, create_feature_detectors=False, create_unprocessed=False,
+                               site_tags=list, exclude_site_tags=False, exclude_assignment=False):
         """
         Retrieves Question Posts, where the questions are labeled based on if
         the question is bad (e.g. -1) or good (e.g. +1).
@@ -102,6 +103,9 @@ class MySQLDatabase:
             limit (int): Amount of rows to retrieve for each label (default=1000)
             create_feature_detectors (bool): Is this function being called to create feature detectors?
             create_unprocessed (bool): Is this function being called to create a clean, unprocessed dataset?
+            site_tags (list): List containing all tags found at the given site (Table: Tags)
+            exclude_site_tags (bool): Should the site tags be excluded from feature detection?
+            exclude_assignment (bool): Should 'assignment' words be excluded from feature detection?
 
         Returns:
              pandas.DataFrame: DataFrame containing the values from the database,
@@ -118,7 +122,9 @@ class MySQLDatabase:
         # is the intention to create a fully processed dataset?
         if not create_feature_detectors and not create_unprocessed:
             negative_training_data = self.__remove_html_from_text(QUESTION_TEXT_KEY,
-                                                                  negative_training_data)
+                                                                  negative_training_data,
+                                                                  site_tags, exclude_site_tags,
+                                                                  exclude_assignment)
         # retrieve the questions with positive votes (> 0)
         class_label = 1
         score_clause = "> " + str(self.__pos_vote_value)
@@ -127,7 +133,9 @@ class MySQLDatabase:
         # is the intention to create a fully processed dataset?
         if not create_feature_detectors and not create_unprocessed:
             positive_training_data = self.__remove_html_from_text(QUESTION_TEXT_KEY,
-                                                                  positive_training_data)
+                                                                  positive_training_data,
+                                                                  site_tags, exclude_site_tags,
+                                                                  exclude_assignment)
         # add the retrieved data to the DataFrame
         training_data = training_data.append(negative_training_data, ignore_index=True)
         training_data = training_data.append(positive_training_data, ignore_index=True)
@@ -180,7 +188,8 @@ class MySQLDatabase:
         return posts_data
 
     @staticmethod
-    def __remove_html_from_text(column_name, text_data=pandas.DataFrame):
+    def __remove_html_from_text(column_name, text_data=pandas.DataFrame, site_tags=list, exclude_site_tags=False,
+                                exclude_assignment=False):
         """
         Removes HTML elements (if any) from the text.
 
@@ -191,6 +200,9 @@ class MySQLDatabase:
         Arguments:
             column_name (str): Key to the column
             text_data (pandas.DataFrame): DataFrame with HTML text data
+            site_tags (list): List containing all tags found at the given site (Table: Tags)
+            exclude_site_tags (bool): Should the site tags be excluded from feature detection?
+            exclude_assignment (bool): Should 'assignment' words be excluded from feature detection?
 
         Returns:
             pandas.DataFrame: DataFrame with updated text data
@@ -200,9 +212,15 @@ class MySQLDatabase:
 
         """
         invalid_question_list = list()
+        # create a list of tags attached to each question, and convert the string value into arrays
+        # this in turn makes them accessible by passing the index value of the given question to retrieve its tags
+        tag_list = text_data["Tags"].tolist()
+        tag_list = text_processor.process_tags(tag_list)
         for index in range(len(text_data)):
             temp_value = text_data.get_value(index=index, col=column_name)
-            new_value = text_processor.remove_html_tags_from_text(temp_value)
+            attached_tags = tag_list[index]
+            new_value = text_processor.remove_html_tags_from_text(temp_value, True, attached_tags, site_tags,
+                                                                  exclude_site_tags, exclude_assignment)
             if new_value is None:
                 new_value = temp_value
                 invalid_question_list.append(index)

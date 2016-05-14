@@ -28,7 +28,7 @@ def dump_pickle_model(data, file_name=str):
         pickle.dump(data, file, pickle.HIGHEST_PROTOCOL)
 
 
-def __get_training_model(path=str, model_name=str, suffix=".pkl"):
+def get_training_model(path=str, model_name=str, suffix=".pkl"):
     """
     Returns the model with the given name at the given path if it exists
 
@@ -41,6 +41,7 @@ def __get_training_model(path=str, model_name=str, suffix=".pkl"):
         model: The loaded pickle model || None if error occurred
 
     """
+    print(path, model_name, suffix)
     try:
         # retrieve only the files with given suffix
         selected_files_only = [
@@ -75,7 +76,8 @@ def __get_training_model(path=str, model_name=str, suffix=".pkl"):
 
 @mem.cache
 def __load_training_data(file_location=str, load_from_database=False, limit=int(1000), return_svmlight=False,
-                         create_feature_detectors=False, create_unprocessed=False):
+                         create_feature_detectors=False, create_unprocessed=False, load_tags_from_database=False,
+                         exclude_site_tags=False, exclude_assignment=False):
     """
     Loads training data either from database (if ```load_from_database``` is True) or from file
 
@@ -96,6 +98,9 @@ def __load_training_data(file_location=str, load_from_database=False, limit=int(
         return_svmlight (bool): Should ```sklearn.datasets.load_svmlight_file``` be returned?
         create_feature_detectors (bool): Is this function being called to create feature detectors?
         create_unprocessed (bool): Is this function being called to create a clean, unprocessed dataset?
+        load_tags_from_database (bool): Should site tags be loaded (only needed when loading dataset from database)?
+        exclude_site_tags (bool): Should the site tags be excluded from feature detection?
+        exclude_assignment (bool): Should 'assignment' words be excluded from feature detection?
 
     Returns:
          (pandas.DataFrame.from_csv, sklearn.datasets.load_svmlight_file):
@@ -113,9 +118,14 @@ def __load_training_data(file_location=str, load_from_database=False, limit=int(
     svm_file = file_location + ".dat"
     csv_file = file_location + ".csv"
     if load_from_database:
+        if not exclude_site_tags:
+            site_tags = load_tags(load_tags_from_database)
+        else:
+            site_tags = None
         comment = u"label: (-1: Bad question, +1: Good question); features: (term_id, frequency)"
         MySQLDatabase().set_vote_value_params()
-        data = MySQLDatabase().retrieve_training_data(limit, create_feature_detectors, create_unprocessed)
+        data = MySQLDatabase().retrieve_training_data(limit, create_feature_detectors, create_unprocessed,
+                                                      site_tags, exclude_site_tags, exclude_assignment)
         # create a term-document matrix
         vectorizer = CountVectorizer(analyzer='word', min_df=0.01, stop_words="english")
         td_matrix = vectorizer.fit_transform(data.get(constants.QUESTION_TEXT_KEY))
@@ -128,7 +138,9 @@ def __load_training_data(file_location=str, load_from_database=False, limit=int(
 
 def load_classifier_model_and_dataframe(model_name=str, dataset_file=str, limit=int(1000),
                                         load_from_database=False, return_svmlight=False,
-                                        create_feature_detectors=False, create_unprocessed=False):
+                                        create_feature_detectors=False, create_unprocessed=False,
+                                        load_tags_from_database=False, exclude_site_tags=False,
+                                        exclude_assignment=False):
     """
     Loads classifier model and pandas.DataFrame from file
 
@@ -140,14 +152,17 @@ def load_classifier_model_and_dataframe(model_name=str, dataset_file=str, limit=
         return_svmlight (bool): Should ```sklearn.datasets.load_svmlight_file``` be returned?
         create_feature_detectors (bool): Is this function being called to create feature detectors?
         create_unprocessed (bool): Is this function being called to create a clean, unprocessed dataset?
+        load_tags_from_database (bool): Should site tags be loaded (only needed when loading dataset from database)?
+        exclude_site_tags (bool): Should the site tags be excluded from feature detection?
+        exclude_assignment (bool): Should 'assignment' words be excluded from feature detection?
 
     Returns:
         tuple: pandas.DataFrame and loaded pickle model || None
 
     """
-    model = __get_training_model(constants.FILEPATH_MODELS, model_name)
+    model = get_training_model(constants.FILEPATH_MODELS, model_name)
     so_dataframe = __load_training_data(dataset_file, load_from_database, limit, return_svmlight,
-                                        create_feature_detectors, create_unprocessed)
+                                        create_feature_detectors, create_unprocessed, load_tags_from_database, exclude_site_tags, exclude_assignment)
     return so_dataframe, model
 
 
@@ -345,9 +360,10 @@ def __create_and_save_feature_detectors_tags(file_location=str, filename=str, tr
     if tag_data is None:
         tag_data = MySQLDatabase().retrieve_all_tags()
     text_tags = training_data["Tags"].tolist()
+    text_tags = text_processor.process_tags(text_tags)
     site_tags = tag_data[constants.TAG_NAME_COLUMN].tolist()
     for question in training_data[constants.QUESTION_TEXT_KEY]:
-        question = text_processor.__set_has_tag(question, text_tags, site_tags)
+        question = text_processor.__set_has_tag(question, text_tags[index], site_tags)
         training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
         index += 1
     # save to file

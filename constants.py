@@ -187,7 +187,7 @@ USER_MENU_OPTIONS = {
     USER_MENU_OPTION_LOAD_USER_MODEL_KEY: {
         # help menu displayed when using -h or --help
         USER_MENU_OPTION_HELP_TEXT_KEY: "Load user created model. Arguments: \n"
-                                        "\tpath: Path to directory with model(s) \n"
+                                        "\tpath: Path to directory with model(s) (e.g. /home/user/my_models/) \n"
                                         "\tfilename: The models filename \n"
                                         "\tsuffix: File type (e.g. '.pkl')",
         # optional argument
@@ -200,9 +200,9 @@ USER_MENU_OPTIONS = {
     # train a new model
     USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY: {
         USER_MENU_OPTION_HELP_TEXT_KEY: "Train a new model. Arguments: \n"
-                                        "\tpath: Path to directory with model(s) \n"
+                                        "\tpath: Path to directory with model(s) (e.g. /home/user/my_models/) \n"
                                         "\tfilename: The models filename \n"
-                                        "\tdb_load: Load from database (y/n) \n"
+                                        "\tdb_load: Load from database (Enter 0: No, 1: Yes) \n"
                                         "\tlimit: Database limit (integer)",
         USER_MENU_OPTION_ARG_KEY: "--train",
         USER_MENU_OPTION_ARGC_KEY: 4,

@@ -66,13 +66,18 @@ def stem_training_data(stemming_data=str):
     return ' '.join(stemming_data)
 
 
-def remove_html_tags_from_text(html_data, add_detectors=True):
+def remove_html_tags_from_text(html_data, add_detectors=True, attached_tags=list, site_tags=list,
+                               exclude_site_tags=False, exclude_assignment=False):
     """
     Returns a string without HTML elements and newlines
 
     Arguments:
         html_data (str): HTML text to convert to string
         add_detectors (bool): Should relevant features in this text be converted?
+        attached_tags (list): List containing tag(s) that are attached to the question
+        site_tags (list): List containing all tags found at the given site (Table: Tags)
+        exclude_site_tags (bool): Should the site tags be excluded from feature detection?
+        exclude_assignment (bool): Should 'assignment' words be excluded from feature detection?
 
     Returns:
         str: String without HTML elements || None (if error)
@@ -93,8 +98,15 @@ def remove_html_tags_from_text(html_data, add_detectors=True):
         if add_detectors:
             stripped_html = __set_has_hexadecimal(stripped_html)
             stripped_html = __set_has_numeric(stripped_html)
-            stripped_html = __set_has_tag(stripped_html)
-            stripped_html = __set_has_homework_or_assignment(stripped_html)
+            # due to external tags also overwriting others, this has been omitted
+            stripped_html = __set_has_tag(stripped_html, attached_tags, site_tags, exclude_site_tags)
+            homework_list = constants.HOMEWORK_SYNONMS_LIST
+            replacement_text = constants.QUESTION_HAS_HOMEWORK_KEY
+            stripped_html = __set_has_homework_or_assignment(stripped_html, replacement_text, homework_list)
+            if not exclude_assignment:
+                assignment_list = constants.ASSIGNMENT_LIST
+                replacement_text = constants.QUESTION_HAS_ASSIGNMENT_KEY
+                stripped_html = __set_has_homework_or_assignment(stripped_html, replacement_text, assignment_list)
         return stripped_html
     except TypeError as error:
         # print html_data
@@ -208,16 +220,20 @@ def __find_and_replace_words(text=str, word_list=list, replacement_text=str):
     word_set = set()
     tokenized_text = nltk.word_tokenize(text)
     # loop through all the words to see if it contains any of the words in the list
+    # the reason for using this comparison, instead of "if word in word_list" is due to
+    # one word tags (e.g. 'c', which would then be replaced)
+    # Even though this IS time-consuming, this is not something that would be run repeatedly
     for word in tokenized_text:
-        if word in word_list:
-            word_set.add(word)
+        for w_val in word_list:
+            if w_val == word:
+                word_set.add(word)
     # replace those words, if any, with the replacement words
     for word in word_set:
         text = text.replace(word, replacement_text)
     return text
 
 
-def __set_has_tag(text=str, text_tags=list, site_tags=list):
+def __set_has_tag(text=str, text_tags=list, site_tags=list, exclude_site_tags=False):
     """
     Checks the text to see if it contains any of the tags found on StackOverflow, and replaces them
 
@@ -225,6 +241,7 @@ def __set_has_tag(text=str, text_tags=list, site_tags=list):
         text (str): Text to check for (and replace) tag values
         text_tags (list): Tags attached to the question
         site_tags (list): Tags found on the site (here: StackOverflow)
+        exclude_site_tags (bool): Should the site tags be excluded from feature detection?
 
     Returns:
         str: Text without tags (where all tags have been replaced with 'has_*_tag), or the original text
@@ -232,8 +249,9 @@ def __set_has_tag(text=str, text_tags=list, site_tags=list):
     """
     has_attached_tag_key = constants.QUESTION_HAS_ATTACHED_TAG_KEY
     has_external_tag_key = constants.QUESTION_HAS_EXTERNAL_TAG_KEY
-    updated_text = __find_and_replace_words(text, text_tags, has_attached_tag_key)
-    updated_text = __find_and_replace_words(updated_text, site_tags, has_external_tag_key)
+    updated_text = __find_and_replace_words(text.lower(), text_tags, has_attached_tag_key)
+    if not exclude_site_tags:
+        updated_text = __find_and_replace_words(updated_text, site_tags, has_external_tag_key)
     return updated_text
 
 
@@ -274,3 +292,27 @@ def __set_has_link(html_text=str):
     except TypeError as error:
         print("TypeError in text_processor.__set_has_link", error)
     return None
+
+
+def process_tags(tags=list):
+    """
+    Converts a list of string tags into a list(list) containing all the separate tags
+
+     Since the database format of tags is formatted as a string; e.g. <c><multi-threading>,
+     they are read as one string value, instead of separate elements. This function strips away
+     the '<' and the '>', replaces them with spaces and then converts it to an array which is
+     added to a list. This way, one can access all the attached tags to a question separately for
+     feature detection.
+
+    Arguments:
+        tags (list): List of unprocessed string tags.
+
+    Returns:
+        list: List with sub-list which contains the tags for a given question at the given index
+    """
+    new_tag_list = list()
+    for tag in tags:
+        new_tag = tag.replace("<", " ")
+        new_tag = new_tag.replace(">", " ")
+        new_tag_list.append(new_tag.split())
+    return new_tag_list

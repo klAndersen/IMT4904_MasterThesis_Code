@@ -27,12 +27,42 @@ def end_program():
     exit(0)
 
 
-def create_new_training_model():
-    global __so_dataframe
-    global __classifier_model
-    # TODO: Create a new model based on passed parameters
-    # path, name, limit, classifier_data
-    pass
+def create_new_training_model(args=list):
+    """
+    Creates a new classifier model based on the given filename
+
+    Arguments:
+        args (list)
+
+    Returns:
+         model: The newly created classifier model
+
+    """
+    model = None
+    dataframe = None
+
+    temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
+    argc = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
+    if (args is not None) and (len(args) == argc):
+        path = str(args[0])
+        filename = str(args[1])
+        db_load = bool(args[2])
+        limit = int(args[3])
+        dataset_file = path + filename + str(limit)
+
+        dataframe, model = load_classifier_model_and_dataframe(model_name=filename, dataset_file=dataset_file,
+                                                               limit=limit, load_from_database=db_load,
+                                                               load_tags_from_database=False, exclude_site_tags=True,
+                                                               exclude_assignment=True)
+        if model is None:
+            pass
+            # TODO: add function for training and creating new model
+    else:
+        missing_args = argc
+        if args is not None:
+            missing_args -= len(args)
+        print("Missing " + str(missing_args) + " argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+    return dataframe, model
 
 
 def predict_question_quality(model, question):
@@ -40,6 +70,34 @@ def predict_question_quality(model, question):
     # model, question (needs to be reconstructed to a string)
     # question would then need to be processed and then controlled against model
     pass
+
+
+def load_user_defined_model(args=list):
+    """
+    Loads a user defined model based on entered input.
+
+    Arguments:
+        args (list): User input arguments (expected: 3)
+                     3 arguments; path, filename and file-suffix
+
+    Returns:
+        model: Trained classifier model at given location
+
+    """
+    model = None
+    temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_LOAD_USER_MODEL_KEY)
+    argc = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
+    if (args is not None) and (len(args) == argc):
+        path = str(args[0])
+        filename = str(args[1])
+        suffix = str(args[2])
+        model = get_training_model(path, filename, suffix)
+    else:
+        missing_args = argc
+        if args is not None:
+            missing_args -= len(args)
+        print("Missing " + str(missing_args) + " argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+    return model
 
 
 def handle_user_input(u_input=str):
@@ -63,8 +121,9 @@ def handle_user_input(u_input=str):
         if __classifier_model is None:
             print("No model is loaded. Load default model by entering 'd' or 'l path filename suffix'.")
         else:
-            question = args
-            predict_question_quality(__classifier_model, question)
+            if args is not None:
+                question = args
+                predict_question_quality(__classifier_model, question)
     elif command == USER_MENU_OPTION_LOAD_DEFAULT_KEY:
         limit = DATABASE_LIMIT.get('10000')
         model_name = "svm_detector_split_" + str(limit)
@@ -72,9 +131,20 @@ def handle_user_input(u_input=str):
         __so_dataframe, __classifier_model = load_classifier_model_and_dataframe(model_name, dataset_file, limit, False)
         print_classifier_results(__classifier_model)
     elif command == USER_MENU_OPTION_LOAD_USER_MODEL_KEY:
-        print(len(args))
+        if args is not None:
+            __classifier_model = load_user_defined_model(args)
+        else:
+            temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_LOAD_USER_MODEL_KEY)
+            print("Missing argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+        # was the model loaded?
+        if __classifier_model is not None:
+            print_classifier_results(__classifier_model)
     elif command == USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY:
-        create_new_training_model()
+        if args is not None:
+            create_new_training_model(args)
+        else:
+            temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
+            print("Missing argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
     elif command != USER_MENU_OPTION_EXIT_KEY:
         print("Invalid command: ", command)
 
