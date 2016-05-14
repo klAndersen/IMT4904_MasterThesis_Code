@@ -211,10 +211,10 @@ def __create_and_save_feature_detectors(limit=int(1000)):
     except Exception:
         MySQLDatabase().set_vote_value_params()
         __create_unprocessed_dataset_dump(limit)
-        training_data = MySQLDatabase().retrieve_training_data(limit, True, False)
     # create feature detector for code blocks
+    data_copy = DataFrame.from_csv(csv_file)
     filename = constants.QUESTION_HAS_CODEBLOCK_KEY
-    __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location, filename, training_data)
+    __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location, filename, data_copy)
     # create feature detector for links
     data_copy = DataFrame.from_csv(csv_file)
     filename = constants.QUESTION_HAS_LINKS_KEY
@@ -243,6 +243,7 @@ def get_processed_dataset(csv_filename):
     # convert all the HTML to normal text
     for question in dataset[constants.QUESTION_TEXT_KEY]:
         question = text_processor.remove_html_tags_from_text(question, False)
+        question = question.lower()
         dataset.loc[index, constants.QUESTION_TEXT_KEY] = question
         index += 1
     return dataset
@@ -386,3 +387,5 @@ def __create_unprocessed_dataset_dump(limit=int(1000)):
     """
     file_location = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed"
     __load_training_data(file_location, True, limit, False, False, True)
+
+# __create_and_save_feature_detectors(10000)

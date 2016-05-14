@@ -1,6 +1,8 @@
 """
 Handles text processing, removal and beautifying of HTML and other relevant text operations
 """
+
+import re
 import abc
 import nltk
 import html
@@ -219,17 +221,17 @@ def __find_and_replace_words(text=str, word_list=list, replacement_text=str):
     """
     word_set = set()
     tokenized_text = nltk.word_tokenize(text)
-    # loop through all the words to see if it contains any of the words in the list
-    # the reason for using this comparison, instead of "if word in word_list" is due to
-    # one word tags (e.g. 'c', which would then be replaced)
-    # Even though this IS time-consuming, this is not something that would be run repeatedly
+    # loop through all the words to see if it contains any of the words in the word list
     for word in tokenized_text:
-        for w_val in word_list:
-            if w_val == word:
-                word_set.add(word)
+        if word in word_list:
+            word_set.add(word)
     # replace those words, if any, with the replacement words
     for word in word_set:
-        text = text.replace(word, replacement_text)
+        if len(word) == 1:
+            # if its only one character (e.g. 'C'), ensure that it is a singular word by using regex
+            text = re.sub(r"\b%s\b" % word, replacement_text, text, flags=re.I)
+        else:
+            text = text.replace(word, replacement_text)
     return text
 
 
@@ -249,7 +251,7 @@ def __set_has_tag(text=str, text_tags=list, site_tags=list, exclude_site_tags=Fa
     """
     has_attached_tag_key = constants.QUESTION_HAS_ATTACHED_TAG_KEY
     has_external_tag_key = constants.QUESTION_HAS_EXTERNAL_TAG_KEY
-    updated_text = __find_and_replace_words(text.lower(), text_tags, has_attached_tag_key)
+    updated_text = __find_and_replace_words(text, text_tags, has_attached_tag_key)
     if not exclude_site_tags:
         updated_text = __find_and_replace_words(updated_text, site_tags, has_external_tag_key)
     return updated_text

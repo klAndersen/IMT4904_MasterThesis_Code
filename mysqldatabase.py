@@ -217,8 +217,9 @@ class MySQLDatabase:
         tag_list = text_data["Tags"].tolist()
         tag_list = text_processor.process_tags(tag_list)
         for index in range(len(text_data)):
-            temp_value = text_data.get_value(index=index, col=column_name)
             attached_tags = tag_list[index]
+            temp_value = text_data.get_value(index=index, col=column_name)
+            temp_value = temp_value.lower()
             new_value = text_processor.remove_html_tags_from_text(temp_value, True, attached_tags, site_tags,
                                                                   exclude_site_tags, exclude_assignment)
             if new_value is None:
