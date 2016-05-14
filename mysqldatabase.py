@@ -217,6 +217,8 @@ class MySQLDatabase:
         tag_list = text_data["Tags"].tolist()
         tag_list = text_processor.process_tags(tag_list)
         for index in range(len(text_data)):
+            if index == 29:
+                print()
             attached_tags = tag_list[index]
             temp_value = text_data.get_value(index=index, col=column_name)
             temp_value = temp_value.lower()

@@ -229,7 +229,7 @@ def __find_and_replace_words(text=str, word_list=list, replacement_text=str):
     for word in word_set:
         if len(word) == 1:
             # if its only one character (e.g. 'C'), ensure that it is a singular word by using regex
-            text = re.sub(r"\b%s\b" % word, replacement_text, text, flags=re.I)
+            text = re.sub(r"\b%s\b" % word, replacement_text, text, flags=re.IGNORECASE)
         else:
             text = text.replace(word, replacement_text)
     return text
