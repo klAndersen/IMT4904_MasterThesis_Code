@@ -386,5 +386,3 @@ def __create_unprocessed_dataset_dump(limit=int(1000)):
     """
     file_location = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed"
     __load_training_data(file_location, True, limit, False, False, True)
-
-__create_and_save_feature_detectors(10000)
