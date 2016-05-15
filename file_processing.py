@@ -362,8 +362,10 @@ def __create_and_save_feature_detectors_tags(file_location=str, filename=str, tr
     if tag_data is None:
         tag_data = MySQLDatabase().retrieve_all_tags()
     text_tags = training_data["Tags"].tolist()
+    text_tags.sort(key=len, reverse=True)
     text_tags = text_processor.process_tags(text_tags)
     site_tags = tag_data[constants.TAG_NAME_COLUMN].tolist()
+    site_tags.sort(key=len, reverse=True)
     for question in training_data[constants.QUESTION_TEXT_KEY]:
         question = text_processor.__set_has_tag(question, text_tags[index], site_tags)
         training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
