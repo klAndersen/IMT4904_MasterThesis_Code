@@ -101,7 +101,7 @@ def remove_html_tags_from_text(html_data, add_detectors=True, attached_tags=list
             stripped_html = __set_has_hexadecimal(stripped_html)
             stripped_html = __set_has_numeric(stripped_html)
             # due to external tags also overwriting others, this has been omitted
-            # stripped_html = __set_has_tag(stripped_html, attached_tags, site_tags, exclude_site_tags)
+            stripped_html = __set_has_tag(stripped_html, attached_tags, site_tags, exclude_site_tags)
             homework_list = constants.HOMEWORK_SYNONMS_LIST
             replacement_text = constants.QUESTION_HAS_HOMEWORK_KEY
             stripped_html = __set_has_homework_or_assignment(stripped_html, replacement_text, homework_list)
@@ -225,6 +225,9 @@ def __find_and_replace_words(text=str, word_list=list, replacement_text=str):
     for word in tokenized_text:
         if word in word_list:
             word_set.add(word)
+    # convert the set to list to make it sortable
+    word_set = list(word_set)
+    word_set.sort(key=len, reverse=True)
     # replace those words, if any, with the replacement words
     for word in word_set:
         if len(word) == 1:
@@ -316,5 +319,8 @@ def process_tags(tags=list):
     for tag in tags:
         new_tag = tag.replace("<", " ")
         new_tag = new_tag.replace(">", " ")
-        new_tag_list.append(new_tag.split())
+        new_tag = new_tag.split()
+        # sort elements by string length (this to avoid 'c' being checked before 'c++', etc)
+        new_tag.sort(key=len, reverse=True)
+        new_tag_list.append(new_tag)
     return new_tag_list

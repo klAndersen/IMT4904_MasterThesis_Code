@@ -182,8 +182,9 @@ def load_tags(load_from_database=False):
         tag_data.to_csv(csv_file)
     else:
         tag_data = DataFrame.from_csv(csv_file)
-    # convert DataFrame to list
+    # convert DataFrame to list, and sort list based on tag length
     tag_list = tag_data[constants.TAG_NAME_COLUMN].tolist()
+    tag_list.sort(key=len, reverse=True)
     return tag_list
 
 
@@ -207,12 +208,12 @@ def __create_and_save_feature_detectors(limit=int(1000)):
     csv_file = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed.csv"
     file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
     try:
-        training_data = DataFrame.from_csv(csv_file)
+        data_copy = DataFrame.from_csv(csv_file)
     except Exception:
         MySQLDatabase().set_vote_value_params()
         __create_unprocessed_dataset_dump(limit)
+        data_copy = DataFrame.from_csv(csv_file)
     # create feature detector for code blocks
-    data_copy = DataFrame.from_csv(csv_file)
     filename = constants.QUESTION_HAS_CODEBLOCK_KEY
     __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location, filename, data_copy)
     # create feature detector for links
