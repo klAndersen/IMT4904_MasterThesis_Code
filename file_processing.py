@@ -41,7 +41,6 @@ def get_training_model(path=str, model_name=str, suffix=".pkl"):
         model: The loaded pickle model || None if error occurred
 
     """
-    print(path, model_name, suffix)
     try:
         # retrieve only the files with given suffix
         selected_files_only = [

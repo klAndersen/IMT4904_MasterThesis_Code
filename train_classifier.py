@@ -114,7 +114,7 @@ def create_gridsearch(pipeline, parameters, cv, refit=True, n_jobs=-1, scoring="
 
 
 def create_and_save_model(train_data, labels, model_path=str, test_size=float(0.2), random_state=0,
-                          print_results=True, use_sgd_settings=True):
+                          print_results=True, use_sgd_settings=False):
     """
     Creates a classifier model by using ```train_test_split``` to split data and ```GridSearchCV``` to select best fit
     

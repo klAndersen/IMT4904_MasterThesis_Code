@@ -32,10 +32,10 @@ def create_new_training_model(args=list):
     Creates a new classifier model based on the given filename
 
     Arguments:
-        args (list)
+        args (list): List containing the inputs used to create the new training model
 
     Returns:
-         model: The newly created classifier model
+         tuple(pandas.DataFrame, model): DataFrame containing the data set that was used, and the created model
 
     """
     model = None
@@ -52,8 +52,14 @@ def create_new_training_model(args=list):
         # create the training data set
         dataframe = load_training_data(dataset_file, db_load, limit, load_tags_from_database=False,
                                        exclude_site_tags=True, exclude_assignment=True)
-
         # TODO: add function for training and creating new model
+        '''
+        1. Get questions and labels from dataframe
+        2. Lemmatize and stem questions
+        3. Set location for where to save model
+        4. Train model with set parameters (default)
+        5. Print results
+        '''
     else:
         missing_args = argc
         if args is not None:
@@ -63,9 +69,25 @@ def create_new_training_model(args=list):
 
 
 def predict_question_quality(model, question):
+    """
+
+     Arguments:
+        model:
+        question (str): Question to predict quality of
+
+    """
     # TODO: Make a prediction based on loaded model and entered question
-    # model, question (needs to be reconstructed to a string)
-    # question would then need to be processed and then controlled against model
+    '''
+    0. Add a note that code samples are not tested
+    1. Load model (if not loaded; give error msg)
+    2. Check if question has been entered
+    3. Convert input to string (bcz args=array)
+    4. Convert question to lower
+    5. Run feature detection
+    6. Lemmatize and stem question
+    7. Pass question to model for prediction
+    8. Print results
+    '''
     pass
 
 
