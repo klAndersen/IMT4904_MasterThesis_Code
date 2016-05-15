@@ -207,9 +207,10 @@ USER_MENU_OPTIONS = {
                                         "\tpath: Path to directory with training data (e.g. /home/user/my_data/) \n"
                                         "\tfilename: Filename for data set (model name will be the same as this) \n"
                                         "\tdb_load: Load from database (Enter 0: No, 1: Yes) \n"
-                                        "\tlimit: Database limit (integer)",
+                                        "\tlimit: Limit for database row retrieval (integer) - Optional unless "
+                                        "'db_load' is '1'",
         USER_MENU_OPTION_ARG_KEY: "--train",
-        USER_MENU_OPTION_ARGC_KEY: 4,
+        USER_MENU_OPTION_ARGC_KEY: 3,
         # required argument description
         USER_MENU_OPTION_METAVAR_KEY: ("path",  "filename", "db_load", "limit")
     },

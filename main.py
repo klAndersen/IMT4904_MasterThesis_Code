@@ -78,38 +78,46 @@ def create_new_training_model(args=list):
     """
     model = None
     dataframe = None
-
+    limit = ""
     temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
     argc = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
-    if (args is not None) and (len(args) == argc):
-        path = str(args[0])
-        filename = str(args[1])
-        db_load = bool(args[2])
-        limit = int(args[3])
-        path = check_path_ending(path)
-        dataset_file = path + filename + str(limit)
-        print("Loading data set...")
-        # create the training data set
-        dataframe = load_training_data(dataset_file, db_load, limit, load_tags_from_database=False,
-                                       exclude_site_tags=True, exclude_assignment=True)
-        print("Retrieving questions and classification labels...")
-        training_data = dataframe[QUESTION_TEXT_KEY].copy()
-        class_labels = dataframe[CLASS_LABEL_KEY].copy()
-        print("Stemming questions...")
-        index = 0
-        for question in training_data:
-            training_data[index] = text_processor.stem_training_data(question)
-            index += 1
-        print("Starting training of model")
-        model_path = FILEPATH_MODELS + filename + str(limit) + ".pkl"
-        model = create_and_save_model(training_data, class_labels, model_path, predict_proba=True,
-                                      test_size=float(0.2), random_state=0, print_results=True,
-                                      use_sgd_settings=False)
-    else:
-        missing_args = argc
-        if args is not None:
-            missing_args -= len(args)
-        print("Missing " + str(missing_args) + " argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+    try:
+        if (args is not None) and (len(args) >= argc):
+            path = str(args[0])
+            filename = str(args[1])
+            db_load = bool(args[2])
+            path = check_path_ending(path)
+            dataset_file = path + filename
+            if db_load and len(args) > argc:
+                limit = int(args[3])
+                dataset_file += str(limit)
+            elif db_load and len(args) == argc:
+                raise(ValueError("Missing required parameter: Limit. When loading from database, "
+                                 "amount of rows to retrieve is required."))
+            print("Loading data set...")
+            # create the training data set
+            dataframe = load_training_data(dataset_file, db_load, limit, load_tags_from_database=False,
+                                           exclude_site_tags=True, exclude_assignment=True)
+            print("Retrieving questions and classification labels...")
+            training_data = dataframe[QUESTION_TEXT_KEY].copy()
+            class_labels = dataframe[CLASS_LABEL_KEY].copy()
+            print("Stemming questions...")
+            index = 0
+            for question in training_data:
+                training_data[index] = text_processor.stem_training_data(question)
+                index += 1
+            print("Starting training of model")
+            model_path = FILEPATH_MODELS + filename + ".pkl"
+            model = create_and_save_model(training_data, class_labels, model_path, predict_proba=True,
+                                          test_size=float(0.2), random_state=0, print_results=True,
+                                          use_sgd_settings=False)
+        else:
+            missing_args = argc
+            if args is not None:
+                missing_args -= len(args)
+            print("Missing " + str(missing_args) + " argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+    except ValueError as err:
+        print(err)
     return dataframe, model
 
 
