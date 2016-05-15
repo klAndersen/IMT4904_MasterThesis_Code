@@ -78,14 +78,14 @@ def create_new_training_model(args=list):
     """
     model = None
     dataframe = None
-    limit = ""
+    limit = 0
     temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
     argc = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
     try:
         if (args is not None) and (len(args) >= argc):
             path = str(args[0])
             filename = str(args[1])
-            db_load = bool(args[2])
+            db_load = bool(int(args[2]))
             path = check_path_ending(path)
             dataset_file = path + filename
             if db_load and len(args) > argc:
