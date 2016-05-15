@@ -75,9 +75,9 @@ def get_training_model(path=str, model_name=str, suffix=".pkl"):
 
 
 @mem.cache
-def __load_training_data(file_location=str, load_from_database=False, limit=int(1000), return_svmlight=False,
-                         create_feature_detectors=False, create_unprocessed=False, load_tags_from_database=False,
-                         exclude_site_tags=False, exclude_assignment=False):
+def load_training_data(file_location=str, load_from_database=False, limit=int(1000), return_svmlight=False,
+                       create_feature_detectors=False, create_unprocessed=False, load_tags_from_database=False,
+                       exclude_site_tags=False, exclude_assignment=False):
     """
     Loads training data either from database (if ```load_from_database``` is True) or from file
 
@@ -136,36 +136,6 @@ def __load_training_data(file_location=str, load_from_database=False, limit=int(
     return DataFrame.from_csv(csv_file), load_svmlight_file(svm_file)
 
 
-def load_classifier_model_and_dataframe(model_name=str, dataset_file=str, limit=int(1000),
-                                        load_from_database=False, return_svmlight=False,
-                                        create_feature_detectors=False, create_unprocessed=False,
-                                        load_tags_from_database=False, exclude_site_tags=False,
-                                        exclude_assignment=False):
-    """
-    Loads classifier model and pandas.DataFrame from file
-
-    Arguments:
-        model_name (str): Name of model to retrieve
-        dataset_file (str): Name of file containing dataset
-        limit (int): Amount of records to retrieve from database (default=1000)
-        load_from_database (bool): Should data be retrieved from database?
-        return_svmlight (bool): Should ```sklearn.datasets.load_svmlight_file``` be returned?
-        create_feature_detectors (bool): Is this function being called to create feature detectors?
-        create_unprocessed (bool): Is this function being called to create a clean, unprocessed dataset?
-        load_tags_from_database (bool): Should site tags be loaded (only needed when loading dataset from database)?
-        exclude_site_tags (bool): Should the site tags be excluded from feature detection?
-        exclude_assignment (bool): Should 'assignment' words be excluded from feature detection?
-
-    Returns:
-        tuple: pandas.DataFrame and loaded pickle model || None
-
-    """
-    model = get_training_model(constants.FILEPATH_MODELS, model_name)
-    so_dataframe = __load_training_data(dataset_file, load_from_database, limit, return_svmlight,
-                                        create_feature_detectors, create_unprocessed, load_tags_from_database, exclude_site_tags, exclude_assignment)
-    return so_dataframe, model
-
-
 def load_tags(load_from_database=False):
     """
     Loads tags either from database (if ```load_from_database``` is True), else loads from file (presuming it exists)
@@ -209,31 +179,43 @@ def __create_and_save_feature_detectors(limit=int(1000)):
     file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
     try:
         data_copy = DataFrame.from_csv(csv_file)
-    except Exception:
+    except OSError:
+        feedback_msg = "Could not find unprocessed data set. File:" + csv_file \
+                       + ". \nAttempting to retrieve from Database:"
+        print(feedback_msg)
         MySQLDatabase().set_vote_value_params()
         __create_unprocessed_dataset_dump(limit)
+        feedback_msg = "Data loaded successfully!"
+        print(feedback_msg)
         data_copy = DataFrame.from_csv(csv_file)
     # create feature detector for code blocks
+    feedback_msg = "Creating singular feature detector: "
+    print(feedback_msg, "Code blocks")
     filename = constants.QUESTION_HAS_CODEBLOCK_KEY
     __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location, filename, data_copy)
     # create feature detector for links
+    print(feedback_msg, "Links")
     data_copy = DataFrame.from_csv(csv_file)
     filename = constants.QUESTION_HAS_LINKS_KEY
     __create_and_save_feature_detector_html(text_processor.__set_has_link, file_location, filename, data_copy)
     # create feature detector for has_homework & has_assignment
+    print(feedback_msg, "Homework")
     data_copy = get_processed_dataset(csv_file)
     filename = constants.QUESTION_HAS_HOMEWORK_KEY
     __create_and_save_feature_detector_homework(file_location, filename, data_copy)
     # create feature detector for has_numeric
+    print(feedback_msg, "Numerical")
     data_copy = get_processed_dataset(csv_file)
     filename = constants.QUESTION_HAS_NUMERIC_KEY
     __create_and_save_feature_detector(text_processor.__set_has_numeric, file_location, filename, data_copy)
     # create feature detector for has_hexadecimal
+    print(feedback_msg, "Hexadecimal")
     data_copy = get_processed_dataset(csv_file)
     filename = constants.QUESTION_HAS_HEXADECIMAL_KEY
     __create_and_save_feature_detector(text_processor.__set_has_hexadecimal, file_location, filename, data_copy)
     # create feature detector for tags
     filename = "has_tags"
+    print(feedback_msg, "Tags")
     data_copy = get_processed_dataset(csv_file)
     __create_and_save_feature_detectors_tags(file_location, filename, data_copy)
 
@@ -390,6 +372,6 @@ def __create_unprocessed_dataset_dump(limit=int(1000)):
 
     """
     file_location = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed"
-    __load_training_data(file_location, True, limit, create_unprocessed=True)
+    load_training_data(file_location, True, limit, create_unprocessed=True)
 
 # __create_and_save_feature_detectors(10000)

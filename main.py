@@ -49,14 +49,11 @@ def create_new_training_model(args=list):
         db_load = bool(args[2])
         limit = int(args[3])
         dataset_file = path + filename + str(limit)
+        # create the training data set
+        dataframe = load_training_data(dataset_file, db_load, limit, load_tags_from_database=False,
+                                       exclude_site_tags=True, exclude_assignment=True)
 
-        dataframe, model = load_classifier_model_and_dataframe(model_name=filename, dataset_file=dataset_file,
-                                                               limit=limit, load_from_database=db_load,
-                                                               load_tags_from_database=False, exclude_site_tags=True,
-                                                               exclude_assignment=True)
-        if model is None:
-            pass
-            # TODO: add function for training and creating new model
+        # TODO: add function for training and creating new model
     else:
         missing_args = argc
         if args is not None:
@@ -128,8 +125,10 @@ def handle_user_input(u_input=str):
         limit = DATABASE_LIMIT.get('10000')
         model_name = "svm_detector_split_" + str(limit)
         dataset_file = FILEPATH_TRAINING_DATA + str(limit)
-        __so_dataframe, __classifier_model = load_classifier_model_and_dataframe(model_name, dataset_file, limit, False)
-        print_classifier_results(__classifier_model)
+        __so_dataframe = load_training_data(dataset_file, False, limit)
+        __classifier_model = get_training_model(constants.FILEPATH_MODELS, model_name)
+        if __classifier_model is not None:
+            print_classifier_results(__classifier_model)
     elif command == USER_MENU_OPTION_LOAD_USER_MODEL_KEY:
         if args is not None:
             __classifier_model = load_user_defined_model(args)
