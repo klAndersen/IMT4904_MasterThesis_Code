@@ -2,10 +2,11 @@
 Main entry file, this is the file to use when starting the program
 """
 
+from sys import platform
 from constants import *
 from time import time, ctime
 from file_processing import *
-from train_classifier import print_classifier_results
+from train_classifier import print_classifier_results, create_and_save_model
 
 __so_dataframe = None
 __classifier_model = None
@@ -27,6 +28,42 @@ def end_program():
     exit(0)
 
 
+def check_path_ending(path):
+    """
+    Checks if path has a ending parameter
+
+    To avoid issues with wrong paths, and since many functions rely on split
+    paths and file names, this was added to account for missing ending for
+    file paths. Example: '/home/lucas/my_folder' vs '/home/lucas/my_folder/'.
+    This is achieved by using sys.platform.startswith().
+
+    https://docs.python.org/3.5/library/sys.html#sys.platform
+
+    |   ------------------------------
+    |   System      |   platform value
+    |   ------------------------------
+    |   Linux       |   'linux'
+    |   Windows     |   'win32'
+    |   Windows/Cygwin   |   'cygwin'
+    |   Mac OS X    |   'darwin'
+
+    Arguments:
+        path (str): Path to check
+
+    Returns:
+        str: path or modified path, where an '/' or '\' has been added
+    """
+    if platform.startswith('win32'):
+        sign = "\\"
+    else:
+        sign = "/"
+    path_length = len(path)-1
+    last_char = path[path_length]
+    if last_char != sign:
+        path += sign
+    return path
+
+
 def create_new_training_model(args=list):
     """
     Creates a new classifier model based on the given filename
@@ -35,7 +72,8 @@ def create_new_training_model(args=list):
         args (list): List containing the inputs used to create the new training model
 
     Returns:
-         tuple(pandas.DataFrame, model): DataFrame containing the data set that was used, and the created model
+         tuple(pandas.DataFrame, sklearn.model_selection._search.GridSearchCV):
+         DataFrame containing the data set that was used, and the created model
 
     """
     model = None
@@ -48,18 +86,25 @@ def create_new_training_model(args=list):
         filename = str(args[1])
         db_load = bool(args[2])
         limit = int(args[3])
+        path = check_path_ending(path)
         dataset_file = path + filename + str(limit)
+        print("Loading data set...")
         # create the training data set
         dataframe = load_training_data(dataset_file, db_load, limit, load_tags_from_database=False,
                                        exclude_site_tags=True, exclude_assignment=True)
-        # TODO: add function for training and creating new model
-        '''
-        1. Get questions and labels from dataframe
-        2. Lemmatize and stem questions
-        3. Set location for where to save model
-        4. Train model with set parameters (default)
-        5. Print results
-        '''
+        print("Retrieving questions and classification labels...")
+        training_data = dataframe[QUESTION_TEXT_KEY].copy()
+        class_labels = dataframe[CLASS_LABEL_KEY].copy()
+        print("Stemming questions...")
+        index = 0
+        for question in training_data:
+            training_data[index] = text_processor.stem_training_data(question)
+            index += 1
+        print("Starting training of model")
+        model_path = FILEPATH_MODELS + filename + str(limit) + ".pkl"
+        model = create_and_save_model(training_data, class_labels, model_path, predict_proba=True,
+                                      test_size=float(0.2), random_state=0, print_results=True,
+                                      use_sgd_settings=False)
     else:
         missing_args = argc
         if args is not None:
@@ -74,7 +119,7 @@ def predict_question_quality(model, question):
 
     The question is processed by looking for potential features, and thereafter
     affixes is removed and stemmed. The model then predicts the accuracy of the
-    question, which is printed on screen with the accuracy score and whether or
+    question, which is printed on screen with the probability score and whether or
     not it was considered a good or bad question.
 
      Arguments:
@@ -86,11 +131,10 @@ def predict_question_quality(model, question):
     processed_question = question.lower()
     prob_score = pred_prob_good = pred_prob_bad = -1
     processed_question = text_processor.process_question_for_prediction(processed_question)
-    # to be able to predict the probability for each class, it needs the predict_proba and probability=True
-    if hasattr(model, "predict_proba") and model.best_estimator_.probability:
-        print(model.predict_proba([processed_question]))
-        pred_prob_bad = model.predict_proba([processed_question])[0]
-        pred_prob_good = model.predict_proba([processed_question])[1]
+    # to be able to predict the probability for each class, it needs 'predict_proba' and 'probability=True'
+    if hasattr(model, "predict_proba") and model.best_estimator_.get_params('probability'):
+        pred_prob_bad = model.predict_proba([processed_question])[0][0]
+        pred_prob_good = model.predict_proba([processed_question])[0][1]
         can_predict_probability = True
     # get the predicted class label and convert it to text
     predicted_class = model.predict([processed_question])[0]
@@ -103,9 +147,10 @@ def predict_question_quality(model, question):
         if can_predict_probability:
             prob_score = pred_prob_good * 100
     # print the results
-    result_msg = "Your question is predicted to be a " + question_type + " question."
+    result_msg = "Your question is predicted to be a " + question_type + " question"
     if prob_score > -1:
-        result_msg += " Probability: " + str(prob_score) + "%."
+        result_msg += ", with a probability of " + str(prob_score) + "%"
+    result_msg += "."
     print(result_msg)
 
 
@@ -126,7 +171,9 @@ def load_user_defined_model(args=list):
     argc = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
     if (args is not None) and (len(args) >= argc):
         path = str(args[0])
+        path = check_path_ending(path)
         filename = str(args[1])
+        # check if suffix was added
         if len(args) > argc:
             suffix = str(args[2])
             model = get_training_model(path, filename, suffix)
@@ -187,7 +234,7 @@ def handle_user_input(u_input=str):
             print_classifier_results(__classifier_model)
     elif command == USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY:
         if args is not None:
-            create_new_training_model(args)
+            __so_dataframe, __classifier_model = create_new_training_model(args)
         else:
             temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
             print("Missing argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))

@@ -203,9 +203,9 @@ USER_MENU_OPTIONS = {
     },
     # train a new model
     USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY: {
-        USER_MENU_OPTION_HELP_TEXT_KEY: "Train a new model. Arguments: \n"
-                                        "\tpath: Path to directory with model(s) (e.g. /home/user/my_models/) \n"
-                                        "\tfilename: The models filename \n"
+        USER_MENU_OPTION_HELP_TEXT_KEY: "Train a new model based on an existing (or new) data set. Arguments: \n"
+                                        "\tpath: Path to directory with training data (e.g. /home/user/my_data/) \n"
+                                        "\tfilename: Filename for data set (model name will be the same as this) \n"
                                         "\tdb_load: Load from database (Enter 0: No, 1: Yes) \n"
                                         "\tlimit: Database limit (integer)",
         USER_MENU_OPTION_ARG_KEY: "--train",

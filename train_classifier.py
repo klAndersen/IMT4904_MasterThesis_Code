@@ -4,6 +4,7 @@ File for handling training of the classifiers
 
 from file_processing import dump_pickle_model
 
+import numpy
 from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import SGDClassifier
@@ -14,7 +15,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 def __create_default_sgd_pipeline(random_state=int(0)):
     """
-    Creates a pipeline with a CountVectorizer, TfidfTransformer and SGDClassifier where all values are set
+    Creates a pipeline with a CountVectorizer, TfidfTransformer and SGD Classifier where all values are set
 
     Arguments:
         random_state (int): Value for random_state. 0 = no random state.
@@ -33,7 +34,7 @@ def __create_default_sgd_pipeline(random_state=int(0)):
 
 def __create_default_svc_pipeline(predict_proba=True, random_state=int(0)):
     """
-    Creates a pipeline with a CountVectorizer, TfidfTransformer and SGDClassifier where all values are set
+    Creates a pipeline with a CountVectorizer, TfidfTransformer and SVC Classifier where all values are set
 
     Arguments:
         predict_proba (bool): Should probability be calculated (goes slower, but allows to see class probability).
@@ -73,12 +74,13 @@ def __create_default_svc_grid_parameters():
     """
     Creates a dictionary containing parameters to use in GridSearch, where all values are set
     """
-    param_svm = [
-        # Values for the classifier (C & LINEAR kernel)
-        {'classifier__C': [1, 10, 100, 1000], 'classifier__kernel': ['linear']},
-        # Values for the classifier (C, Gamma & RBF kernel)
-        {'classifier__C': [1, 10, 100, 1000], 'classifier__gamma': [0.001, 0.0001], 'classifier__kernel': ['rbf']}
-    ]
+    param_svm = {
+        'vect__min_df': (0.01, 0.025, 0.05, 0.075, 0.1),
+        'vect__max_df': (0.25, 0.5, 0.75, 1.0),
+        'clf__C': numpy.logspace(-2, 10, 13),
+        'clf__kernel': ('linear', 'rbf'),
+        'clf__gamma': numpy.logspace(-9, 3, 13)
+    }
     return param_svm
 
 
@@ -151,10 +153,14 @@ def create_and_save_model(train_data, labels, model_path=str, predict_proba=True
     svm_detector = grid_svm.fit(question_train, label_train)
     dump_pickle_model(svm_detector, model_path)
     if print_results:
+        print("Classifier results:")
         print_classifier_results(svm_detector)
         if test_size > 0:
             predict_split = svm_detector.predict(question_test)
+            print("Confusion matrix for test set classification:")
             print(confusion_matrix(label_test, predict_split))
+            print("Accuracy score for test set:")
             print(accuracy_score(label_test, predict_split))
+            print("Classification Report:")
             print(classification_report(label_test, predict_split))
     return svm_detector

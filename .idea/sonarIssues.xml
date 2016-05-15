@@ -68,6 +68,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/feat_detect_models/README.md">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/feature_detectors/README.md">
           <value>
             <set />
@@ -99,6 +104,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/mysqldatabase.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/pickle_models/README.md">
           <value>
             <set />
           </value>
@@ -228,6 +238,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/test_all_alg_pickle/README.md">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/test_all_algorithms.py">
           <value>
             <set />
@@ -239,6 +254,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/train_classifier.py">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/training_data/README.md">
           <value>
             <set />
           </value>

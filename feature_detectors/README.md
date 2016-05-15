@@ -8,5 +8,5 @@ Filename explanation:
 - _type: Type indicates the type of feature that was used to create this file
 
 E.g. "feature_detector_10000_homework.csv" indicates that this file 
-contains 20.000 rows (10.000 good and bad questions), and that it  
+contains 20.000 rows (10.000 good and bad questions), and that it 
  contains the phrases 'has_homework' and 'has_assignment'.
