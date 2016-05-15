@@ -286,6 +286,7 @@ def __create_and_save_feature_detector_homework(file_location=str, filename=str,
     index = 0
     assignment_list = constants.ASSIGNMENT_LIST
     homework_list = constants.HOMEWORK_SYNONMS_LIST
+    homework_list.sort(key=len, reverse=True)
     has_homework = constants.QUESTION_HAS_HOMEWORK_KEY
     has_assignment = constants.QUESTION_HAS_ASSIGNMENT_KEY
     # loop through questions to find homework and its synonyms

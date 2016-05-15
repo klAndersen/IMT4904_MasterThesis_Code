@@ -103,6 +103,7 @@ def remove_html_tags_from_text(html_data, add_detectors=True, attached_tags=list
             # due to external tags also overwriting others, this has been omitted
             stripped_html = __set_has_tag(stripped_html, attached_tags, site_tags, exclude_site_tags)
             homework_list = constants.HOMEWORK_SYNONMS_LIST
+            homework_list.sort(key=len, reverse=True)
             replacement_text = constants.QUESTION_HAS_HOMEWORK_KEY
             stripped_html = __set_has_homework_or_assignment(stripped_html, replacement_text, homework_list)
             if not exclude_assignment:
@@ -200,6 +201,9 @@ def __set_has_homework_or_assignment(text=str, replacement_text=str, word_list=l
         word_lem = wordnet.morphy(word, wordnet.NOUN)
         if (word_lem is not None) and (word_lem in word_list):
             word_set.add(word)
+    # convert to list and sort based on length
+    word_set = list(word_set)
+    word_set.sort(key=len, reverse=True)
     # replace those words, if any, with the replacement text
     for word in word_set:
         text = text.replace(word, replacement_text)
