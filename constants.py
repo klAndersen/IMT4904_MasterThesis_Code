@@ -193,11 +193,11 @@ USER_MENU_OPTIONS = {
         USER_MENU_OPTION_HELP_TEXT_KEY: "Load user created model. Arguments: \n"
                                         "\tpath: Path to directory with model(s) (e.g. /home/user/my_models/) \n"
                                         "\tfilename: The models filename \n"
-                                        "\tsuffix: File type (e.g. '.pkl')",
+                                        "\tsuffix: File type - Optional (default: '.pkl')",
         # optional argument
         USER_MENU_OPTION_ARG_KEY: "--load-user-model",
         # amount of arguments required by this option
-        USER_MENU_OPTION_ARGC_KEY: 3,
+        USER_MENU_OPTION_ARGC_KEY: 2,
         # required argument description
         USER_MENU_OPTION_METAVAR_KEY: ("path",  "filename", "suffix")
     },
@@ -215,7 +215,8 @@ USER_MENU_OPTIONS = {
     },
     # test out new prediction(s)
     USER_MENU_OPTION_NEW_PREDICTION: {
-        USER_MENU_OPTION_HELP_TEXT_KEY: "Predict the quality of the entered question",
+        USER_MENU_OPTION_HELP_TEXT_KEY: "Predict the quality of the entered question. Arguments: \n"
+                                        "\tquestion: Question to predict quality of ",
         USER_MENU_OPTION_ARG_KEY: "--predict",
         USER_MENU_OPTION_ARGC_KEY: 1,
         # required argument description

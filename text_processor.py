@@ -328,3 +328,23 @@ def process_tags(tags=list):
         new_tag.sort(key=len, reverse=True)
         new_tag_list.append(new_tag)
     return new_tag_list
+
+
+def process_question_for_prediction(question):
+    """
+    Runs feature detection on the users question, removes affixes and stems before returning it
+
+    Arguments:
+        question (str):
+
+    Returns:
+        str: The processed question ready for prediction
+    """
+    question = __set_has_hexadecimal(question)
+    question = __set_has_numeric(question)
+    homework_list = constants.HOMEWORK_SYNONMS_LIST
+    homework_list.sort(key=len, reverse=True)
+    replacement_text = constants.QUESTION_HAS_HOMEWORK_KEY
+    question = __set_has_homework_or_assignment(question, replacement_text, homework_list)
+    question = stem_training_data(question)
+    return question

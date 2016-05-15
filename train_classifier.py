@@ -31,11 +31,12 @@ def __create_default_sgd_pipeline(random_state=int(0)):
     return pipeline
 
 
-def __create_default_svc_pipeline(random_state=int(0)):
+def __create_default_svc_pipeline(predict_proba=True, random_state=int(0)):
     """
     Creates a pipeline with a CountVectorizer, TfidfTransformer and SGDClassifier where all values are set
 
     Arguments:
+        predict_proba (bool): Should probability be calculated (goes slower, but allows to see class probability).
         random_state (int): Value for random_state. 0 = no random state.
 
     Returns:
@@ -45,7 +46,7 @@ def __create_default_svc_pipeline(random_state=int(0)):
     return Pipeline([
         ('vect', CountVectorizer(analyzer='word', stop_words='english')),
         ('tfidf', TfidfTransformer()),
-        ('clf', SVC(random_state=random_state)),
+        ('clf', SVC(probability=predict_proba, random_state=random_state)),
     ])
 
 
@@ -113,7 +114,7 @@ def create_gridsearch(pipeline, parameters, cv, refit=True, n_jobs=-1, scoring="
     )
 
 
-def create_and_save_model(train_data, labels, model_path=str, test_size=float(0.2), random_state=0,
+def create_and_save_model(train_data, labels, model_path=str, predict_proba=True, test_size=float(0.2), random_state=0,
                           print_results=True, use_sgd_settings=False):
     """
     Creates a classifier model by using ```train_test_split``` to split data and ```GridSearchCV``` to select best fit
@@ -123,9 +124,14 @@ def create_and_save_model(train_data, labels, model_path=str, test_size=float(0.
         labels: Labels for the training data
         model_path (str): The location to store the created model
         test_size (float): Size of test set (amount of training data to use for testing classifier) (default=0.2)
+        predict_proba (bool): Should probability be calculated (goes slower, but allows to see class probability).
+                            Only for SVC
         random_state (int): Random state
         print_results (bool): Should the results of the classifier be printed?
         use_sgd_settings (bool): If True, run exhaustive SGD search. If False, use exhaustive SVC
+
+    Returns:
+        sklearn.model_selection._search.GridSearchCV: The ```GridSearchCV``` classifier model
 
     """
     # split all the training data into both training and test data
@@ -139,7 +145,7 @@ def create_and_save_model(train_data, labels, model_path=str, test_size=float(0.
         pipeline_svm = __create_default_sgd_pipeline()
         param_svm = __create_default_sgd_grid_parameters()
     else:
-        pipeline_svm = __create_default_svc_pipeline()
+        pipeline_svm = __create_default_svc_pipeline(predict_proba)
         param_svm = __create_default_svc_grid_parameters()
     grid_svm = create_gridsearch(pipeline_svm, param_svm, cv)
     svm_detector = grid_svm.fit(question_train, label_train)
@@ -151,3 +157,4 @@ def create_and_save_model(train_data, labels, model_path=str, test_size=float(0.
             print(confusion_matrix(label_test, predict_split))
             print(accuracy_score(label_test, predict_split))
             print(classification_report(label_test, predict_split))
+    return svm_detector

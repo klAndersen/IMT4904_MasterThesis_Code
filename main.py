@@ -70,25 +70,43 @@ def create_new_training_model(args=list):
 
 def predict_question_quality(model, question):
     """
+    Predicts the quality of the question based on the classifier model
+
+    The question is processed by looking for potential features, and thereafter
+    affixes is removed and stemmed. The model then predicts the accuracy of the
+    question, which is printed on screen with the accuracy score and whether or
+    not it was considered a good or bad question.
 
      Arguments:
-        model:
+        model (sklearn.model_selection._search.GridSearchCV): Classifier model
         question (str): Question to predict quality of
 
     """
-    # TODO: Make a prediction based on loaded model and entered question
-    '''
-    0. Add a note that code samples are not tested
-    1. Load model (if not loaded; give error msg)
-    2. Check if question has been entered
-    3. Convert input to string (bcz args=array)
-    4. Convert question to lower
-    5. Run feature detection
-    6. Lemmatize and stem question
-    7. Pass question to model for prediction
-    8. Print results
-    '''
-    pass
+    can_predict_probability = False
+    processed_question = question.lower()
+    prob_score = pred_prob_good = pred_prob_bad = -1
+    processed_question = text_processor.process_question_for_prediction(processed_question)
+    # to be able to predict the probability for each class, it needs the predict_proba and probability=True
+    if hasattr(model, "predict_proba") and model.best_estimator_.probability:
+        print(model.predict_proba([processed_question]))
+        pred_prob_bad = model.predict_proba([processed_question])[0]
+        pred_prob_good = model.predict_proba([processed_question])[1]
+        can_predict_probability = True
+    # get the predicted class label and convert it to text
+    predicted_class = model.predict([processed_question])[0]
+    if predicted_class == -1:
+        question_type = "bad"
+        if can_predict_probability:
+            prob_score = pred_prob_bad * 100
+    else:
+        question_type = "good"
+        if can_predict_probability:
+            prob_score = pred_prob_good * 100
+    # print the results
+    result_msg = "Your question is predicted to be a " + question_type + " question."
+    if prob_score > -1:
+        result_msg += " Probability: " + str(prob_score) + "%."
+    print(result_msg)
 
 
 def load_user_defined_model(args=list):
@@ -100,17 +118,20 @@ def load_user_defined_model(args=list):
                      3 arguments; path, filename and file-suffix
 
     Returns:
-        model: Trained classifier model at given location
+        sklearn.model_selection._search.GridSearchCV: Trained classifier model at given location
 
     """
     model = None
     temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_LOAD_USER_MODEL_KEY)
     argc = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
-    if (args is not None) and (len(args) == argc):
+    if (args is not None) and (len(args) >= argc):
         path = str(args[0])
         filename = str(args[1])
-        suffix = str(args[2])
-        model = get_training_model(path, filename, suffix)
+        if len(args) > argc:
+            suffix = str(args[2])
+            model = get_training_model(path, filename, suffix)
+        else:
+            model = get_training_model(path, filename)
     else:
         missing_args = argc
         if args is not None:
@@ -131,7 +152,10 @@ def handle_user_input(u_input=str):
     global __classifier_model
     args = None
     if len(u_input) > 1:
-        command, *args = u_input.split()
+        if u_input[0] == USER_MENU_OPTION_NEW_PREDICTION:
+            command, args = u_input.split(" ", 1)
+        else:
+            command, *args = u_input.split()
     else:
         command = u_input
     if command == USER_MENU_OPTION_HELP_KEY:
@@ -141,8 +165,9 @@ def handle_user_input(u_input=str):
             print("No model is loaded. Load default model by entering 'd' or 'l path filename suffix'.")
         else:
             if args is not None:
-                question = args
-                predict_question_quality(__classifier_model, question)
+                predict_question_quality(__classifier_model, args)
+            else:
+                print("No question entered. Please enter a question to predict.")
     elif command == USER_MENU_OPTION_LOAD_DEFAULT_KEY:
         limit = DATABASE_LIMIT.get('10000')
         model_name = "svm_detector_split_" + str(limit)
