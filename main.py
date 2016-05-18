@@ -2,7 +2,6 @@
 Main entry file, this is the file to use when starting the program
 """
 
-from sys import platform
 from constants import *
 from time import time, ctime
 from file_processing import *
@@ -37,26 +36,16 @@ def check_path_ending(path):
     file paths. Example: '/home/lucas/my_folder' vs '/home/lucas/my_folder/'.
     This is achieved by using sys.platform.startswith().
 
-    https://docs.python.org/3.5/library/sys.html#sys.platform
-
-    |   ------------------------------
-    |   System      |   platform value
-    |   ------------------------------
-    |   Linux       |   'linux'
-    |   Windows     |   'win32'
-    |   Windows/Cygwin   |   'cygwin'
-    |   Mac OS X    |   'darwin'
-
     Arguments:
         path (str): Path to check
 
     Returns:
-        str: path or modified path, where an '/' or '\' has been added
+        str: path or modified path, where an '/' or '\\' has been added
     """
-    if platform.startswith('win32'):
-        sign = "\\"
+    if PLATFORM_IS_WINDOWS:
+        sign = WINDOWS_PATH_SEPARATOR
     else:
-        sign = "/"
+        sign = LINUX_PATH_SEPARATOR
     path_length = len(path)-1
     last_char = path[path_length]
     if last_char != sign:

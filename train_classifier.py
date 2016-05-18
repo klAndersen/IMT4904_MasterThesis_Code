@@ -2,10 +2,10 @@
 File for handling training of the classifiers
 """
 
+from constants import PLATFORM_IS_WINDOWS, CPU_COUNT
 from file_processing import dump_pickle_model
 
 import numpy
-from sys import platform
 from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import SGDClassifier
@@ -75,28 +75,12 @@ def __create_default_svc_grid_parameters():
     """
     Creates a dictionary containing parameters to use in GridSearch, where all values are set
     """
-
-    C_range = numpy.logspace(-2, 10, 13)
-    gamma_range = numpy.logspace(-9, 3, 13)
-    param_svm = dict(clf__C=C_range, clf__kernel=['linear']) # clf__gamma=gamma_range,
-    # param_svm = dict(clf__gamma=gamma_range, clf__C=C_range)
-    # c = numpy.logspace(-2, 10, 13),
-    # gamma = numpy.logspace(-9, 3, 13)
     # t C:\Users\KnutLucas\Documents\GitHub\IMT4904_MasterThesis_Code\training_data\ training_data_10000 0
-    # # c = [1, 10, 100, 1000]
-    # param_svm = [{
-    #     'clf__kernel': ['linear'],
-    #     'clf__C': c
-    # }]
-
-    # param_svm = [
-    #     {'clf__C': [1, 10, 100, 1000], 'clf__kernel': ['linear']},
-    #     # {'clf__C': [1, 10, 100, 1000], 'clf__gamma': [0.001, 0.0001], 'clf__kernel': ['rbf']},
-    # ]
-    return [
+    param_svm = [
         {'clf__C': [1, 10, 100, 1000], 'clf__kernel': ['linear']},
         {'clf__C': [1, 10, 100, 1000], 'clf__gamma': [0.001, 0.0001], 'clf__kernel': ['rbf']},
     ]
+    return param_svm
 
 
 def print_classifier_results(svm_detector):
@@ -122,8 +106,8 @@ def create_gridsearch(pipeline, parameters, cv, refit=True, n_jobs=-1, scoring="
     """
     # according to this post, verbose doesn't work well with multi-threading on windows:
     # http://stackoverflow.com/questions/28005307/gridsearchcv-no-reporting-on-high-verbosity
-    if platform.startswith('win32') and n_jobs == -1:
-        n_jobs = 7
+    if PLATFORM_IS_WINDOWS and n_jobs == -1:
+        n_jobs = CPU_COUNT - 1
 
     return GridSearchCV(
         estimator=pipeline,

@@ -2,6 +2,8 @@
 File containing various constants used in this project
 """
 
+import multiprocessing
+from sys import platform
 from re import compile, IGNORECASE, VERBOSE
 
 DATABASE_LIMIT = {
@@ -251,4 +253,53 @@ USER_MENU_OPTIONS = {
 }
 """
 Dictionary containing the options available upon program start
+"""
+
+"""
+    https://docs.python.org/3.5/library/sys.html#sys.platform
+
+    |   ------------------------------
+    |   System      |   platform value
+    |   ------------------------------
+    |   Linux       |   'linux'
+    |   Windows     |   'win32'
+    |   Windows/Cygwin   |   'cygwin'
+    |   Mac OS X    |   'darwin'
+"""
+PLATFORM_IS_WINDOWS = platform.startswith("win32")
+"""
+Constant value for OS Platform: Windows (win32)
+"""
+
+PLATFORM_IS_CYGWIN = platform.startswith("cygwin")
+"""
+Constant value for OS Platform: CygWin
+"""
+
+PLATFORM_IS_LINUX = platform.startswith("linux")
+"""
+Constant value for OS Platform: Linux
+"""
+
+PLATFORM_IS_MAC = platform.startswith("darwin")
+"""
+Constant value for OS Platform: Mac (darwin)
+"""
+
+CPU_COUNT = multiprocessing.cpu_count()
+"""
+Get the number of Logical CPUs for this computer
+Used to adjust n_jobs for Windows systems
+"""
+
+WINDOWS_PATH_SEPARATOR = "\\"
+"""
+Path separator for Windows systems, e.g:
+C:\\Users\\<username>\\Documents
+"""
+
+LINUX_PATH_SEPARATOR = "/"
+"""
+Path separator for Linux and Unix, e.g:
+/home/<username>/Documents/
 """
