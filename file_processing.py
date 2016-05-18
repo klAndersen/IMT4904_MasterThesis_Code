@@ -74,9 +74,9 @@ def get_training_model(path=str, model_name=str, suffix=".pkl"):
 
 
 @mem.cache
-def load_training_data(file_location=str, load_from_database=False, limit=int(1000), return_svmlight=False,
+def load_training_data(file_location=str, load_from_database=False, limit=int(1000),
                        create_feature_detectors=False, create_unprocessed=False, load_tags_from_database=False,
-                       exclude_site_tags=False, exclude_assignment=False):
+                       tags_filename="", exclude_site_tags=False, exclude_assignment=False):
     """
     Loads training data either from database (if ```load_from_database``` is True) or from file
 
@@ -94,10 +94,10 @@ def load_training_data(file_location=str, load_from_database=False, limit=int(10
         file_location (str): Path + filename of files to save/load (e.g. 'path/training_data')
         load_from_database (bool): Should data be retrieved from database?
         limit (int): Amount of records to retrieve from database (default=1000)
-        return_svmlight (bool): Should ```sklearn.datasets.load_svmlight_file``` be returned?
         create_feature_detectors (bool): Is this function being called to create feature detectors?
         create_unprocessed (bool): Is this function being called to create a clean, unprocessed dataset?
         load_tags_from_database (bool): Should site tags be loaded (only needed when loading dataset from database)?
+        tags_filename (str): Optional filename; e.g. if using multiple StackExchange sites this should be used
         exclude_site_tags (bool): Should the site tags be excluded from feature detection?
         exclude_assignment (bool): Should 'assignment' words be excluded from feature detection?
 
@@ -111,46 +111,39 @@ def load_training_data(file_location=str, load_from_database=False, limit=int(10
         | ```MySQLDatabase().retrieve_training_data```
         | ```pandas.DataFrame.to_csv```
         | ```pandas.DataFrame.from_csv```
-        | ```sklearn.datasets.dump_svmlight_file```
-        | ```sklearn.datasets.load_svmlight_file```
     """
-    svm_file = file_location + ".dat"
     csv_file = file_location + ".csv"
     if load_from_database:
         if not exclude_site_tags:
-            site_tags = load_tags(load_tags_from_database)
+            site_tags = load_tags(tags_filename, load_tags_from_database)
         else:
             site_tags = None
-        comment = u"label: (-1: Bad question, +1: Good question); features: (term_id, frequency)"
-        MySQLDatabase().set_vote_value_params()
-        data = MySQLDatabase().retrieve_training_data(limit, create_feature_detectors, create_unprocessed,
-                                                      site_tags, exclude_site_tags, exclude_assignment)
-        # create a term-document matrix
-        vectorizer = CountVectorizer(analyzer='word', min_df=0.01, stop_words="english")
-        td_matrix = vectorizer.fit_transform(data.get(constants.QUESTION_TEXT_KEY))
-        data.to_csv(csv_file)
-        dump_svmlight_file(td_matrix, data[constants.CLASS_LABEL_KEY], f=svm_file, comment=comment)
-    if not return_svmlight:
-        return DataFrame.from_csv(csv_file)
-    return DataFrame.from_csv(csv_file), load_svmlight_file(svm_file)
+        mysqldb = MySQLDatabase()
+        mysqldb.set_vote_value_params()
+        data = mysqldb.retrieve_training_data(limit, create_feature_detectors, create_unprocessed,
+                                              site_tags, exclude_site_tags, exclude_assignment)
+        data.to_csv(csv_file, encoding='utf-8')
+        return data
+    return DataFrame.from_csv(csv_file, encoding='utf-8')
 
 
-def load_tags(load_from_database=False):
+def load_tags(tags_filename="", load_from_database=False):
     """
     Loads tags either from database (if ```load_from_database``` is True), else loads from file (presuming it exists)
 
     Arguments:
+        tags_filename (str): Optional filename; e.g. if using multiple StackExchange sites this should be used
         load_from_database (bool): Should tags be loaded from the database?
 
     Returns:
          list: List containing the tags retrieved from the database
     """
-    csv_file = constants.FILEPATH_TRAINING_DATA + "Tags.csv"
+    csv_file = constants.FILEPATH_TRAINING_DATA + tags_filename + "Tags.csv"
     if load_from_database:
         tag_data = MySQLDatabase().retrieve_all_tags()
-        tag_data.to_csv(csv_file)
+        tag_data.to_csv(csv_file, encoding='utf-8')
     else:
-        tag_data = DataFrame.from_csv(csv_file)
+        tag_data = DataFrame.from_csv(csv_file, encoding='utf-8')
     # convert DataFrame to list, and sort list based on tag length
     tag_list = tag_data[constants.TAG_NAME_COLUMN].tolist()
     tag_list.sort(key=len, reverse=True)
@@ -158,7 +151,7 @@ def load_tags(load_from_database=False):
 
 
 @mem.cache
-def __create_and_save_feature_detectors(limit=int(1000)):
+def create_and_save_feature_detectors(filename, limit=int(1000)):
     """
     Creates singular feature files where the amount of rows retrieved is equal to limit.
     The files are stored in ./feature_detectors
@@ -171,57 +164,62 @@ def __create_and_save_feature_detectors(limit=int(1000)):
     - has_hexadecimal: Replaces hexadecimal values with this text
 
     Arguments:
+        filename (str): The name of the dataset that contains the unprocessed data
         limit (int): Amount of rows to retrieve from database
 
+    Returns:
+        pandas.DataFrame: DataFrame containing the loaded, unprocessed dataset
+
     """
-    csv_file = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed.csv"
+    csv_file = constants.FILEPATH_TRAINING_DATA + filename + str(limit) + "_unprocessed.csv"
     file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
     try:
-        data_copy = DataFrame.from_csv(csv_file)
+        data_copy = DataFrame.from_csv(csv_file, encoding='utf-8')
+        loaded_dataset = DataFrame.from_csv(csv_file, encoding='utf-8')
     except OSError:
         feedback_msg = "Could not find unprocessed data set. File:" + csv_file \
-                       + ". \nAttempting to retrieve from Database:"
+                       + ". \nAttempting to retrieve from Database..."
         print(feedback_msg)
-        MySQLDatabase().set_vote_value_params()
-        __create_unprocessed_dataset_dump(limit)
+        loaded_dataset = create_unprocessed_dataset_dump(filename, limit)
         feedback_msg = "Data loaded successfully!"
         print(feedback_msg)
-        data_copy = DataFrame.from_csv(csv_file)
+        data_copy = DataFrame.from_csv(csv_file, encoding='utf-8')
     # create feature detector for code blocks
     feedback_msg = "Creating singular feature detector: "
     print(feedback_msg, "Code blocks")
-    filename = constants.QUESTION_HAS_CODEBLOCK_KEY
-    __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location, filename, data_copy)
+    new_filename = filename + constants.QUESTION_HAS_CODEBLOCK_KEY.strip()
+    __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location, new_filename, data_copy)
     # create feature detector for links
     print(feedback_msg, "Links")
-    data_copy = DataFrame.from_csv(csv_file)
-    filename = constants.QUESTION_HAS_LINKS_KEY
-    __create_and_save_feature_detector_html(text_processor.__set_has_link, file_location, filename, data_copy)
+    data_copy = DataFrame.from_csv(csv_file, encoding='utf-8')
+    new_filename = filename + constants.QUESTION_HAS_LINKS_KEY.strip()
+    __create_and_save_feature_detector_html(text_processor.__set_has_link, file_location, new_filename, data_copy)
     # create feature detector for has_homework & has_assignment
     print(feedback_msg, "Homework")
     data_copy = get_processed_dataset(csv_file)
-    filename = constants.QUESTION_HAS_HOMEWORK_KEY
-    __create_and_save_feature_detector_homework(file_location, filename, data_copy)
+    new_filename = filename + constants.QUESTION_HAS_HOMEWORK_KEY.strip()
+    __create_and_save_feature_detector_homework(file_location, new_filename, data_copy)
     # create feature detector for has_numeric
     print(feedback_msg, "Numerical")
     data_copy = get_processed_dataset(csv_file)
-    filename = constants.QUESTION_HAS_NUMERIC_KEY
-    __create_and_save_feature_detector(text_processor.__set_has_numeric, file_location, filename, data_copy)
+    new_filename = filename + constants.QUESTION_HAS_NUMERIC_KEY.strip()
+    __create_and_save_feature_detector(text_processor.__set_has_numeric, file_location, new_filename, data_copy)
     # create feature detector for has_hexadecimal
     print(feedback_msg, "Hexadecimal")
     data_copy = get_processed_dataset(csv_file)
-    filename = constants.QUESTION_HAS_HEXADECIMAL_KEY
-    __create_and_save_feature_detector(text_processor.__set_has_hexadecimal, file_location, filename, data_copy)
+    new_filename = filename + constants.QUESTION_HAS_HEXADECIMAL_KEY.strip()
+    __create_and_save_feature_detector(text_processor.__set_has_hexadecimal, file_location, new_filename, data_copy)
     # create feature detector for tags
-    filename = "has_tags"
+    new_filename = filename + "has_tags"
     print(feedback_msg, "Tags")
     data_copy = get_processed_dataset(csv_file)
-    __create_and_save_feature_detectors_tags(file_location, filename, data_copy)
+    __create_and_save_feature_detectors_tags(file_location, new_filename, data_copy)
+    return loaded_dataset
 
 
 def get_processed_dataset(csv_filename):
     index = 0
-    dataset = DataFrame.from_csv(csv_filename)
+    dataset = DataFrame.from_csv(csv_filename, encoding='utf-8')
     # convert all the HTML to normal text
     for question in dataset[constants.QUESTION_TEXT_KEY]:
         question = text_processor.remove_html_tags_from_text(question, False)
@@ -250,7 +248,7 @@ def __create_and_save_feature_detector(exec_function, file_location=str, filenam
         index += 1
     # save to file
     filename = file_location + filename + ".csv"
-    training_data.to_csv(filename)
+    training_data.to_csv(filename, encoding='utf-8')
 
 
 def __create_and_save_feature_detector_homework(file_location=str, filename=str, training_data=DataFrame):
@@ -278,7 +276,7 @@ def __create_and_save_feature_detector_homework(file_location=str, filename=str,
         index += 1
     # save to file
     filename = file_location + filename + ".csv"
-    training_data.to_csv(filename)
+    training_data.to_csv(filename, encoding='utf-8')
 
 
 def __create_and_save_feature_detector_html(exec_function, file_location=str, filename=str, training_data=DataFrame):
@@ -308,7 +306,7 @@ def __create_and_save_feature_detector_html(exec_function, file_location=str, fi
         index += 1
     # save to file
     filename = file_location + filename + ".csv"
-    training_data.to_csv(filename)
+    training_data.to_csv(filename, encoding='utf-8')
 
 
 def __create_and_save_feature_detectors_tags(file_location=str, filename=str, training_data=DataFrame):
@@ -337,7 +335,7 @@ def __create_and_save_feature_detectors_tags(file_location=str, filename=str, tr
             file = "Tags" + suffix
             if file in selected_files_only:
                 file = constants.FILEPATH_TRAINING_DATA + file
-                tag_data = DataFrame.from_csv(file)
+                tag_data = DataFrame.from_csv(file, encoding='utf-8')
     except Exception as ex:
         print("Failed at loading Tags file: ", ex)
     # was the Tags data successfully loaded from file?
@@ -354,10 +352,10 @@ def __create_and_save_feature_detectors_tags(file_location=str, filename=str, tr
         index += 1
     # save to file
     filename = file_location + filename + ".csv"
-    training_data.to_csv(filename)
+    training_data.to_csv(filename, encoding='utf-8')
 
 
-def __create_unprocessed_dataset_dump(limit=int(1000)):
+def create_unprocessed_dataset_dump(filename, limit=int(1000)):
     """
     Creates a clean dataset without any form of processing.
 
@@ -367,10 +365,13 @@ def __create_unprocessed_dataset_dump(limit=int(1000)):
     the processed training sets.
 
     Arguments:
+        filename (str): The name of the file
         limit (int): Amount of rows to retrieve from database
 
-    """
-    file_location = constants.FILEPATH_TRAINING_DATA + str(limit) + "_unprocessed"
-    load_training_data(file_location, True, limit, create_unprocessed=True)
+    Returns:
+        pandas.DataFrame: DataFrame containing the unprocessed data loaded from database
 
-# __create_and_save_feature_detectors(10000)
+    """
+    file_location = constants.FILEPATH_TRAINING_DATA + filename + str(limit) + "_unprocessed"
+    return load_training_data(file_location, True, limit, create_unprocessed=True, tags_filename=filename,
+                              load_tags_from_database=True)

@@ -6,6 +6,64 @@ import multiprocessing
 from sys import platform
 from re import compile, IGNORECASE, VERBOSE
 
+"""
+    https://docs.python.org/3.5/library/sys.html#sys.platform
+
+    |   ------------------------------
+    |   System      |   platform value
+    |   ------------------------------
+    |   Linux       |   'linux'
+    |   Windows     |   'win32'
+    |   Windows/Cygwin   |   'cygwin'
+    |   Mac OS X    |   'darwin'
+"""
+PLATFORM_IS_WINDOWS = platform.startswith("win32")
+"""
+Constant value for OS Platform: Windows (win32)
+"""
+
+PLATFORM_IS_CYGWIN = platform.startswith("cygwin")
+"""
+Constant value for OS Platform: CygWin
+"""
+
+PLATFORM_IS_LINUX = platform.startswith("linux")
+"""
+Constant value for OS Platform: Linux
+"""
+
+PLATFORM_IS_MAC = platform.startswith("darwin")
+"""
+Constant value for OS Platform: Mac (darwin)
+"""
+
+WINDOWS_PATH_SEPARATOR = "\\"
+"""
+Path separator for Windows systems, e.g:
+C:\\Users\\<username>\\Documents
+"""
+
+LINUX_PATH_SEPARATOR = "/"
+"""
+Path separator for Linux and Unix, e.g:
+/home/<username>/Documents/
+"""
+
+
+def get_platform_separator():
+    """
+    Returns the correct path separator for the OS running this program (e.g. Windows: '\\', *nix: '/'
+
+    Returns:
+         str: The path separator for the OS running this program
+    """
+    if PLATFORM_IS_WINDOWS:
+        sign = WINDOWS_PATH_SEPARATOR
+    else:
+        sign = LINUX_PATH_SEPARATOR
+    return sign
+
+
 DATABASE_LIMIT = {
     '10': 10,
     '100': 100,
@@ -13,17 +71,19 @@ DATABASE_LIMIT = {
     '10000': 10000
 }
 
-FILEPATH_FEATURE_DETECTOR = "./feature_detectors/feature_detector_"
+SEPARATOR = get_platform_separator()
+
+FILEPATH_FEATURE_DETECTOR = "." + SEPARATOR + "feature_detectors" + SEPARATOR + "feature_detector_"
 """
 The path to where the different feature detectors can be found
 """
 
-FILEPATH_TRAINING_DATA = "./training_data/training_data_"
+FILEPATH_TRAINING_DATA = "." + SEPARATOR + "training_data" + SEPARATOR + ""
 """
 The path to where the training data can be found
 """
 
-FILEPATH_MODELS = "./pickle_models/"
+FILEPATH_MODELS = "." + SEPARATOR + "pickle_models" + SEPARATOR + ""
 """
 The path to were the produced models can be found
 """
@@ -187,8 +247,24 @@ USER_MENU_OPTION_LOAD_DEFAULT_KEY = "d"
 USER_MENU_OPTION_METAVAR_KEY = "metavar"
 USER_MENU_OPTION_LOAD_USER_MODEL_KEY = "l"
 USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY = "t"
+USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET = "u"
 
 USER_MENU_OPTIONS = {
+    # create a new, unprocessed dataset
+    USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET: {
+        USER_MENU_OPTION_HELP_TEXT_KEY: "Create an unprocessed dataset based on database content "#Create a new, unprocessed dataset from the database "
+                                        "(from database set in dbconfig.py). \n\tArguments: \n"
+                                        "\tfilename: Filename for dataset (model name will be the same as this) \n"
+                                        "\tlimit: Limit for database row retrieval (integer) \n"
+                                        "\tfeature_detectors: Create singular feature detectors based on dataset? "
+                                        "(Enter 0: No, 1: Yes) \n"
+                                        "\tcreate_model: Create classifier model based on dataset? "
+                                        "(Enter 0: No, 1: Yes)",
+        USER_MENU_OPTION_ARG_KEY: "--unprocessed",
+        USER_MENU_OPTION_ARGC_KEY: 4,
+        # required argument description
+        USER_MENU_OPTION_METAVAR_KEY: ("filename", "limit", "feature_detectors", "create_model")
+    },
     # load a model that was created by the user
     USER_MENU_OPTION_LOAD_USER_MODEL_KEY: {
         # help menu displayed when using -h or --help
@@ -205,9 +281,9 @@ USER_MENU_OPTIONS = {
     },
     # train a new model
     USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY: {
-        USER_MENU_OPTION_HELP_TEXT_KEY: "Train a new model based on an existing (or new) data set. Arguments: \n"
+        USER_MENU_OPTION_HELP_TEXT_KEY: "Train a new model based on an existing (or new) dataset. Arguments: \n"
                                         "\tpath: Path to directory with training data (e.g. /home/user/my_data/) \n"
-                                        "\tfilename: Filename for data set (model name will be the same as this) \n"
+                                        "\tfilename: Filename for dataset (model name will be the same as this) \n"
                                         "\tdb_load: Load from database (Enter 0: No, 1: Yes) \n"
                                         "\tlimit: Limit for database row retrieval (integer) - Optional unless "
                                         "'db_load' is '1'",
@@ -255,51 +331,8 @@ USER_MENU_OPTIONS = {
 Dictionary containing the options available upon program start
 """
 
-"""
-    https://docs.python.org/3.5/library/sys.html#sys.platform
-
-    |   ------------------------------
-    |   System      |   platform value
-    |   ------------------------------
-    |   Linux       |   'linux'
-    |   Windows     |   'win32'
-    |   Windows/Cygwin   |   'cygwin'
-    |   Mac OS X    |   'darwin'
-"""
-PLATFORM_IS_WINDOWS = platform.startswith("win32")
-"""
-Constant value for OS Platform: Windows (win32)
-"""
-
-PLATFORM_IS_CYGWIN = platform.startswith("cygwin")
-"""
-Constant value for OS Platform: CygWin
-"""
-
-PLATFORM_IS_LINUX = platform.startswith("linux")
-"""
-Constant value for OS Platform: Linux
-"""
-
-PLATFORM_IS_MAC = platform.startswith("darwin")
-"""
-Constant value for OS Platform: Mac (darwin)
-"""
-
 CPU_COUNT = multiprocessing.cpu_count()
 """
 Get the number of Logical CPUs for this computer
 Used to adjust n_jobs for Windows systems
-"""
-
-WINDOWS_PATH_SEPARATOR = "\\"
-"""
-Path separator for Windows systems, e.g:
-C:\\Users\\<username>\\Documents
-"""
-
-LINUX_PATH_SEPARATOR = "/"
-"""
-Path separator for Linux and Unix, e.g:
-/home/<username>/Documents/
 """

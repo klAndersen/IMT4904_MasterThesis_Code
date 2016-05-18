@@ -11,7 +11,7 @@ Quick requirement list:
 - Pandas
 - Cython
 - BeatifulSoup4 (bs4) 
-- Natural Language Toolkit (nltk)
+- Natural Language Toolkit (nltk); use *nltk.download()* and aquire the resource 'tokenizers/punkt/english.pickle'.
 - Scikit-learn >= v18 (available from GitHub: [https://github.com/scikit-learn/scikit-learn]())
 - StackOverflow dataset added to MySQL (not included in project)
 - Before starting the program, ensure that you have a dummy file named "dbconfig.py" (just rename dbconfig.py.example)

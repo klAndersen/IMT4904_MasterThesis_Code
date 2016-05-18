@@ -21,10 +21,10 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer, TfidfVectorizer
 # project imports
 from mysqldatabase import MySQLDatabase
-from constants import CLASS_LABEL_KEY, QUESTION_TEXT_KEY, FILEPATH_TRAINING_DATA, DATABASE_LIMIT
+from constants import CLASS_LABEL_KEY, QUESTION_TEXT_KEY, DATABASE_LIMIT
 
 mem = Memory("./mem_cache")
-
+FILEPATH_TRAINING_DATA = "./training_data/training_data_"
 
 def load_pickle_model(file_name=str):
     with open(file_name, 'rb') as file:

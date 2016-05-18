@@ -11,6 +11,76 @@ __so_dataframe = None
 __classifier_model = None
 
 
+def create_unprocessed_dataset(args=list):
+    """
+    Creates a new classifier model based on the given filename
+
+    Arguments:
+        args (list): List containing the inputs used to create the new training model
+
+    Returns:
+         tuple(pandas.DataFrame, sklearn.model_selection._search.GridSearchCV):
+         DataFrame containing the data set that was used, and the created model
+
+    """
+    # u tex_dump_ 10000 1 1
+    model = None
+    dataframe = None
+    temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET)
+    argc = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
+    try:
+        if (args is not None) and (len(args) == argc):
+            filename = str(args[0])
+            limit = int(args[1])
+            create_feature_detectors = bool(int(args[2]))
+            create_model = bool(int(args[3]))
+            print("Loading data set...")
+            # create the training data set
+            if create_feature_detectors:
+                dataframe = create_and_save_feature_detectors(filename, limit)
+            else:
+                dataframe = create_unprocessed_dataset_dump(filename, limit)
+            if create_model:
+                filename += str(limit) + "_unprocessed"
+                model = create_new_classifier_model(filename, dataframe)
+        else:
+            missing_args = argc
+            if args is not None:
+                missing_args -= len(args)
+            print("Missing " + str(missing_args) + " argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+    except ValueError as err:
+        print(err)
+    return dataframe, model
+
+
+def create_new_classifier_model(filename, dataframe):
+    """
+    Creates a new classifier model based on the data in the passed ```dataframe```
+
+    Arguments:
+        filename (str): Filename for the model
+        dataframe (pandas.DataFrame): DataFrame containing data to train classifier with
+
+    Returns:
+         model (sklearn.model_selection._search.GridSearchCV): The created classifier model
+
+    """
+    print("Retrieving questions and classification labels...")
+    training_data = dataframe[QUESTION_TEXT_KEY].copy()
+    class_labels = dataframe[CLASS_LABEL_KEY].copy()
+    print("Stemming questions...")
+    index = 0
+    for question in training_data:
+        training_data[index] = text_processor.stem_training_data(question)
+        index += 1
+    current_time("Starting training of model")
+    model_path = FILEPATH_MODELS + filename + ".pkl"
+    model = create_and_save_model(training_data, class_labels, model_path, predict_proba=True,
+                                  test_size=float(0.2), random_state=0, print_results=True,
+                                  use_sgd_settings=False)
+    return model
+
+
 def print_startup_menu():
     """
     Prints the startup menu displayed to the user on first run
@@ -42,10 +112,7 @@ def check_path_ending(path):
     Returns:
         str: path or modified path, where an '/' or '\\' has been added
     """
-    if PLATFORM_IS_WINDOWS:
-        sign = WINDOWS_PATH_SEPARATOR
-    else:
-        sign = LINUX_PATH_SEPARATOR
+    sign = get_platform_separator()
     path_length = len(path)-1
     last_char = path[path_length]
     if last_char != sign:
@@ -53,12 +120,12 @@ def check_path_ending(path):
     return path
 
 
-def create_new_training_model(args=list):
+def train_new_classifier_model(args=list):
     """
-    Creates a new classifier model based on the given filename
+    Creates a new classifier model based on the input from the user
 
     Arguments:
-        args (list): List containing the inputs used to create the new training model
+        args (list): List containing the inputs used to create the new classifier model
 
     Returns:
          tuple(pandas.DataFrame, sklearn.model_selection._search.GridSearchCV):
@@ -87,19 +154,8 @@ def create_new_training_model(args=list):
             # create the training data set
             dataframe = load_training_data(dataset_file, db_load, limit, load_tags_from_database=False,
                                            exclude_site_tags=True, exclude_assignment=True)
-            print("Retrieving questions and classification labels...")
-            training_data = dataframe[QUESTION_TEXT_KEY].copy()
-            class_labels = dataframe[CLASS_LABEL_KEY].copy()
-            print("Stemming questions...")
-            index = 0
-            for question in training_data:
-                training_data[index] = text_processor.stem_training_data(question)
-                index += 1
-            current_time("Starting training of model")
-            model_path = FILEPATH_MODELS + filename + ".pkl"
-            model = create_and_save_model(training_data, class_labels, model_path, predict_proba=True,
-                                          test_size=float(0.2), random_state=0, print_results=True,
-                                          use_sgd_settings=False)
+            filename += str(limit)
+            model = create_new_classifier_model(filename, dataframe)
         else:
             missing_args = argc
             if args is not None:
@@ -215,7 +271,7 @@ def handle_user_input(u_input=str):
     elif command == USER_MENU_OPTION_LOAD_DEFAULT_KEY:
         limit = DATABASE_LIMIT.get('10000')
         model_name = "svm_detector_split_" + str(limit)
-        dataset_file = FILEPATH_TRAINING_DATA + str(limit)
+        dataset_file = FILEPATH_TRAINING_DATA + "training_data_" + str(limit)
         __so_dataframe = load_training_data(dataset_file, False, limit)
         __classifier_model = get_training_model(constants.FILEPATH_MODELS, model_name)
         if __classifier_model is not None:
@@ -231,10 +287,14 @@ def handle_user_input(u_input=str):
             print_classifier_results(__classifier_model)
     elif command == USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY:
         if args is not None:
-            __so_dataframe, __classifier_model = create_new_training_model(args)
+            __so_dataframe, __classifier_model = train_new_classifier_model(args)
         else:
             temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
             print("Missing argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+    elif command == USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET:
+        __so_dataframe, __classifier_model = create_unprocessed_dataset(args)
+        if __classifier_model is not None:
+            print_classifier_results(__classifier_model)
     elif command != USER_MENU_OPTION_EXIT_KEY:
         print("Invalid command: ", command)
 
@@ -260,10 +320,12 @@ def main():
     print_startup_menu()
     while user_input != USER_MENU_OPTION_EXIT_KEY:
         try:
-            user_input = input("Enter option followed by arguments (if any) Enter h to show options: ")
+            user_input = input("Enter option followed by arguments (if any). Enter h to show options: ")
             handle_user_input(user_input)
-        except ValueError as ex:
-            print("ValueError: ", ex)
+        except ValueError as err:
+            print("ValueError: ", err)
+        except OSError as err:
+            print("OSError: ", err)
     if user_input == USER_MENU_OPTION_EXIT_KEY:
         end_program()
 

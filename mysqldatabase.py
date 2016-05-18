@@ -269,8 +269,25 @@ class MySQLDatabase:
             neg_vote_value (int): Start value for bad questions (<= 0).
 
         """
-        self.__pos_vote_value = pos_vote_value
-        self.__neg_vote_value = neg_vote_value
+        use_default = False
+        try:
+            if pos_vote_value is not None:
+                self.__pos_vote_value = int(pos_vote_value)
+            else:
+                self.__pos_vote_value = self.__DEFAULT_POSITIVE_VOTE_VALUE
+            if pos_vote_value is not None:
+                self.__neg_vote_value = int(neg_vote_value)
+            else:
+                self.__neg_vote_value = self.__DEFAULT_NEGATIVE_VOTE_VALUE
+        except TypeError as err:
+            print(err)
+            use_default = True
+        except ValueError as err:
+            print(err)
+            use_default = True
+        if use_default:
+            self.__pos_vote_value = self.__DEFAULT_POSITIVE_VOTE_VALUE
+            self.__neg_vote_value = self.__DEFAULT_NEGATIVE_VOTE_VALUE
 
     def __close_db_connection(self):
         """

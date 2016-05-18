@@ -76,9 +76,19 @@ def __create_default_svc_grid_parameters():
     Creates a dictionary containing parameters to use in GridSearch, where all values are set
     """
     # t C:\Users\KnutLucas\Documents\GitHub\IMT4904_MasterThesis_Code\training_data\ training_data_10000 0
+    # c = numpy.logspace(-2, 10, 13)
+    # gamma = numpy.logspace(-9, 3, 13)
+    # param_svm = [
+    #     {'clf__C': c, 'clf__kernel': ['linear']},
+    #     {'clf__C': c, 'clf__gamma': gamma, 'clf__kernel': ['rbf']},
+    #     {'clf__C': c, 'clf__gamma': gamma, 'clf__kernel': ['sigmoid']},
+    # ]
+    # c = numpy.logspace(0, 10, 11)
+    # gamma = numpy.logspace(-9, -1, 10)
     param_svm = [
         {'clf__C': [1, 10, 100, 1000], 'clf__kernel': ['linear']},
         {'clf__C': [1, 10, 100, 1000], 'clf__gamma': [0.001, 0.0001], 'clf__kernel': ['rbf']},
+        {'clf__C': [1, 10, 100, 1000], 'clf__gamma': [0.001, 0.0001], 'clf__kernel': ['sigmoid']},
     ]
     return param_svm
 
