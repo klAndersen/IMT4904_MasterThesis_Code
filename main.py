@@ -106,7 +106,7 @@ def create_new_training_model(args=list):
             for question in training_data:
                 training_data[index] = text_processor.stem_training_data(question)
                 index += 1
-            print("Starting training of model")
+            current_time("Starting training of model")
             model_path = FILEPATH_MODELS + filename + ".pkl"
             model = create_and_save_model(training_data, class_labels, model_path, predict_proba=True,
                                           test_size=float(0.2), random_state=0, print_results=True,
