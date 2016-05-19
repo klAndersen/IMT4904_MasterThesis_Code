@@ -6,7 +6,7 @@ import constants as const
 from time import time, ctime
 from train_classifier import print_classifier_results, create_and_save_model
 from file_processing import get_training_model, load_training_data, \
-    create_and_save_feature_detectors, create_unprocessed_dataset_dump
+    create_and_save_feature_detectors, create_unprocessed_dataset_dump, create_singular_feature_detector_model
 from text_processor import stem_training_data, process_question_for_prediction
 
 __so_dataframe = None
@@ -149,9 +149,10 @@ def train_new_classifier_model(args=list):
          DataFrame containing the data set that was used, and the created model
 
     """
+    limit = -1
     model = None
     dataframe = None
-    limit = 0
+    create_additional_models = False
     temp_dict = const.USER_MENU_OPTIONS.get(const.USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
     argc = temp_dict.get(const.USER_MENU_OPTION_ARGC_KEY)
     try:
@@ -163,16 +164,31 @@ def train_new_classifier_model(args=list):
             dataset_file = path + filename
             if db_load and len(args) > argc:
                 limit = int(args[3])
+                filename += str(limit)
                 dataset_file += str(limit)
             elif db_load and len(args) == argc:
                 raise(ValueError("Missing required parameter: Limit. When loading from database, "
                                  "amount of rows to retrieve is required."))
+            elif not db_load and (len(args) > argc) and (args[3] == "eu"):
+                # temporary easter egg
+                create_additional_models = True
             print("Loading data set...")
             # create the training data set
             dataframe = load_training_data(dataset_file, db_load, limit, load_tags_from_database=False,
                                            exclude_site_tags=True, exclude_assignment=True)
             print("Data set loaded")
-            filename += str(limit)
+            if create_additional_models:
+                # due to the time it takes to create new menu options, check them and control for
+                # errors, this was added to as a temporary feature to be able to run proper feature comparison
+                # depending on remaining time, this will most likely just be an easter egg
+                print("Easter egg unlocked: Now creating two additional classifier models.")
+                print("Creating model based on the best settings for the unprocessed data set...")
+                file = filename + "_UP_settings"
+                existing_model = filename + "_unprocessed"
+                create_singular_feature_detector_model(file, existing_model, dataframe)
+                print("Creating model without stemming, using exhaustive search...")
+                file = filename + "_no_stem"
+                model = create_new_classifier_model(file, dataframe, False)
             model = create_new_classifier_model(filename, dataframe)
         else:
             missing_args = argc

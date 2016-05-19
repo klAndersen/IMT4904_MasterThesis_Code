@@ -457,28 +457,3 @@ def create_singular_feature_detector_model(new_model_name, existing_model_name, 
         from train_classifier import create_singular_feature_detector_model
         create_singular_feature_detector_model(pipeline_svm, param_svm, model_path, training_data, class_labels,
                                                test_size=float(0.2), random_state=0)
-
-
-def create_feature_detector_model(filename=str, dataframe=DataFrame, limit=int):
-    """
-    Creates a new classifier model for a singular feature detector
-
-    (not used in this thesis, because it may have other estimator values which
-    makes it not comparable to the unprocessed data set)
-
-    Arguments:
-        filename (str): Filename for the model
-        dataframe (pandas.DataFrame): The dataframe containing the data for creating the model
-        limit (int): The amount of rows
-
-    """
-    # to avoid circular import issue
-    from train_classifier import create_and_save_model
-    print("Retrieving questions and classification labels...")
-    training_data = dataframe[constants.QUESTION_TEXT_KEY].copy()
-    class_labels = dataframe[constants.CLASS_LABEL_KEY].copy()
-    print("Starting training of model")
-    model_path = constants.FILEPATH_SINGULAR_FEATURE_MODELS + filename + str(limit) + ".pkl"
-    create_and_save_model(training_data, class_labels, model_path, predict_proba=True,
-                          test_size=float(0.2), random_state=0, print_results=True,
-                          use_sgd_settings=False)
