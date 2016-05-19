@@ -2,10 +2,12 @@
 Main entry file, this is the file to use when starting the program
 """
 
-from constants import *
+import constants as const
 from time import time, ctime
-from file_processing import *
 from train_classifier import print_classifier_results, create_and_save_model
+from file_processing import get_training_model, load_training_data, \
+    create_and_save_feature_detectors, create_unprocessed_dataset_dump
+from text_processor import stem_training_data, process_question_for_prediction
 
 __so_dataframe = None
 __classifier_model = None
@@ -24,57 +26,72 @@ def create_unprocessed_dataset(args=list):
 
     """
     # u tex_dump_ 10000 1 1
+    # u training_data_ 10 1 2
     model = None
     dataframe = None
-    temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET)
-    argc = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
+    temp_dict = const.USER_MENU_OPTIONS.get(const.USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET)
+    argc = temp_dict.get(const.USER_MENU_OPTION_ARGC_KEY)
+    arg_array = temp_dict.get(const.USER_MENU_OPTION_ARG_SELECTION_ARRAY)
     try:
         if (args is not None) and (len(args) == argc):
             filename = str(args[0])
             limit = int(args[1])
             create_feature_detectors = bool(int(args[2]))
-            create_model = bool(int(args[3]))
+            create_model = int(args[3])
+            # if value is out of range, set it to min/max value
+            if create_model > arg_array[3]:
+                create_model = arg_array[3]
+            elif create_model < arg_array[0]:
+                create_model = arg_array[0]
             print("Loading data set...")
-            # create the training data set
+            # retrieve data from database, and create model if desired
+            tags_filename = filename
+            filename += str(limit) + "_unprocessed"
+            dataframe = create_unprocessed_dataset_dump(filename, limit, tags_filename)
+            # should a classifier model be created?
+            if create_model == arg_array[3] or create_model == arg_array[1]:
+                model = create_new_classifier_model(filename, dataframe, False)
+            # should feature detectors be created?
             if create_feature_detectors:
-                dataframe = create_and_save_feature_detectors(filename, limit)
-            else:
-                dataframe = create_unprocessed_dataset_dump(filename, limit)
-            if create_model:
-                filename += str(limit) + "_unprocessed"
-                model = create_new_classifier_model(filename, dataframe)
+                if create_model == arg_array[3] or create_model == arg_array[2]:
+                    create_and_save_feature_detectors(filename, True, limit, tags_filename)
+                else:
+                    create_and_save_feature_detectors(filename, False, limit, tags_filename)
         else:
             missing_args = argc
             if args is not None:
                 missing_args -= len(args)
-            print("Missing " + str(missing_args) + " argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+            print("Missing " + str(missing_args) + " argument(s): \n",
+                  temp_dict.get(const.USER_MENU_OPTION_HELP_TEXT_KEY))
     except ValueError as err:
         print(err)
     return dataframe, model
 
 
-def create_new_classifier_model(filename, dataframe):
+def create_new_classifier_model(filename, dataframe, stem_data=True):
     """
     Creates a new classifier model based on the data in the passed ```dataframe```
 
     Arguments:
         filename (str): Filename for the model
         dataframe (pandas.DataFrame): DataFrame containing data to train classifier with
+        stem_data (bool): Should the data set be stemmed before model is created?
 
     Returns:
          model (sklearn.model_selection._search.GridSearchCV): The created classifier model
 
     """
     print("Retrieving questions and classification labels...")
-    training_data = dataframe[QUESTION_TEXT_KEY].copy()
-    class_labels = dataframe[CLASS_LABEL_KEY].copy()
-    print("Stemming questions...")
-    index = 0
-    for question in training_data:
-        training_data[index] = text_processor.stem_training_data(question)
-        index += 1
+    training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
+    class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
+    if stem_data:
+        print("Stemming questions...")
+        index = 0
+        for question in training_data:
+            training_data[index] = stem_training_data(question)
+            index += 1
     current_time("Starting training of model")
-    model_path = FILEPATH_MODELS + filename + ".pkl"
+    model_path = const.FILEPATH_MODELS + filename + ".pkl"
     model = create_and_save_model(training_data, class_labels, model_path, predict_proba=True,
                                   test_size=float(0.2), random_state=0, print_results=True,
                                   use_sgd_settings=False)
@@ -86,9 +103,9 @@ def print_startup_menu():
     Prints the startup menu displayed to the user on first run
     """
     menu = "Menu: \n"
-    for key in sorted(USER_MENU_OPTIONS):
-        temp_dict = USER_MENU_OPTIONS.get(key)
-        menu += key + ": " + temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY) + "\n"
+    for key in sorted(const.USER_MENU_OPTIONS):
+        temp_dict = const.USER_MENU_OPTIONS.get(key)
+        menu += key + ": " + temp_dict.get(const.USER_MENU_OPTION_HELP_TEXT_KEY) + "\n"
     print(menu)
 
 
@@ -112,7 +129,7 @@ def check_path_ending(path):
     Returns:
         str: path or modified path, where an '/' or '\\' has been added
     """
-    sign = get_platform_separator()
+    sign = const.get_platform_separator()
     path_length = len(path)-1
     last_char = path[path_length]
     if last_char != sign:
@@ -135,8 +152,8 @@ def train_new_classifier_model(args=list):
     model = None
     dataframe = None
     limit = 0
-    temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
-    argc = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
+    temp_dict = const.USER_MENU_OPTIONS.get(const.USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
+    argc = temp_dict.get(const.USER_MENU_OPTION_ARGC_KEY)
     try:
         if (args is not None) and (len(args) >= argc):
             path = str(args[0])
@@ -154,13 +171,15 @@ def train_new_classifier_model(args=list):
             # create the training data set
             dataframe = load_training_data(dataset_file, db_load, limit, load_tags_from_database=False,
                                            exclude_site_tags=True, exclude_assignment=True)
+            print("Data set loaded")
             filename += str(limit)
             model = create_new_classifier_model(filename, dataframe)
         else:
             missing_args = argc
             if args is not None:
                 missing_args -= len(args)
-            print("Missing " + str(missing_args) + " argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+            print("Missing " + str(missing_args) + " argument(s): \n",
+                  temp_dict.get(const.USER_MENU_OPTION_HELP_TEXT_KEY))
     except ValueError as err:
         print(err)
     return dataframe, model
@@ -183,7 +202,7 @@ def predict_question_quality(model, question):
     can_predict_probability = False
     processed_question = question.lower()
     prob_score = pred_prob_good = pred_prob_bad = -1
-    processed_question = text_processor.process_question_for_prediction(processed_question)
+    processed_question = process_question_for_prediction(processed_question)
     # to be able to predict the probability for each class, it needs 'predict_proba' and 'probability=True'
     if hasattr(model, "predict_proba") and model.best_estimator_.get_params('probability'):
         pred_prob_bad = model.predict_proba([processed_question])[0][0]
@@ -220,8 +239,8 @@ def load_user_defined_model(args=list):
 
     """
     model = None
-    temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_LOAD_USER_MODEL_KEY)
-    argc = temp_dict.get(USER_MENU_OPTION_ARGC_KEY)
+    temp_dict = const.USER_MENU_OPTIONS.get(const.USER_MENU_OPTION_LOAD_USER_MODEL_KEY)
+    argc = temp_dict.get(const.USER_MENU_OPTION_ARGC_KEY)
     if (args is not None) and (len(args) >= argc):
         path = str(args[0])
         path = check_path_ending(path)
@@ -236,7 +255,7 @@ def load_user_defined_model(args=list):
         missing_args = argc
         if args is not None:
             missing_args -= len(args)
-        print("Missing " + str(missing_args) + " argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+        print("Missing " + str(missing_args) + " argument(s): \n", temp_dict.get(const.USER_MENU_OPTION_HELP_TEXT_KEY))
     return model
 
 
@@ -252,15 +271,15 @@ def handle_user_input(u_input=str):
     global __classifier_model
     args = None
     if len(u_input) > 1:
-        if u_input[0] == USER_MENU_OPTION_NEW_PREDICTION:
+        if u_input[0] == const.USER_MENU_OPTION_NEW_PREDICTION:
             command, args = u_input.split(" ", 1)
         else:
             command, *args = u_input.split()
     else:
         command = u_input
-    if command == USER_MENU_OPTION_HELP_KEY:
+    if command == const.USER_MENU_OPTION_HELP_KEY:
         print_startup_menu()
-    elif command == USER_MENU_OPTION_NEW_PREDICTION:
+    elif command == const.USER_MENU_OPTION_NEW_PREDICTION:
         if __classifier_model is None:
             print("No model is loaded. Load default model by entering 'd' or 'l path filename suffix'.")
         else:
@@ -268,34 +287,34 @@ def handle_user_input(u_input=str):
                 predict_question_quality(__classifier_model, args)
             else:
                 print("No question entered. Please enter a question to predict.")
-    elif command == USER_MENU_OPTION_LOAD_DEFAULT_KEY:
-        limit = DATABASE_LIMIT.get('10000')
+    elif command == const.USER_MENU_OPTION_LOAD_DEFAULT_KEY:
+        limit = const.DATABASE_LIMIT.get('10000')
         model_name = "svm_detector_split_" + str(limit)
-        dataset_file = FILEPATH_TRAINING_DATA + "training_data_" + str(limit)
+        dataset_file = const.FILEPATH_TRAINING_DATA + "training_data_" + str(limit)
         __so_dataframe = load_training_data(dataset_file, False, limit)
-        __classifier_model = get_training_model(constants.FILEPATH_MODELS, model_name)
+        __classifier_model = get_training_model(const.FILEPATH_MODELS, model_name)
         if __classifier_model is not None:
             print_classifier_results(__classifier_model)
-    elif command == USER_MENU_OPTION_LOAD_USER_MODEL_KEY:
+    elif command == const.USER_MENU_OPTION_LOAD_USER_MODEL_KEY:
         if args is not None:
             __classifier_model = load_user_defined_model(args)
         else:
-            temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_LOAD_USER_MODEL_KEY)
-            print("Missing argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
+            temp_dict = const.USER_MENU_OPTIONS.get(const.USER_MENU_OPTION_LOAD_USER_MODEL_KEY)
+            print("Missing argument(s): \n", temp_dict.get(const.USER_MENU_OPTION_HELP_TEXT_KEY))
         # was the model loaded?
         if __classifier_model is not None:
             print_classifier_results(__classifier_model)
-    elif command == USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY:
+    elif command == const.USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY:
         if args is not None:
             __so_dataframe, __classifier_model = train_new_classifier_model(args)
         else:
-            temp_dict = USER_MENU_OPTIONS.get(USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
-            print("Missing argument(s): \n", temp_dict.get(USER_MENU_OPTION_HELP_TEXT_KEY))
-    elif command == USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET:
+            temp_dict = const.USER_MENU_OPTIONS.get(const.USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
+            print("Missing argument(s): \n", temp_dict.get(const.USER_MENU_OPTION_HELP_TEXT_KEY))
+    elif command == const.USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET:
         __so_dataframe, __classifier_model = create_unprocessed_dataset(args)
         if __classifier_model is not None:
             print_classifier_results(__classifier_model)
-    elif command != USER_MENU_OPTION_EXIT_KEY:
+    elif command != const.USER_MENU_OPTION_EXIT_KEY:
         print("Invalid command: ", command)
 
 
@@ -318,7 +337,7 @@ def main():
     user_input = ""
     current_time("Program started")
     print_startup_menu()
-    while user_input != USER_MENU_OPTION_EXIT_KEY:
+    while user_input != const.USER_MENU_OPTION_EXIT_KEY:
         try:
             user_input = input("Enter option followed by arguments (if any). Enter h to show options: ")
             handle_user_input(user_input)
@@ -326,7 +345,7 @@ def main():
             print("ValueError: ", err)
         except OSError as err:
             print("OSError: ", err)
-    if user_input == USER_MENU_OPTION_EXIT_KEY:
+    if user_input == const.USER_MENU_OPTION_EXIT_KEY:
         end_program()
 
 

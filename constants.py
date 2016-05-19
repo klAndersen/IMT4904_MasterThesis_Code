@@ -73,19 +73,24 @@ DATABASE_LIMIT = {
 
 SEPARATOR = get_platform_separator()
 
-FILEPATH_FEATURE_DETECTOR = "." + SEPARATOR + "feature_detectors" + SEPARATOR + "feature_detector_"
+FILEPATH_FEATURE_DETECTOR = "." + SEPARATOR + "feature_detectors" + SEPARATOR
 """
 The path to where the different feature detectors can be found
 """
 
-FILEPATH_TRAINING_DATA = "." + SEPARATOR + "training_data" + SEPARATOR + ""
+FILEPATH_TRAINING_DATA = "." + SEPARATOR + "training_data" + SEPARATOR
 """
 The path to where the training data can be found
 """
 
-FILEPATH_MODELS = "." + SEPARATOR + "pickle_models" + SEPARATOR + ""
+FILEPATH_MODELS = "." + SEPARATOR + "pickle_models" + SEPARATOR
 """
-The path to were the produced models can be found
+Path to folder containing the produced classifier models
+"""
+
+FILEPATH_SINGULAR_FEATURE_MODELS = "." + SEPARATOR + "feat_detect_models" + SEPARATOR
+"""
+Path to folder containing the produced classifier models based on a singular feature detector
 """
 
 TAG_NAME_COLUMN = "TagName"
@@ -248,22 +253,25 @@ USER_MENU_OPTION_METAVAR_KEY = "metavar"
 USER_MENU_OPTION_LOAD_USER_MODEL_KEY = "l"
 USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY = "t"
 USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET = "u"
+USER_MENU_OPTION_ARG_SELECTION_ARRAY = "arg_array"
 
 USER_MENU_OPTIONS = {
     # create a new, unprocessed dataset
     USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET: {
-        USER_MENU_OPTION_HELP_TEXT_KEY: "Create an unprocessed dataset based on database content "#Create a new, unprocessed dataset from the database "
+        USER_MENU_OPTION_HELP_TEXT_KEY: "Create an unprocessed data set based on database content "
                                         "(from database set in dbconfig.py). \n\tArguments: \n"
-                                        "\tfilename: Filename for dataset (model name will be the same as this) \n"
+                                        "\tfilename: Filename for data set (model name will be the same as this) \n"
                                         "\tlimit: Limit for database row retrieval (integer) \n"
-                                        "\tfeature_detectors: Create singular feature detectors based on dataset? "
+                                        "\tfeature_detectors: Create singular feature detectors based on data set? "
                                         "(Enter 0: No, 1: Yes) \n"
-                                        "\tcreate_model: Create classifier model based on dataset? "
-                                        "(Enter 0: No, 1: Yes)",
+                                        "\tcreate_model: Create classifier model(s) based on data set? "
+                                        "\n\t\t\t\t  0: No, 1: Unprocessed model, 2: Feature detector model(s) "
+                                        "3: Both (1 and 2)",
         USER_MENU_OPTION_ARG_KEY: "--unprocessed",
         USER_MENU_OPTION_ARGC_KEY: 4,
         # required argument description
-        USER_MENU_OPTION_METAVAR_KEY: ("filename", "limit", "feature_detectors", "create_model")
+        USER_MENU_OPTION_METAVAR_KEY: ("filename", "limit", "feature_detectors", "create_model"),
+        USER_MENU_OPTION_ARG_SELECTION_ARRAY: [0, 1, 2, 3]
     },
     # load a model that was created by the user
     USER_MENU_OPTION_LOAD_USER_MODEL_KEY: {
@@ -281,9 +289,9 @@ USER_MENU_OPTIONS = {
     },
     # train a new model
     USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY: {
-        USER_MENU_OPTION_HELP_TEXT_KEY: "Train a new model based on an existing (or new) dataset. Arguments: \n"
+        USER_MENU_OPTION_HELP_TEXT_KEY: "Train a new model based on an existing (or new) data set. Arguments: \n"
                                         "\tpath: Path to directory with training data (e.g. /home/user/my_data/) \n"
-                                        "\tfilename: Filename for dataset (model name will be the same as this) \n"
+                                        "\tfilename: Filename for data set (model name will be the same as this) \n"
                                         "\tdb_load: Load from database (Enter 0: No, 1: Yes) \n"
                                         "\tlimit: Limit for database row retrieval (integer) - Optional unless "
                                         "'db_load' is '1'",

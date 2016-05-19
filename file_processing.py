@@ -10,8 +10,6 @@ from pandas import DataFrame
 from os.path import isfile, join
 from mysqldatabase import MySQLDatabase
 from sklearn.externals.joblib import Memory
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.datasets import dump_svmlight_file, load_svmlight_file
 
 
 mem = Memory("./mem_cache")
@@ -66,11 +64,34 @@ def get_training_model(path=str, model_name=str, suffix=".pkl"):
                 feedback += "\nThe following models were found: \n" + files_found
                 print(feedback)
         else:
-            feedback = "No classifier models found in '" + path + "."
+            feedback = "No classifier models found in '" + path + "'."
             print(feedback)
     except Exception as ex:
         print("Failed at loading training model: ", ex)
     return None
+
+
+def create_unprocessed_dataset_dump(filename, limit=int(1000), tags_filename=""):
+    """
+    Creates a clean data set without any form of processing.
+
+    What this means is that the content is -exactly- as it is in the database,
+    without HTML removal, feature detector replacement or labels. However,
+    it does not contain all the columns, only those columns which are used in
+    the processed training sets.
+
+    Arguments:
+        filename (str): The name of the file
+        limit (int): Amount of rows to retrieve from database
+        tags_filename (str): Optional filename; e.g. if using multiple StackExchange sites this should be used
+
+    Returns:
+        pandas.DataFrame: DataFrame containing the unprocessed data loaded from database
+
+    """
+    file_location = constants.FILEPATH_TRAINING_DATA + filename
+    return load_training_data(file_location, True, limit, create_unprocessed=True, tags_filename=tags_filename,
+                              load_tags_from_database=True)
 
 
 @mem.cache
@@ -95,17 +116,14 @@ def load_training_data(file_location=str, load_from_database=False, limit=int(10
         load_from_database (bool): Should data be retrieved from database?
         limit (int): Amount of records to retrieve from database (default=1000)
         create_feature_detectors (bool): Is this function being called to create feature detectors?
-        create_unprocessed (bool): Is this function being called to create a clean, unprocessed dataset?
-        load_tags_from_database (bool): Should site tags be loaded (only needed when loading dataset from database)?
+        create_unprocessed (bool): Is this function being called to create a clean, unprocessed data set?
+        load_tags_from_database (bool): Should site tags be loaded (only needed when loading data set from database)?
         tags_filename (str): Optional filename; e.g. if using multiple StackExchange sites this should be used
         exclude_site_tags (bool): Should the site tags be excluded from feature detection?
         exclude_assignment (bool): Should 'assignment' words be excluded from feature detection?
 
     Returns:
-         (pandas.DataFrame.from_csv, sklearn.datasets.load_svmlight_file):
-         Tuple containing a pandas.DataFrame (all data retrieved from database) and
-         tuple with training data (load_svmlight_file).
-         If ```return_svmlight``` is set to False, only pandas.DataFrame.from_csv is returned
+         pandas.DataFrame.from_csv: DataFrame containing the data set that was either loaded from database or file
 
     See:
         | ```MySQLDatabase().retrieve_training_data```
@@ -113,13 +131,13 @@ def load_training_data(file_location=str, load_from_database=False, limit=int(10
         | ```pandas.DataFrame.from_csv```
     """
     csv_file = file_location + ".csv"
+    if not exclude_site_tags:
+        site_tags = load_tags(tags_filename, load_tags_from_database)
+    else:
+        site_tags = None
     if load_from_database:
-        if not exclude_site_tags:
-            site_tags = load_tags(tags_filename, load_tags_from_database)
-        else:
-            site_tags = None
         mysqldb = MySQLDatabase()
-        mysqldb.set_vote_value_params()
+        # mysqldb.set_vote_value_params()
         data = mysqldb.retrieve_training_data(limit, create_feature_detectors, create_unprocessed,
                                               site_tags, exclude_site_tags, exclude_assignment)
         data.to_csv(csv_file, encoding='utf-8')
@@ -151,7 +169,7 @@ def load_tags(tags_filename="", load_from_database=False):
 
 
 @mem.cache
-def create_and_save_feature_detectors(filename, limit=int(1000)):
+def create_and_save_feature_detectors(filename, create_models=False, limit=int(1000), site_tags_filename=str):
     """
     Creates singular feature files where the amount of rows retrieved is equal to limit.
     The files are stored in ./feature_detectors
@@ -164,60 +182,74 @@ def create_and_save_feature_detectors(filename, limit=int(1000)):
     - has_hexadecimal: Replaces hexadecimal values with this text
 
     Arguments:
-        filename (str): The name of the dataset that contains the unprocessed data
+        filename (str): The name of the data set that contains the unprocessed data
+        create_models (bool): Should models be created for these singular feature detector(s)?
         limit (int): Amount of rows to retrieve from database
+        site_tags_filename (str): Name of file containing all the tags found at the given site
 
     Returns:
-        pandas.DataFrame: DataFrame containing the loaded, unprocessed dataset
+        pandas.DataFrame: DataFrame containing the loaded, unprocessed data set
 
     """
-    csv_file = constants.FILEPATH_TRAINING_DATA + filename + str(limit) + "_unprocessed.csv"
-    file_location = constants.FILEPATH_FEATURE_DETECTOR + str(limit) + "_"
+    file_location = constants.FILEPATH_FEATURE_DETECTOR + filename + "_"
+    csv_file = constants.FILEPATH_TRAINING_DATA + filename + ".csv"
     try:
         data_copy = DataFrame.from_csv(csv_file, encoding='utf-8')
-        loaded_dataset = DataFrame.from_csv(csv_file, encoding='utf-8')
     except OSError:
         feedback_msg = "Could not find unprocessed data set. File:" + csv_file \
                        + ". \nAttempting to retrieve from Database..."
         print(feedback_msg)
-        loaded_dataset = create_unprocessed_dataset_dump(filename, limit)
+        create_unprocessed_dataset_dump(filename, limit)
         feedback_msg = "Data loaded successfully!"
         print(feedback_msg)
         data_copy = DataFrame.from_csv(csv_file, encoding='utf-8')
     # create feature detector for code blocks
     feedback_msg = "Creating singular feature detector: "
     print(feedback_msg, "Code blocks")
-    new_filename = filename + constants.QUESTION_HAS_CODEBLOCK_KEY.strip()
-    __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location, new_filename, data_copy)
+    new_filename = constants.QUESTION_HAS_CODEBLOCK_KEY.strip()
+    __create_and_save_feature_detector_html(text_processor.__set_has_codeblock, file_location,
+                                            new_filename, data_copy, create_models, filename)
     # create feature detector for links
     print(feedback_msg, "Links")
     data_copy = DataFrame.from_csv(csv_file, encoding='utf-8')
-    new_filename = filename + constants.QUESTION_HAS_LINKS_KEY.strip()
-    __create_and_save_feature_detector_html(text_processor.__set_has_link, file_location, new_filename, data_copy)
+    new_filename = constants.QUESTION_HAS_LINKS_KEY.strip()
+    __create_and_save_feature_detector_html(text_processor.__set_has_link, file_location, new_filename,
+                                            data_copy, create_models, filename)
     # create feature detector for has_homework & has_assignment
     print(feedback_msg, "Homework")
     data_copy = get_processed_dataset(csv_file)
-    new_filename = filename + constants.QUESTION_HAS_HOMEWORK_KEY.strip()
-    __create_and_save_feature_detector_homework(file_location, new_filename, data_copy)
+    new_filename = constants.QUESTION_HAS_HOMEWORK_KEY.strip()
+    __create_and_save_feature_detector_homework(file_location, new_filename, data_copy,
+                                                create_models, filename)
     # create feature detector for has_numeric
     print(feedback_msg, "Numerical")
     data_copy = get_processed_dataset(csv_file)
-    new_filename = filename + constants.QUESTION_HAS_NUMERIC_KEY.strip()
-    __create_and_save_feature_detector(text_processor.__set_has_numeric, file_location, new_filename, data_copy)
+    new_filename = constants.QUESTION_HAS_NUMERIC_KEY.strip()
+    __create_and_save_feature_detector(text_processor.__set_has_numeric, file_location, new_filename,
+                                       data_copy, create_models, filename)
     # create feature detector for has_hexadecimal
     print(feedback_msg, "Hexadecimal")
     data_copy = get_processed_dataset(csv_file)
-    new_filename = filename + constants.QUESTION_HAS_HEXADECIMAL_KEY.strip()
-    __create_and_save_feature_detector(text_processor.__set_has_hexadecimal, file_location, new_filename, data_copy)
+    new_filename = constants.QUESTION_HAS_HEXADECIMAL_KEY.strip()
+    __create_and_save_feature_detector(text_processor.__set_has_hexadecimal, file_location, new_filename,
+                                       data_copy, create_models, filename)
     # create feature detector for tags
-    new_filename = filename + "has_tags"
+    new_filename = "has_tags"
     print(feedback_msg, "Tags")
     data_copy = get_processed_dataset(csv_file)
-    __create_and_save_feature_detectors_tags(file_location, new_filename, data_copy)
-    return loaded_dataset
+    __create_and_save_feature_detectors_tags(file_location, new_filename, data_copy, create_models,
+                                             filename, site_tags_filename)
 
 
 def get_processed_dataset(csv_filename):
+    """
+
+    Arguments:
+        csv_filename (str): Name of CSV file containing data set to load
+
+    Returns:
+        pandas.DataFrame: DataFrame containing the data set loaded from file
+    """
     index = 0
     dataset = DataFrame.from_csv(csv_filename, encoding='utf-8')
     # convert all the HTML to normal text
@@ -229,7 +261,8 @@ def get_processed_dataset(csv_filename):
     return dataset
 
 
-def __create_and_save_feature_detector(exec_function, file_location=str, filename=str, training_data=DataFrame):
+def __create_and_save_feature_detector(exec_function, file_location=str, filename=str, training_data=DataFrame,
+                                       create_model=False, unprocessed_model_name=str):
     """
     Creates feature detectors from text where only one parameter (question text) is needed.
     Requires processed question text, without HTML. Saves to file afterwards.
@@ -239,6 +272,8 @@ def __create_and_save_feature_detector(exec_function, file_location=str, filenam
         file_location (str): The path to the file
         filename (str): Name of the file (e.g. "feature_detector")
         training_data (pandas.DataFrame):DataFrame containing all related data, where Questions doesn't contain HTML
+        create_model (bool): Should a classifier model be created for this feature detector? Default: False
+        unprocessed_model_name (str): Name of the data set which this feature detector is based for (```create_model```)
 
     """
     index = 0
@@ -247,11 +282,15 @@ def __create_and_save_feature_detector(exec_function, file_location=str, filenam
         training_data.loc[index, constants.QUESTION_TEXT_KEY] = exec_function(question)
         index += 1
     # save to file
-    filename = file_location + filename + ".csv"
-    training_data.to_csv(filename, encoding='utf-8')
+    file = file_location + filename + ".csv"
+    training_data.to_csv(file, encoding='utf-8')
+    if create_model:
+        feature_model_name = unprocessed_model_name + "_" + filename
+        create_singular_feature_detector_model(feature_model_name, unprocessed_model_name, training_data)
 
 
-def __create_and_save_feature_detector_homework(file_location=str, filename=str, training_data=DataFrame):
+def __create_and_save_feature_detector_homework(file_location=str, filename=str, training_data=DataFrame,
+                                                create_model=False, unprocessed_model_name=str):
     """
     Since homework and assignment are separated (but still considered as homework), these are handled here
     Requires processed, non-HTML text. Saves to file afterwards.
@@ -260,6 +299,8 @@ def __create_and_save_feature_detector_homework(file_location=str, filename=str,
         file_location (str): The path to the file
         filename (str): Name of the file (e.g. "feature_detector")
         training_data (pandas.DataFrame):DataFrame containing all related data, where Questions doesn't contain HTML
+        create_model (bool): Should a classifier model be created for this feature detector? Default: False
+        unprocessed_model_name (str): Name of the data set which this feature detector is based for (```create_model```)
 
     """
     index = 0
@@ -275,11 +316,16 @@ def __create_and_save_feature_detector_homework(file_location=str, filename=str,
         training_data.loc[index, constants.QUESTION_TEXT_KEY] = updated_question
         index += 1
     # save to file
-    filename = file_location + filename + ".csv"
-    training_data.to_csv(filename, encoding='utf-8')
+    file = file_location + filename + ".csv"
+    training_data.to_csv(file, encoding='utf-8')
+    if create_model:
+        feature_model_name = unprocessed_model_name + "_" + filename
+        create_singular_feature_detector_model(feature_model_name, unprocessed_model_name, training_data)
 
 
-def __create_and_save_feature_detector_html(exec_function, file_location=str, filename=str, training_data=DataFrame):
+def __create_and_save_feature_detector_html(exec_function, file_location=str, filename=str,
+                                            training_data=DataFrame, create_model=False,
+                                            unprocessed_model_name=str):
     """
     Creates feature detector for those that require HTML tags to be properly extracted,
     afterwards it converted to normal text and saved to file
@@ -289,6 +335,8 @@ def __create_and_save_feature_detector_html(exec_function, file_location=str, fi
         file_location (str): The path to the file
         filename (str): Name of the file (e.g. "feature_detector")
         training_data (pandas.DataFrame): DataFrame containing all related data, where the Questions are wrapped in HTML
+        create_model (bool): Should a classifier model be created for this feature detector? Default: False
+        unprocessed_model_name (str): Name of the data set which this feature detector is based for (```create_model```)
 
     """
     index = 0
@@ -305,11 +353,15 @@ def __create_and_save_feature_detector_html(exec_function, file_location=str, fi
         training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
         index += 1
     # save to file
-    filename = file_location + filename + ".csv"
-    training_data.to_csv(filename, encoding='utf-8')
+    file = file_location + filename + ".csv"
+    training_data.to_csv(file, encoding='utf-8')
+    if create_model:
+        feature_model_name = unprocessed_model_name + "_" + filename
+        create_singular_feature_detector_model(feature_model_name, unprocessed_model_name, training_data)
 
 
-def __create_and_save_feature_detectors_tags(file_location=str, filename=str, training_data=DataFrame):
+def __create_and_save_feature_detectors_tags(file_location=str, filename=str, training_data=DataFrame,
+                                             create_model=False, unprocessed_model_name=str, site_tags_filename=str):
     """
     Retrieves tags from the question and the database, and uses this to extract and replace tags in the question.
     Requires Questions without HTML. Saves data to file.
@@ -318,13 +370,16 @@ def __create_and_save_feature_detectors_tags(file_location=str, filename=str, tr
         file_location (str): The path to the file
         filename (str): Name of the file (e.g. "feature_detector")
         training_data (pandas.DataFrame): DataFrame containing all related data, where Questions doesn't contain HTML
+        create_model (bool): Should a classifier model be created for this feature detector? Default: False
+        unprocessed_model_name (str): Name of the data set which this feature detector is based for (```create_model```)
+        site_tags_filename (str): Name of file containing all the tags found at the given site
 
     """
     index = 0
     tag_data = None
     try:
         suffix = ".csv"
-        path = "./training_data"
+        path = constants.FILEPATH_TRAINING_DATA
         # retrieve only the files with given suffix
         selected_files_only = [
             file for file in listdir(path)
@@ -332,7 +387,7 @@ def __create_and_save_feature_detectors_tags(file_location=str, filename=str, tr
             ]
         # was there any files in the given path, and does the file exists?
         if len(selected_files_only) > 0:
-            file = "Tags" + suffix
+            file = site_tags_filename + "Tags" + suffix
             if file in selected_files_only:
                 file = constants.FILEPATH_TRAINING_DATA + file
                 tag_data = DataFrame.from_csv(file, encoding='utf-8')
@@ -345,33 +400,84 @@ def __create_and_save_feature_detectors_tags(file_location=str, filename=str, tr
     text_tags.sort(key=len, reverse=True)
     text_tags = text_processor.process_tags(text_tags)
     site_tags = tag_data[constants.TAG_NAME_COLUMN].tolist()
-    site_tags.sort(key=len, reverse=True)
+    # for some reason, some values are interpreted as float (e.g. 'nan'; index: 4413)
+    # therefore, list comprehension is used to use a forced transformation to ensure all values are strings
+    site_tags = sorted([str(tag) for tag in site_tags])
+    # site_tags.sort(key=len(), reverse=True)
     for question in training_data[constants.QUESTION_TEXT_KEY]:
         question = text_processor.__set_has_tag(question, text_tags[index], site_tags)
         training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
         index += 1
     # save to file
-    filename = file_location + filename + ".csv"
-    training_data.to_csv(filename, encoding='utf-8')
+    file = file_location + filename + ".csv"
+    training_data.to_csv(file, encoding='utf-8')
+    if create_model:
+        feature_model_name = unprocessed_model_name + "_" + filename
+        create_singular_feature_detector_model(feature_model_name, unprocessed_model_name, training_data)
 
 
-def create_unprocessed_dataset_dump(filename, limit=int(1000)):
+def create_singular_feature_detector_model(new_model_name, existing_model_name, dataframe):
     """
-    Creates a clean dataset without any form of processing.
+    Creates a new classifier model for a single feature based on values from existing model
 
-    What this means is that the content is -exactly- as it is in the database,
-    without HTML removal, feature detector replacement or labels. However,
-    it does not contain all the columns, only those columns which are used in
-    the processed training sets.
+    To be able to see if a new feature has any impact on accuracy and prediction, it is
+    necessary to compare the accuracy before and after the feature was added. This is achieved
+    by re-using the best estimation - and parameter values from the classifier model that
+    was trained on the unprocessed data set. By doing this, one avoids that new optimal parameters
+    are created, which could give a false positive on the score (since score could be improved
+    due to the new parameter setting, and not the actual feature that was added).
 
     Arguments:
-        filename (str): The name of the file
-        limit (int): Amount of rows to retrieve from database
-
-    Returns:
-        pandas.DataFrame: DataFrame containing the unprocessed data loaded from database
+        new_model_name (str): The name of the classifier model to create
+        existing_model_name (str): The name of the existing model to base the new model on
+        dataframe (pandas.DataFrame): DataFrame containing the data set for training the new model
 
     """
-    file_location = constants.FILEPATH_TRAINING_DATA + filename + str(limit) + "_unprocessed"
-    return load_training_data(file_location, True, limit, create_unprocessed=True, tags_filename=filename,
-                              load_tags_from_database=True)
+    path = constants.FILEPATH_MODELS
+    model = get_training_model(path, existing_model_name)
+    if model is not None:
+        pipeline_svm = model.best_estimator_
+        # set up the parameter values
+        param_svm = [
+            {
+                'clf__C': [model.best_params_['clf__C']],
+                'clf__kernel': [model.best_params_['clf__kernel']],
+             },
+            ]
+        # check if gamma is a part of the parameters
+        if model.best_params_.get('clf__gamma') is not None:
+            param_svm[0]['clf__gamma'] = [model.best_params_.get('clf__gamma')]
+        print("Retrieving questions and classification labels...")
+        training_data = dataframe[constants.QUESTION_TEXT_KEY].copy()
+        class_labels = dataframe[constants.CLASS_LABEL_KEY].copy()
+        print("Starting training of model")
+        model_path = constants.FILEPATH_SINGULAR_FEATURE_MODELS + new_model_name + ".pkl"
+        # to avoid circular import issue
+        from train_classifier import create_singular_feature_detector_model
+        create_singular_feature_detector_model(pipeline_svm, param_svm, model_path, training_data, class_labels,
+                                               test_size=float(0.2), random_state=0)
+
+
+def create_feature_detector_model(filename=str, dataframe=DataFrame, limit=int):
+    """
+    Creates a new classifier model for a singular feature detector
+
+    (not used in this thesis, because it may have other estimator values which
+    makes it not comparable to the unprocessed data set)
+
+    Arguments:
+        filename (str): Filename for the model
+        dataframe (pandas.DataFrame): The dataframe containing the data for creating the model
+        limit (int): The amount of rows
+
+    """
+    # to avoid circular import issue
+    from train_classifier import create_and_save_model
+    print("Retrieving questions and classification labels...")
+    training_data = dataframe[constants.QUESTION_TEXT_KEY].copy()
+    class_labels = dataframe[constants.CLASS_LABEL_KEY].copy()
+    print("Starting training of model")
+    model_path = constants.FILEPATH_SINGULAR_FEATURE_MODELS + filename + str(limit) + ".pkl"
+    create_and_save_model(training_data, class_labels, model_path, predict_proba=True,
+                          test_size=float(0.2), random_state=0, print_results=True,
+                          use_sgd_settings=False)

@@ -13,6 +13,8 @@ from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKF
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
+CROSS_VALIDATION = StratifiedKFold(n_folds=5)
+
 
 def __create_default_sgd_pipeline(random_state=int(0)):
     """
@@ -155,7 +157,6 @@ def create_and_save_model(train_data, labels, model_path=str, predict_proba=True
                                                                               labels,
                                                                               test_size=test_size,
                                                                               random_state=random_state)
-    cv = StratifiedKFold(n_folds=5)
     # get setup and create grid
     if use_sgd_settings:
         pipeline_svm = __create_default_sgd_pipeline()
@@ -163,7 +164,7 @@ def create_and_save_model(train_data, labels, model_path=str, predict_proba=True
     else:
         pipeline_svm = __create_default_svc_pipeline(predict_proba)
         param_svm = __create_default_svc_grid_parameters()
-    grid_svm = create_gridsearch(pipeline_svm, param_svm, cv)
+    grid_svm = create_gridsearch(pipeline_svm, param_svm, CROSS_VALIDATION)
     svm_detector = grid_svm.fit(question_train, label_train)
     dump_pickle_model(svm_detector, model_path)
     if print_results:
@@ -178,3 +179,41 @@ def create_and_save_model(train_data, labels, model_path=str, predict_proba=True
             print("Classification Report:")
             print(classification_report(label_test, predict_split))
     return svm_detector
+
+
+def create_singular_feature_detector_model(pipeline_svm, param_svm, model_path, train_data, labels,
+                                           test_size=float(0.2), random_state=0, print_results=True):
+    """
+    Create a model based on the best estimator - and parameter values from previously trained model
+
+    Arguments:
+        pipeline_svm (sklearn.pipeline.Pipeline): Pipeline containing the best estimator
+        param_svm: Dictionary containing the best parameters
+        train_data: The training data for the classifier
+        labels: Labels for the training data
+        model_path (str): The location to store the created model
+        test_size (float): Size of test set (amount of training data to use for testing classifier) (default=0.2)
+        random_state (int): Random state
+        print_results (bool): Should the results of the classifier be printed?
+
+    """
+    # split the data set into training and test set
+    question_train, question_test, label_train, label_test = train_test_split(train_data,
+                                                                              labels,
+                                                                              test_size=test_size,
+                                                                              random_state=random_state)
+    # create a grid search using the set values
+    grid_svm = create_gridsearch(pipeline_svm, param_svm, CROSS_VALIDATION)
+    svm_detector = grid_svm.fit(question_train, label_train)
+    dump_pickle_model(svm_detector, model_path)
+    if print_results:
+        print("Classifier results:")
+        print_classifier_results(svm_detector)
+        if test_size > 0:
+            predict_split = svm_detector.predict(question_test)
+            print("Confusion matrix for test set classification:")
+            print(confusion_matrix(label_test, predict_split))
+            print("Accuracy score for test set:")
+            print(accuracy_score(label_test, predict_split))
+            print("Classification Report:")
+            print(classification_report(label_test, predict_split))
