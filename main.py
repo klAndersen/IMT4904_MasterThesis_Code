@@ -25,8 +25,8 @@ def create_unprocessed_dataset(args=list):
          DataFrame containing the data set that was used, and the created model
 
     """
-    # u tex_dump_ 10000 1 1
-    # u training_data_ 10 1 2
+    # u tex_dump_ 10000 1 3
+    # u training_data_ 10000 1 3
     model = None
     dataframe = None
     temp_dict = const.USER_MENU_OPTIONS.get(const.USER_MENU_OPTION_CREATE_UNPROCESSED_DATASET)
@@ -345,6 +345,10 @@ def main():
             print("ValueError: ", err)
         except OSError as err:
             print("OSError: ", err)
+        except AttributeError as err:
+            print("AttributeError: ", err)
+        except TypeError as err:
+            print("TypeError: ", err)
     if user_input == const.USER_MENU_OPTION_EXIT_KEY:
         end_program()
 

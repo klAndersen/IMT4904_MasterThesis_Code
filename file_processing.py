@@ -164,7 +164,9 @@ def load_tags(tags_filename="", load_from_database=False):
         tag_data = DataFrame.from_csv(csv_file, encoding='utf-8')
     # convert DataFrame to list, and sort list based on tag length
     tag_list = tag_data[constants.TAG_NAME_COLUMN].tolist()
-    tag_list.sort(key=len, reverse=True)
+    # for some reason, some values are interpreted as float (e.g. 'nan'; index: 4413)
+    # therefore, list comprehension is used to use a forced transformation to ensure all values are strings
+    tag_list = sorted([str(tag) for tag in tag_list])
     return tag_list
 
 
@@ -403,7 +405,6 @@ def __create_and_save_feature_detectors_tags(file_location=str, filename=str, tr
     # for some reason, some values are interpreted as float (e.g. 'nan'; index: 4413)
     # therefore, list comprehension is used to use a forced transformation to ensure all values are strings
     site_tags = sorted([str(tag) for tag in site_tags])
-    # site_tags.sort(key=len(), reverse=True)
     for question in training_data[constants.QUESTION_TEXT_KEY]:
         question = text_processor.__set_has_tag(question, text_tags[index], site_tags)
         training_data.loc[index, constants.QUESTION_TEXT_KEY] = question
