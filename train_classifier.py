@@ -60,7 +60,7 @@ def __create_default_sgd_grid_parameters():
     """
     grid_parameters = {
         'vect__min_df': (0.01, 0.025, 0.05, 0.075, 0.1),
-        'vect__max_df': (0.25, 0.5, 0.75, 1.0),
+        'vect__max_df': (0.25, 0.5, 0.75, 0.95, 1.0),
         # 'vect__max_features': (None, 5000, 10000, 50000),
         # 'vect__ngram_range': ((1, 1), (1, 2)),  # unigrams or bigrams
         'tfidf__use_idf': (True, False),
@@ -68,7 +68,8 @@ def __create_default_sgd_grid_parameters():
         'clf__alpha': (0.00001, 0.000001),
         'clf__penalty': ('l1', 'l2', 'elasticnet'),
         'clf__n_iter': (10, 50, 75, 100),
-        'clf__loss': ('hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'),
+        # 'clf__loss': ('hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'),
+        'clf__loss': ['log'],
     }
     return grid_parameters
 

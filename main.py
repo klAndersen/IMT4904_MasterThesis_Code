@@ -68,7 +68,7 @@ def create_unprocessed_dataset(args=list):
     return dataframe, model
 
 
-def create_new_classifier_model(filename, dataframe, stem_data=True):
+def create_new_classifier_model(filename, dataframe, stem_data=True, use_sgd_settings=False):
     """
     Creates a new classifier model based on the data in the passed ```dataframe```
 
@@ -76,6 +76,7 @@ def create_new_classifier_model(filename, dataframe, stem_data=True):
         filename (str): Filename for the model
         dataframe (pandas.DataFrame): DataFrame containing data to train classifier with
         stem_data (bool): Should the data set be stemmed before model is created?
+        use_sgd_settings (bool): If True, run exhaustive SGD search. If False, use exhaustive SVC
 
     Returns:
          model (sklearn.model_selection._search.GridSearchCV): The created classifier model
@@ -91,10 +92,12 @@ def create_new_classifier_model(filename, dataframe, stem_data=True):
             training_data[index] = stem_training_data(question)
             index += 1
     current_time("Starting training of model")
+    if use_sgd_settings:
+        filename += "_sgd"
     model_path = const.FILEPATH_MODELS + filename + ".pkl"
     model = create_and_save_model(training_data, class_labels, model_path, predict_proba=True,
                                   test_size=float(0.2), random_state=0, print_results=True,
-                                  use_sgd_settings=False)
+                                  use_sgd_settings=use_sgd_settings)
     return model
 
 
@@ -188,8 +191,8 @@ def train_new_classifier_model(args=list):
                 create_singular_feature_detector_model(file, existing_model, dataframe)
                 print("Creating model without stemming, using exhaustive search...")
                 file = filename + "_no_stem"
-                model = create_new_classifier_model(file, dataframe, False)
-            model = create_new_classifier_model(filename, dataframe)
+                model = create_new_classifier_model(file, dataframe, stem_data=False, use_sgd_settings=False)
+            model = create_new_classifier_model(filename, dataframe, stem_data=True, use_sgd_settings=False)
         else:
             missing_args = argc
             if args is not None:
@@ -237,7 +240,7 @@ def predict_question_quality(model, question):
     # print the results
     result_msg = "Your question is predicted to be a " + question_type + " question"
     if prob_score > -1:
-        result_msg += ", with a probability of " + str(prob_score) + "%"
+        result_msg += ", with a probability of {0:.2f}%".format(prob_score)
     result_msg += "."
     print(result_msg)
 
@@ -305,9 +308,10 @@ def handle_user_input(u_input=str):
                 print("No question entered. Please enter a question to predict.")
     elif command == const.USER_MENU_OPTION_LOAD_DEFAULT_KEY:
         limit = const.DATABASE_LIMIT.get('10000')
-        model_name = "svm_detector_split_" + str(limit)
-        dataset_file = const.FILEPATH_TRAINING_DATA + "training_data_" + str(limit)
-        __so_dataframe = load_training_data(dataset_file, False, limit)
+        default_name = "training_data_"
+        model_name = default_name + str(limit) + "_unprocessed"
+        dataset_file = const.FILEPATH_TRAINING_DATA + default_name + str(limit) + "_unprocessed"
+        __so_dataframe = load_training_data(dataset_file, False, limit, tags_filename=default_name)
         __classifier_model = get_training_model(const.FILEPATH_MODELS, model_name)
         if __classifier_model is not None:
             print_classifier_results(__classifier_model)
