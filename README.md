@@ -14,6 +14,6 @@ Quick requirement list:
 - BeatifulSoup4 (bs4) 
 - mysql-connector-python: [https://github.com/mysql/mysql-connector-python]()
 - Natural Language Toolkit (nltk); use *nltk.download()* and aquire the resource *'tokenizers/punkt/english.pickle'*.
-- Scikit-learn >= dev.v18 (available from GitHub: [https://github.com/scikit-learn/scikit-learn]())
+- Scikit-learn >= 0.18.dev0 (available from GitHub: [https://github.com/scikit-learn/scikit-learn]())
 - StackOverflow dataset added to MySQL (not included in project)
 - Before starting the program, ensure that you have a dummy file named *"dbconfig.py"* (just rename dbconfig.py.example)

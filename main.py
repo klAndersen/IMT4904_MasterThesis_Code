@@ -155,6 +155,7 @@ def train_new_classifier_model(args=list):
     limit = -1
     model = None
     dataframe = None
+    use_sgd = False
     create_additional_models = False
     temp_dict = const.USER_MENU_OPTIONS.get(const.USER_MENU_OPTION_NEW_TRAINING_MODEL_KEY)
     argc = temp_dict.get(const.USER_MENU_OPTION_ARGC_KEY)
@@ -172,6 +173,8 @@ def train_new_classifier_model(args=list):
             elif db_load and len(args) == argc:
                 raise(ValueError("Missing required parameter: Limit. When loading from database, "
                                  "amount of rows to retrieve is required."))
+            elif not db_load and (len(args) > argc) and (args[3] == "sgd"):
+                use_sgd = True
             elif not db_load and (len(args) > argc) and (args[3] == "eu"):
                 # temporary easter egg
                 create_additional_models = True
@@ -192,7 +195,7 @@ def train_new_classifier_model(args=list):
                 print("Creating model without stemming, using exhaustive search...")
                 file = filename + "_no_stem"
                 model = create_new_classifier_model(file, dataframe, stem_data=False, use_sgd_settings=False)
-            model = create_new_classifier_model(filename, dataframe, stem_data=True, use_sgd_settings=False)
+            model = create_new_classifier_model(filename, dataframe, stem_data=True, use_sgd_settings=use_sgd)
         else:
             missing_args = argc
             if args is not None:
