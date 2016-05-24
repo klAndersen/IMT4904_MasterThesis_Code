@@ -6,6 +6,7 @@ saved to file.
 """
 import constants as const
 from pandas import DataFrame
+from train_classifier import create_and_save_model, create_singular_feature_detector_model
 
 FILE_ENDING = ".csv"
 FILENAME_START = "training_data_10000_unprocessed"
@@ -28,7 +29,7 @@ def __extract_single_features(feature):
           updated unprocessed questions (those that contains the given feature), and the
           other dataframe that has the features added to its question text
     """
-    up_name = "UP_" + feature
+    up_name = "UP_" + feature.strip()
     new_index = old_index = 0
     path = const.FILEPATH_TRAINING_DATA + FILENAME_START + FILE_ENDING
     unprocessed_df = DataFrame.from_csv(path)
@@ -41,8 +42,8 @@ def __extract_single_features(feature):
             new_up_dataframe.loc[new_index] = unprocessed_df.loc[old_index].copy()
             new_index += 1
         old_index += 1
-    new_up_dataframe.to_csv(__get_filename(NEW_PATH, up_name))
-    new_feat_dataframe.to_csv(__get_filename(NEW_PATH, feature))
+    new_up_dataframe.to_csv(__get_filename(NEW_PATH, up_name), encoding='utf-8')
+    new_feat_dataframe.to_csv(__get_filename(NEW_PATH, feature), encoding='utf-8')
 
 
 def __extract_multiple_features(feature1, feature2, filename):
@@ -56,7 +57,7 @@ def __extract_multiple_features(feature1, feature2, filename):
 
     """
     new_index = old_index = 0
-    up_name = "UP_" + filename
+    up_name = "UP_" + filename.strip()
     path = const.FILEPATH_TRAINING_DATA + FILENAME_START + FILE_ENDING
     unprocessed_df = DataFrame.from_csv(path)
     feature_df = DataFrame.from_csv(__get_filename(const.FILEPATH_FEATURE_DETECTOR, filename))
@@ -72,16 +73,82 @@ def __extract_multiple_features(feature1, feature2, filename):
             new_up_dataframe.loc[new_index] = unprocessed_df.loc[old_index].copy()
             new_index += 1
         old_index += 1
-    new_up_dataframe.to_csv(__get_filename(NEW_PATH, up_name))
-    new_feat_dataframe.to_csv(__get_filename(NEW_PATH, filename))
+    new_up_dataframe.to_csv(__get_filename(NEW_PATH, up_name), encoding='utf-8')
+    new_feat_dataframe.to_csv(__get_filename(NEW_PATH, filename), encoding='utf-8')
 
-# extract the features which has only one feature defined
-__extract_single_features(const.QUESTION_HAS_HEXADECIMAL_KEY)
-__extract_single_features(const.QUESTION_HAS_NUMERIC_KEY)
-__extract_single_features(const.QUESTION_HAS_LINKS_KEY)
-__extract_single_features(const.QUESTION_HAS_CODEBLOCK_KEY)
-# extract those that have multiple
+
+def __create_new_classifier_model(filename, use_sgd_settings=False):
+    """
+    Creates a new classifier model based on the data in the passed ```dataframe```
+
+    Arguments:
+        filename (str): path + Filename for the model
+        use_sgd_settings (bool): If True, run exhaustive SGD search. If False, use exhaustive SVC
+
+    Returns:
+         model (sklearn.model_selection._search.GridSearchCV): The created classifier model
+
+    """
+    dataframe = DataFrame.from_csv(__get_filename(NEW_PATH, filename), encoding='utf-8')
+    print("Retrieving questions and classification labels...")
+    training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
+    class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
+    print("Starting training of model")
+    file = NEW_PATH + FILENAME_START + "_UP_" + filename + ".pkl"
+    model = create_and_save_model(training_data, class_labels, file, predict_proba=True,
+                                  test_size=float(0.2), random_state=0, print_results=True,
+                                  use_sgd_settings=use_sgd_settings)
+    __create_new_singular_feature_model(filename, model)
+
+
+def __create_new_singular_feature_model(filename, model):
+    """
+    Crate a new model based on the singular feature (only for questions containing it)
+
+    Arguments:
+        filename (str): Name of file
+        model: Unprocessed data set model
+
+    """
+    if model is not None:
+        pipeline_svm = model.best_estimator_
+        # set up the parameter values
+        param_svm = [
+            {
+                'clf__C': [model.best_params_['clf__C']],
+                'clf__kernel': [model.best_params_['clf__kernel']],
+            },
+        ]
+        # check if gamma is a part of the parameters
+        if model.best_params_.get('clf__gamma') is not None:
+            param_svm[0]['clf__gamma'] = [model.best_params_.get('clf__gamma')]
+    dataframe = DataFrame.from_csv(__get_filename(NEW_PATH, filename), encoding='utf-8')
+    print("Retrieving questions and classification labels...")
+    training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
+    class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
+    print("Starting training of model")
+    filename = NEW_PATH + FILENAME_START + "_" + filename + ".pkl"
+    create_singular_feature_detector_model(pipeline_svm, param_svm, filename, training_data, class_labels,
+                                           test_size=float(0.2), random_state=0)
+
+if True:
+    # extract the features which has only one feature defined
+    __extract_single_features(const.QUESTION_HAS_HEXADECIMAL_KEY)
+    __extract_single_features(const.QUESTION_HAS_NUMERIC_KEY)
+    __extract_single_features(const.QUESTION_HAS_LINKS_KEY)
+    __extract_single_features(const.QUESTION_HAS_CODEBLOCK_KEY)
+    # extract those that have multiple
+    __file = "has_tags"
+    __extract_multiple_features(const.QUESTION_HAS_ATTACHED_TAG_KEY, const.QUESTION_HAS_EXTERNAL_TAG_KEY, __file)
+    __file = const.QUESTION_HAS_HOMEWORK_KEY
+    __extract_multiple_features(const.QUESTION_HAS_HOMEWORK_KEY, const.QUESTION_HAS_ASSIGNMENT_KEY, __file)
+
+
+__create_new_classifier_model(const.QUESTION_HAS_HEXADECIMAL_KEY)
+__create_new_classifier_model(const.QUESTION_HAS_NUMERIC_KEY)
+__create_new_classifier_model(const.QUESTION_HAS_LINKS_KEY)
+__create_new_classifier_model(const.QUESTION_HAS_CODEBLOCK_KEY)
 __file = "has_tags"
-__extract_multiple_features(const.QUESTION_HAS_ATTACHED_TAG_KEY, const.QUESTION_HAS_EXTERNAL_TAG_KEY, __file)
+__create_new_classifier_model(__file)
 __file = const.QUESTION_HAS_HOMEWORK_KEY
-__extract_multiple_features(const.QUESTION_HAS_HOMEWORK_KEY, const.QUESTION_HAS_ASSIGNMENT_KEY, __file)
+__create_new_classifier_model(__file)
