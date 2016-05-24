@@ -1,0 +1,87 @@
+"""
+This is simply a dummy file for creating comparable files for the singular feature detectors.
+What happens is that the files with the feature detectors are checked, and for each question with the feature,
+its index is retrieved and the values for this and the unprocessed are stored in a new DataFrame, which is then
+saved to file.
+"""
+import constants as const
+from pandas import DataFrame
+
+FILE_ENDING = ".csv"
+FILENAME_START = "training_data_10000_unprocessed"
+NEW_PATH = "." + const.SEPARATOR + "extraction_sets" + const.SEPARATOR
+
+
+def __get_filename(path, filename):
+    return path + FILENAME_START + "_" + filename.strip() + FILE_ENDING
+
+
+def __extract_single_features(feature):
+    """
+    Creates two files (one with unprocessed, and one with singular feature) containing questions that has the feature
+
+    Arguments:
+        feature: The feature(s) to look for
+
+    Returns:
+         tuple (pandas.DataFrame, pandas.DataFrame): Tuple that contains the dataframe with
+          updated unprocessed questions (those that contains the given feature), and the
+          other dataframe that has the features added to its question text
+    """
+    up_name = "UP_" + feature
+    new_index = old_index = 0
+    path = const.FILEPATH_TRAINING_DATA + FILENAME_START + FILE_ENDING
+    unprocessed_df = DataFrame.from_csv(path)
+    feature_df = DataFrame.from_csv(__get_filename(const.FILEPATH_FEATURE_DETECTOR, feature))
+    new_up_dataframe = DataFrame(columns=unprocessed_df.columns.values)
+    new_feat_dataframe = DataFrame(columns=unprocessed_df.columns.values)
+    for question in feature_df[const.QUESTION_TEXT_KEY]:
+        if feature in question:
+            new_feat_dataframe.loc[new_index] = feature_df.loc[old_index].copy()
+            new_up_dataframe.loc[new_index] = unprocessed_df.loc[old_index].copy()
+            new_index += 1
+        old_index += 1
+    new_up_dataframe.to_csv(__get_filename(NEW_PATH, up_name))
+    new_feat_dataframe.to_csv(__get_filename(NEW_PATH, feature))
+
+
+def __extract_multiple_features(feature1, feature2, filename):
+    """
+    Creates two files (one with unprocessed, and one with singular feature) containing questions that has the features
+
+    Arguments:
+        feature1: The first feature to look for
+        feature2: The second feature to look for
+        filename (str): File containing the features
+
+    """
+    new_index = old_index = 0
+    up_name = "UP_" + filename
+    path = const.FILEPATH_TRAINING_DATA + FILENAME_START + FILE_ENDING
+    unprocessed_df = DataFrame.from_csv(path)
+    feature_df = DataFrame.from_csv(__get_filename(const.FILEPATH_FEATURE_DETECTOR, filename))
+    new_up_dataframe = DataFrame(columns=unprocessed_df.columns.values)
+    new_feat_dataframe = DataFrame(columns=unprocessed_df.columns.values)
+    for question in feature_df[const.QUESTION_TEXT_KEY]:
+        if feature1 in question:
+            new_feat_dataframe.loc[new_index] = feature_df.loc[old_index].copy()
+            new_up_dataframe.loc[new_index] = unprocessed_df.loc[old_index].copy()
+            new_index += 1
+        elif feature2 in question:
+            new_feat_dataframe.loc[new_index] = feature_df.loc[old_index].copy()
+            new_up_dataframe.loc[new_index] = unprocessed_df.loc[old_index].copy()
+            new_index += 1
+        old_index += 1
+    new_up_dataframe.to_csv(__get_filename(NEW_PATH, up_name))
+    new_feat_dataframe.to_csv(__get_filename(NEW_PATH, filename))
+
+# extract the features which has only one feature defined
+__extract_single_features(const.QUESTION_HAS_HEXADECIMAL_KEY)
+__extract_single_features(const.QUESTION_HAS_NUMERIC_KEY)
+__extract_single_features(const.QUESTION_HAS_LINKS_KEY)
+__extract_single_features(const.QUESTION_HAS_CODEBLOCK_KEY)
+# extract those that have multiple
+__file = "has_tags"
+__extract_multiple_features(const.QUESTION_HAS_ATTACHED_TAG_KEY, const.QUESTION_HAS_EXTERNAL_TAG_KEY, __file)
+__file = const.QUESTION_HAS_HOMEWORK_KEY
+__extract_multiple_features(const.QUESTION_HAS_HOMEWORK_KEY, const.QUESTION_HAS_ASSIGNMENT_KEY, __file)

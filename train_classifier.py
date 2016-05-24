@@ -30,7 +30,7 @@ def __create_default_sgd_pipeline(random_state=int(0)):
     pipeline = Pipeline([
         ('vect', CountVectorizer(analyzer='word', stop_words='english')),
         ('tfidf', TfidfTransformer()),
-        ('clf', SGDClassifier(random_state=random_state, shuffle=True))  # loss='log',
+        ('clf', SGDClassifier(loss='log', random_state=random_state, shuffle=True))
     ])
     return pipeline
 
@@ -68,7 +68,7 @@ def __create_default_sgd_grid_parameters():
         'clf__alpha': (0.00001, 0.000001),
         'clf__penalty': ('l1', 'l2', 'elasticnet'),
         'clf__n_iter': (10, 50, 75, 100),
-        'clf__loss': ('hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'),
+        # 'clf__loss': ('hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'),
     }
     return grid_parameters
 
