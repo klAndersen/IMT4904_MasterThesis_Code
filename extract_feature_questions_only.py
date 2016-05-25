@@ -127,12 +127,13 @@ def __create_new_classifier_model(filename, use_sgd_settings=False):
          model (sklearn.model_selection._search.GridSearchCV): The created classifier model
 
     """
-    dataframe = DataFrame.from_csv(__get_filename(NEW_PATH, filename), encoding='utf-8')
+    csv_file = NEW_PATH + FILENAME_START + "_UP_" + filename.strip() + FILE_ENDING
+    dataframe = DataFrame.from_csv(csv_file, encoding='utf-8')
     print("Retrieving questions and classification labels...")
     training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
     class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
     print("Starting training of model")
-    file = NEW_PATH + "models" + const.SEPARATOR + FILENAME_START + "_UP_" + filename + ".pkl"
+    file = NEW_PATH + "models" + const.SEPARATOR + FILENAME_START + "_UP_" + filename.strip() + ".pkl"
     model = create_and_save_model(training_data, class_labels, file, predict_proba=True,
                                   test_size=float(0.2), random_state=0, print_results=True,
                                   use_sgd_settings=use_sgd_settings)
@@ -171,8 +172,8 @@ def __create_new_singular_feature_model(filename, model):
 
 
 def __train_on_all_features(filename, up_filename, use_sgd_settings=False):
-    path = __get_filename(NEW_PATH, up_filename)
-    dataframe = DataFrame.from_csv(path, encoding='utf-8')
+    csv_file = NEW_PATH + FILENAME_START + up_filename + FILE_ENDING
+    dataframe = DataFrame.from_csv(csv_file, encoding='utf-8')
     print("Retrieving questions and classification labels...")
     training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
     class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
@@ -217,7 +218,7 @@ if load_extra:
     __file = const.QUESTION_HAS_HOMEWORK_KEY
     __extract_multiple_features(const.QUESTION_HAS_HOMEWORK_KEY, const.QUESTION_HAS_ASSIGNMENT_KEY, __file)
     __file = "training_data_10000"
-    __up_name = "UP_all_features"
+    __up_name = "_UP_all_features"
     __feature_list = list()
     __feature_list.append(const.QUESTION_HAS_CODEBLOCK_KEY)
     __feature_list.append(const.QUESTION_HAS_LINKS_KEY)
@@ -229,9 +230,9 @@ if load_extra:
 
 if __name__ == "__main__":
     __file = "training_data_10000"
-    __up_name = "UP_all_features"
+    __up_name = "_UP_all_features"
     __train_on_all_features(__file, __up_name, False)
-    create_all = False
+    create_all = True
     if create_all:
         __create_new_classifier_model(const.QUESTION_HAS_HEXADECIMAL_KEY)
         __create_new_classifier_model(const.QUESTION_HAS_NUMERIC_KEY)
