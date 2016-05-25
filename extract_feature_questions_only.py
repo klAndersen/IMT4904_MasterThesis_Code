@@ -77,6 +77,44 @@ def __extract_multiple_features(feature1, feature2, filename):
     new_feat_dataframe.to_csv(__get_filename(NEW_PATH, filename), encoding='utf-8')
 
 
+def __extract_features_from_list(feature_list, filename, up_name):
+    """
+    Compares questions against a list of features to select only those that contain them
+
+    Arguments:
+        feature: The feature(s) to look for
+        filename (str): Name of file
+
+    Returns:
+         tuple (pandas.DataFrame, pandas.DataFrame): Tuple that contains the dataframe with
+          updated unprocessed questions (those that contains the given feature), and the
+          other dataframe that has the features added to its question text
+    """
+    new_index = old_index = 0
+    path = const.FILEPATH_TRAINING_DATA + FILENAME_START + FILE_ENDING
+    unprocessed_df = DataFrame.from_csv(path)
+    feature_df = DataFrame.from_csv(const.FILEPATH_TRAINING_DATA + filename + FILE_ENDING)
+    new_up_dataframe = DataFrame(columns=unprocessed_df.columns.values)
+    new_feat_dataframe = DataFrame(columns=unprocessed_df.columns.values)
+    counter = 0
+    found_feature = False
+    for question in feature_df[const.QUESTION_TEXT_KEY]:
+        while not found_feature and counter < len(feature_list):
+            feature = feature_list[counter]
+            if feature in question:
+                new_feat_dataframe.loc[new_index] = feature_df.loc[old_index].copy()
+                new_up_dataframe.loc[new_index] = unprocessed_df.loc[old_index].copy()
+                new_index += 1
+                found_feature = True
+            counter += 1
+        counter = 0
+        old_index += 1
+        found_feature = False
+    new_up_dataframe.to_csv(__get_filename(NEW_PATH, up_name), encoding='utf-8')
+    filename = NEW_PATH + filename + FILE_ENDING
+    new_feat_dataframe.to_csv(filename, encoding='utf-8')
+
+
 def __create_new_classifier_model(filename, use_sgd_settings=False):
     """
     Creates a new classifier model based on the data in the passed ```dataframe```
@@ -131,6 +169,41 @@ def __create_new_singular_feature_model(filename, model):
     create_singular_feature_detector_model(pipeline_svm, param_svm, filename, training_data, class_labels,
                                            test_size=float(0.2), random_state=0)
 
+
+def __train_on_all_features(filename, up_filename, use_sgd_settings=False):
+    path = __get_filename(NEW_PATH, up_filename)
+    dataframe = DataFrame.from_csv(path, encoding='utf-8')
+    print("Retrieving questions and classification labels...")
+    training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
+    class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
+    print("Starting training of model")
+    file = NEW_PATH + "models" + const.SEPARATOR + FILENAME_START + "_UP_" + up_filename + ".pkl"
+    model = create_and_save_model(training_data, class_labels, file, predict_proba=True,
+                                  test_size=float(0.2), random_state=0, print_results=True,
+                                  use_sgd_settings=use_sgd_settings)
+    if model is not None:
+        pipeline_svm = model.best_estimator_
+        # set up the parameter values
+        param_svm = [
+            {
+                'clf__C': [model.best_params_['clf__C']],
+                'clf__kernel': [model.best_params_['clf__kernel']],
+            },
+        ]
+        # check if gamma is a part of the parameters
+        if model.best_params_.get('clf__gamma') is not None:
+            param_svm[0]['clf__gamma'] = [model.best_params_.get('clf__gamma')]
+    csv_file = NEW_PATH + "models" + const.SEPARATOR + filename + FILE_ENDING
+    dataframe = DataFrame.from_csv(csv_file, encoding='utf-8')
+    print("Retrieving questions and classification labels...")
+    training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
+    class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
+    print("Starting training of model")
+    filename = NEW_PATH + "models" + const.SEPARATOR + filename + ".pkl"
+    create_singular_feature_detector_model(pipeline_svm, param_svm, filename, training_data, class_labels,
+                                           test_size=float(0.2), random_state=0)
+
+
 load_extra = False
 if load_extra:
     # extract the features which has only one feature defined
@@ -143,13 +216,28 @@ if load_extra:
     __extract_multiple_features(const.QUESTION_HAS_ATTACHED_TAG_KEY, const.QUESTION_HAS_EXTERNAL_TAG_KEY, __file)
     __file = const.QUESTION_HAS_HOMEWORK_KEY
     __extract_multiple_features(const.QUESTION_HAS_HOMEWORK_KEY, const.QUESTION_HAS_ASSIGNMENT_KEY, __file)
+__file = "training_data_10000"
+__up_name = "UP_all_features"
+__feature_list = list()
+__feature_list.append(const.QUESTION_HAS_CODEBLOCK_KEY)
+__feature_list.append(const.QUESTION_HAS_LINKS_KEY)
+__feature_list.append(const.QUESTION_HAS_ATTACHED_TAG_KEY)
+__feature_list.append(const.QUESTION_HAS_HEXADECIMAL_KEY)
+__feature_list.append(const.QUESTION_HAS_NUMERIC_KEY)
+__feature_list.append(const.QUESTION_HAS_HOMEWORK_KEY)
+__extract_features_from_list(__feature_list, __file, __up_name)
 
 if __name__ == "__main__":
-    __create_new_classifier_model(const.QUESTION_HAS_HEXADECIMAL_KEY)
-    __create_new_classifier_model(const.QUESTION_HAS_NUMERIC_KEY)
-    __create_new_classifier_model(const.QUESTION_HAS_LINKS_KEY)
-    __create_new_classifier_model(const.QUESTION_HAS_CODEBLOCK_KEY)
-    __file = "has_tags"
-    __create_new_classifier_model(__file)
-    __file = const.QUESTION_HAS_HOMEWORK_KEY
-    __create_new_classifier_model(__file)
+    __file = "training_data_10000"
+    __up_name = "UP_all_features"
+    __train_on_all_features(__file, __up_name, False)
+    create_all = False
+    if create_all:
+        __create_new_classifier_model(const.QUESTION_HAS_HEXADECIMAL_KEY)
+        __create_new_classifier_model(const.QUESTION_HAS_NUMERIC_KEY)
+        __create_new_classifier_model(const.QUESTION_HAS_LINKS_KEY)
+        __create_new_classifier_model(const.QUESTION_HAS_CODEBLOCK_KEY)
+        __file = "has_tags"
+        __create_new_classifier_model(__file)
+        __file = const.QUESTION_HAS_HOMEWORK_KEY
+        __create_new_classifier_model(__file)
