@@ -216,16 +216,16 @@ if load_extra:
     __extract_multiple_features(const.QUESTION_HAS_ATTACHED_TAG_KEY, const.QUESTION_HAS_EXTERNAL_TAG_KEY, __file)
     __file = const.QUESTION_HAS_HOMEWORK_KEY
     __extract_multiple_features(const.QUESTION_HAS_HOMEWORK_KEY, const.QUESTION_HAS_ASSIGNMENT_KEY, __file)
-__file = "training_data_10000"
-__up_name = "UP_all_features"
-__feature_list = list()
-__feature_list.append(const.QUESTION_HAS_CODEBLOCK_KEY)
-__feature_list.append(const.QUESTION_HAS_LINKS_KEY)
-__feature_list.append(const.QUESTION_HAS_ATTACHED_TAG_KEY)
-__feature_list.append(const.QUESTION_HAS_HEXADECIMAL_KEY)
-__feature_list.append(const.QUESTION_HAS_NUMERIC_KEY)
-__feature_list.append(const.QUESTION_HAS_HOMEWORK_KEY)
-__extract_features_from_list(__feature_list, __file, __up_name)
+    __file = "training_data_10000"
+    __up_name = "UP_all_features"
+    __feature_list = list()
+    __feature_list.append(const.QUESTION_HAS_CODEBLOCK_KEY)
+    __feature_list.append(const.QUESTION_HAS_LINKS_KEY)
+    __feature_list.append(const.QUESTION_HAS_ATTACHED_TAG_KEY)
+    __feature_list.append(const.QUESTION_HAS_HEXADECIMAL_KEY)
+    __feature_list.append(const.QUESTION_HAS_NUMERIC_KEY)
+    __feature_list.append(const.QUESTION_HAS_HOMEWORK_KEY)
+    __extract_features_from_list(__feature_list, __file, __up_name)
 
 if __name__ == "__main__":
     __file = "training_data_10000"
