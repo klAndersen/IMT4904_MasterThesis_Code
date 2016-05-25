@@ -94,7 +94,7 @@ def __create_new_classifier_model(filename, use_sgd_settings=False):
     training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
     class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
     print("Starting training of model")
-    file = NEW_PATH + FILENAME_START + "_UP_" + filename + ".pkl"
+    file = NEW_PATH + "models" + const.SEPARATOR + FILENAME_START + "_UP_" + filename + ".pkl"
     model = create_and_save_model(training_data, class_labels, file, predict_proba=True,
                                   test_size=float(0.2), random_state=0, print_results=True,
                                   use_sgd_settings=use_sgd_settings)
@@ -127,11 +127,12 @@ def __create_new_singular_feature_model(filename, model):
     training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
     class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
     print("Starting training of model")
-    filename = NEW_PATH + FILENAME_START + "_" + filename + ".pkl"
+    filename = NEW_PATH + "models" + const.SEPARATOR + FILENAME_START + "_" + filename + ".pkl"
     create_singular_feature_detector_model(pipeline_svm, param_svm, filename, training_data, class_labels,
                                            test_size=float(0.2), random_state=0)
 
-if True:
+load_extra = False
+if load_extra:
     # extract the features which has only one feature defined
     __extract_single_features(const.QUESTION_HAS_HEXADECIMAL_KEY)
     __extract_single_features(const.QUESTION_HAS_NUMERIC_KEY)
@@ -143,12 +144,12 @@ if True:
     __file = const.QUESTION_HAS_HOMEWORK_KEY
     __extract_multiple_features(const.QUESTION_HAS_HOMEWORK_KEY, const.QUESTION_HAS_ASSIGNMENT_KEY, __file)
 
-
-__create_new_classifier_model(const.QUESTION_HAS_HEXADECIMAL_KEY)
-__create_new_classifier_model(const.QUESTION_HAS_NUMERIC_KEY)
-__create_new_classifier_model(const.QUESTION_HAS_LINKS_KEY)
-__create_new_classifier_model(const.QUESTION_HAS_CODEBLOCK_KEY)
-__file = "has_tags"
-__create_new_classifier_model(__file)
-__file = const.QUESTION_HAS_HOMEWORK_KEY
-__create_new_classifier_model(__file)
+if __name__ == "__main__":
+    __create_new_classifier_model(const.QUESTION_HAS_HEXADECIMAL_KEY)
+    __create_new_classifier_model(const.QUESTION_HAS_NUMERIC_KEY)
+    __create_new_classifier_model(const.QUESTION_HAS_LINKS_KEY)
+    __create_new_classifier_model(const.QUESTION_HAS_CODEBLOCK_KEY)
+    __file = "has_tags"
+    __create_new_classifier_model(__file)
+    __file = const.QUESTION_HAS_HOMEWORK_KEY
+    __create_new_classifier_model(__file)
