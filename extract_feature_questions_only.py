@@ -193,7 +193,7 @@ def __train_on_all_features(filename, up_filename, use_sgd_settings=False):
         # check if gamma is a part of the parameters
         if model.best_params_.get('clf__gamma') is not None:
             param_svm[0]['clf__gamma'] = [model.best_params_.get('clf__gamma')]
-    csv_file = NEW_PATH + "models" + const.SEPARATOR + filename + FILE_ENDING
+    csv_file = NEW_PATH + const.SEPARATOR + filename + FILE_ENDING
     dataframe = DataFrame.from_csv(csv_file, encoding='utf-8')
     print("Retrieving questions and classification labels...")
     training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
