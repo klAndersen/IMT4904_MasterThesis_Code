@@ -141,7 +141,12 @@ def load_training_data(file_location=str, load_from_database=False, limit=int(10
         data = mysqldb.retrieve_training_data(limit, create_feature_detectors, create_unprocessed,
                                               site_tags, exclude_site_tags, exclude_assignment)
         data.to_csv(csv_file, encoding='utf-8')
+        if create_unprocessed:
+            # if this was an unprocessed dataset, remove the HTML before returning it for training
+            data = get_processed_dataset(csv_file)
         return data
+    if constants.SET_UNPROCESSED in csv_file:
+        return get_processed_dataset(csv_file)
     return DataFrame.from_csv(csv_file, encoding='utf-8')
 
 

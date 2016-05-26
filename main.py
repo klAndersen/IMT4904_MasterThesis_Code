@@ -46,7 +46,7 @@ def create_unprocessed_dataset(args=list):
             print("Loading data set...")
             # retrieve data from database, and create model if desired
             tags_filename = filename
-            filename += str(limit) + "_unprocessed"
+            filename += str(limit) + const.SET_UNPROCESSED
             dataframe = create_unprocessed_dataset_dump(filename, limit, tags_filename)
             # should a classifier model be created?
             if create_model == arg_array[3] or create_model == arg_array[1]:
@@ -190,7 +190,7 @@ def train_new_classifier_model(args=list):
                 print("Easter egg unlocked: Now creating two additional classifier models.")
                 print("Creating model based on the best settings for the unprocessed data set...")
                 file = filename + "_UP_settings"
-                existing_model = filename + "_unprocessed"
+                existing_model = filename + const.SET_UNPROCESSED
                 create_singular_feature_detector_model(file, existing_model, dataframe)
                 print("Creating model without stemming, using exhaustive search...")
                 file = filename + "_no_stem"

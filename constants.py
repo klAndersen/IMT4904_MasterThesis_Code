@@ -135,6 +135,13 @@ Column identifier/key: length
 The length of the questions text
 '''
 
+SET_UNPROCESSED = "_unprocessed"
+'''
+Default value attached to the raw, unprocessed data sets
+
+Can also be used to check if the loaded data is unprocessed, if so remove HTML
+'''
+
 QUESTION_HAS_ATTACHED_TAG_KEY = " has_attached_tag "
 '''
 Value used to replace the tag value, if found.
