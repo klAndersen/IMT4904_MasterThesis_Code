@@ -6,6 +6,7 @@ saved to file.
 """
 import constants as const
 from pandas import DataFrame
+from file_processing import load_training_data
 from train_classifier import create_and_save_model, create_singular_feature_detector_model
 
 FILE_ENDING = ".csv"
@@ -31,8 +32,8 @@ def __extract_single_features(feature):
     """
     up_name = "UP_" + feature.strip()
     new_index = old_index = 0
-    path = const.FILEPATH_TRAINING_DATA + FILENAME_START + FILE_ENDING
-    unprocessed_df = DataFrame.from_csv(path)
+    path = const.FILEPATH_TRAINING_DATA + FILENAME_START
+    unprocessed_df = load_training_data(path, False, exclude_site_tags=True)
     feature_df = DataFrame.from_csv(__get_filename(const.FILEPATH_FEATURE_DETECTOR, feature))
     new_up_dataframe = DataFrame(columns=unprocessed_df.columns.values)
     new_feat_dataframe = DataFrame(columns=unprocessed_df.columns.values)
@@ -58,8 +59,8 @@ def __extract_multiple_features(feature1, feature2, filename):
     """
     new_index = old_index = 0
     up_name = "UP_" + filename.strip()
-    path = const.FILEPATH_TRAINING_DATA + FILENAME_START + FILE_ENDING
-    unprocessed_df = DataFrame.from_csv(path)
+    path = const.FILEPATH_TRAINING_DATA + FILENAME_START
+    unprocessed_df = load_training_data(path, False, exclude_site_tags=True)
     feature_df = DataFrame.from_csv(__get_filename(const.FILEPATH_FEATURE_DETECTOR, filename))
     new_up_dataframe = DataFrame(columns=unprocessed_df.columns.values)
     new_feat_dataframe = DataFrame(columns=unprocessed_df.columns.values)
@@ -82,8 +83,9 @@ def __extract_features_from_list(feature_list, filename, up_name):
     Compares questions against a list of features to select only those that contain them
 
     Arguments:
-        feature: The feature(s) to look for
+        feature_list: The feature(s) to look for
         filename (str): Name of file
+        up_name (str): Name of the filtered unprocessed data set
 
     Returns:
          tuple (pandas.DataFrame, pandas.DataFrame): Tuple that contains the dataframe with
@@ -91,8 +93,8 @@ def __extract_features_from_list(feature_list, filename, up_name):
           other dataframe that has the features added to its question text
     """
     new_index = old_index = 0
-    path = const.FILEPATH_TRAINING_DATA + FILENAME_START + FILE_ENDING
-    unprocessed_df = DataFrame.from_csv(path)
+    path = const.FILEPATH_TRAINING_DATA + FILENAME_START
+    unprocessed_df = load_training_data(path, False, exclude_site_tags=True)
     feature_df = DataFrame.from_csv(const.FILEPATH_TRAINING_DATA + filename + FILE_ENDING)
     new_up_dataframe = DataFrame(columns=unprocessed_df.columns.values)
     new_feat_dataframe = DataFrame(columns=unprocessed_df.columns.values)
@@ -161,24 +163,24 @@ def __create_new_singular_feature_model(filename, model):
         # check if gamma is a part of the parameters
         if model.best_params_.get('clf__gamma') is not None:
             param_svm[0]['clf__gamma'] = [model.best_params_.get('clf__gamma')]
-    dataframe = DataFrame.from_csv(__get_filename(NEW_PATH, filename), encoding='utf-8')
-    print("Retrieving questions and classification labels...")
-    training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
-    class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
-    print("Starting training of model")
-    filename = NEW_PATH + "models" + const.SEPARATOR + FILENAME_START + "_" + filename + ".pkl"
-    create_singular_feature_detector_model(pipeline_svm, param_svm, filename, training_data, class_labels,
-                                           test_size=float(0.2), random_state=0)
+        dataframe = DataFrame.from_csv(__get_filename(NEW_PATH, filename), encoding='utf-8')
+        print("Retrieving questions and classification labels...")
+        training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
+        class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
+        print("Starting training of model")
+        filename = NEW_PATH + "models" + const.SEPARATOR + FILENAME_START + "_" + filename + ".pkl"
+        create_singular_feature_detector_model(pipeline_svm, param_svm, filename, training_data, class_labels,
+                                               test_size=float(0.2), random_state=0)
 
 
 def __train_on_all_features(filename, up_filename, use_sgd_settings=False):
-    csv_file = NEW_PATH + FILENAME_START + up_filename + FILE_ENDING
+    csv_file = __get_filename(NEW_PATH, up_filename)
     dataframe = DataFrame.from_csv(csv_file, encoding='utf-8')
     print("Retrieving questions and classification labels...")
     training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
     class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
     print("Starting training of model")
-    file = NEW_PATH + "models" + const.SEPARATOR + FILENAME_START + "_UP_" + up_filename + ".pkl"
+    file = NEW_PATH + "models" + const.SEPARATOR + FILENAME_START + "_" + up_filename + ".pkl"
     model = create_and_save_model(training_data, class_labels, file, predict_proba=True,
                                   test_size=float(0.2), random_state=0, print_results=True,
                                   use_sgd_settings=use_sgd_settings)
@@ -194,15 +196,15 @@ def __train_on_all_features(filename, up_filename, use_sgd_settings=False):
         # check if gamma is a part of the parameters
         if model.best_params_.get('clf__gamma') is not None:
             param_svm[0]['clf__gamma'] = [model.best_params_.get('clf__gamma')]
-    csv_file = NEW_PATH + const.SEPARATOR + filename + FILE_ENDING
-    dataframe = DataFrame.from_csv(csv_file, encoding='utf-8')
-    print("Retrieving questions and classification labels...")
-    training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
-    class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
-    print("Starting training of model")
-    filename = NEW_PATH + "models" + const.SEPARATOR + filename + ".pkl"
-    create_singular_feature_detector_model(pipeline_svm, param_svm, filename, training_data, class_labels,
-                                           test_size=float(0.2), random_state=0)
+        csv_file = NEW_PATH + const.SEPARATOR + filename + FILE_ENDING
+        dataframe = DataFrame.from_csv(csv_file, encoding='utf-8')
+        print("Retrieving questions and classification labels...")
+        training_data = dataframe[const.QUESTION_TEXT_KEY].copy()
+        class_labels = dataframe[const.CLASS_LABEL_KEY].copy()
+        print("Starting training of model")
+        filename = NEW_PATH + "models" + const.SEPARATOR + filename + ".pkl"
+        create_singular_feature_detector_model(pipeline_svm, param_svm, filename, training_data, class_labels,
+                                               test_size=float(0.2), random_state=0)
 
 
 load_extra = False
@@ -218,7 +220,7 @@ if load_extra:
     __file = const.QUESTION_HAS_HOMEWORK_KEY
     __extract_multiple_features(const.QUESTION_HAS_HOMEWORK_KEY, const.QUESTION_HAS_ASSIGNMENT_KEY, __file)
     __file = "training_data_10000"
-    __up_name = "_UP_all_features"
+    __up_name = "UP_all_features"
     __feature_list = list()
     __feature_list.append(const.QUESTION_HAS_CODEBLOCK_KEY)
     __feature_list.append(const.QUESTION_HAS_LINKS_KEY)
@@ -230,9 +232,9 @@ if load_extra:
 
 if __name__ == "__main__":
     __file = "training_data_10000"
-    __up_name = "_UP_all_features"
+    __up_name = "UP_all_features"
     __train_on_all_features(__file, __up_name, False)
-    create_all = True
+    create_all = False
     if create_all:
         __create_new_classifier_model(const.QUESTION_HAS_HEXADECIMAL_KEY)
         __create_new_classifier_model(const.QUESTION_HAS_NUMERIC_KEY)
